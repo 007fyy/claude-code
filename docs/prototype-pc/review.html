@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商品评价 · 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.page-main { max-width: 700px; margin: 0 auto; padding: 32px 20px 60px; }
+.review-card { background: var(--card); border-radius: 14px; box-shadow: var(--sh); overflow: hidden; }
+.review-card-header { padding: 20px 24px; border-bottom: 1px solid var(--bd); background: var(--bg); }
+.review-order-no { font-size: 12px; color: var(--t3); margin-bottom: 6px; }
+.review-item { display: flex; align-items: center; gap: 14px; }
+.review-item-img { width: 60px; height: 60px; border-radius: 8px; background: linear-gradient(135deg,#F5EDE3,#F0E8D8); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+.review-item-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.review-item-sku  { font-size: 12px; color: var(--t2); }
+
+.review-body { padding: 24px; }
+
+.section-label { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 12px; }
+
+/* 星级 */
+.star-row { display: flex; gap: 6px; margin-bottom: 22px; }
+.star { font-size: 32px; cursor: pointer; transition: transform .1s; filter: grayscale(1); }
+.star:hover, .star.active { filter: grayscale(0); transform: scale(1.15); }
+
+/* 标签快选 */
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.tag-btn { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1.5px solid var(--bd); color: var(--t2); cursor: pointer; background: #fff; transition: all .15s; }
+.tag-btn:hover { border-color: var(--gold); color: var(--gold-dk); }
+.tag-btn.active { background: var(--gold-lt); border-color: var(--gold); color: var(--gold-dk); }
+
+/* 文本区 */
+.review-textarea { width: 100%; min-height: 110px; padding: 12px 14px; border: 1.5px solid var(--bd); border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical; outline: none; transition: border-color .15s; line-height: 1.6; }
+.review-textarea:focus { border-color: var(--gold); }
+.char-count { font-size: 11px; color: var(--t3); text-align: right; margin-top: 4px; margin-bottom: 20px; }
+
+/* 图片上传 */
+.upload-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.upload-thumb { width: 72px; height: 72px; border-radius: 8px; border: 1.5px dashed var(--bd); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; color: var(--t3); gap: 4px; transition: border-color .15s; }
+.upload-thumb:hover { border-color: var(--gold); color: var(--gold); }
+.upload-thumb .ic { font-size: 22px; }
+
+/* 匿名 toggle */
+.anon-row { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; font-size: 13px; color: var(--t2); }
+.toggle { position: relative; width: 40px; height: 22px; }
+.toggle input { display: none; }
+.toggle-track { position: absolute; inset: 0; border-radius: 11px; background: var(--bd); cursor: pointer; transition: background .2s; }
+.toggle input:checked + .toggle-track { background: var(--gold); }
+.toggle-thumb { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); transition: transform .2s; pointer-events: none; }
+.toggle input:checked ~ .toggle-thumb { transform: translateX(18px); }
+
+/* AI 评分展示 */
+.ai-score-box { background: linear-gradient(135deg,#FEF6EE,#FDF0E5); border-radius: 10px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px; }
+.ai-score-val { font-size: 28px; font-weight: 900; color: var(--gold-dk); }
+.ai-score-lbl { font-size: 12px; color: var(--t2); }
+.ai-score-tips { font-size: 12px; color: var(--t2); flex: 1; }
+
+.submit-btn { width: 100%; padding: 14px; background: linear-gradient(135deg,var(--gold),var(--gold-dk)); color: #fff; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; font-family: inherit; transition: all .2s; }
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(196,144,106,.35); }
+
+.divider { border: none; border-top: 1px solid var(--bd); margin: 22px 0; }
+
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--dark); color: #fff; padding: 10px 22px; border-radius: 8px; font-size: 13px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity .2s; white-space: nowrap; pointer-events: none; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <ul class="nav-links">
+      <li><a href="index.html">首页</a></li>
+      <li class="has-drop">
+        <a href="products.html">商品 <span class="drop-arrow">▾</span></a>
+        <div class="nav-drop">
+          <a href="products.html?cat=earrings"><span class="drop-ic">🌙</span>耳饰</a>
+          <a href="products.html?cat=necklace"><span class="drop-ic">✨</span>项链</a>
+          <a href="products.html?cat=bracelet"><span class="drop-ic">💫</span>手链</a>
+          <a href="products.html?cat=ring"><span class="drop-ic">💍</span>戒指</a>
+          <a href="products.html?cat=set"><span class="drop-ic">🎁</span>套装</a>
+        </div>
+      </li>
+      <li><a href="guide.html">AI 选款</a></li>
+      <li><a href="face.html">脸型测试</a></li>
+      <li><a href="profile.html">会员中心</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-search">
+        <span class="ic">🔍</span>
+        <input type="text" placeholder="搜索耳饰、项链、手链...">
+      </div>
+      <a href="ar.html" class="nav-icon-btn" data-tip="AR 虚拟试戴">📷</a>
+      <a href="cart.html" class="nav-icon-btn" data-tip="购物车">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-user-btn">👤 登录 / 注册</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-main">
+  <div class="breadcrumb">
+    <a href="index.html">首页</a><span class="sep">›</span>
+    <a href="profile.html">个人中心</a><span class="sep">›</span>
+    <a href="orders.html">我的订单</a><span class="sep">›</span>
+    <span class="cur">商品评价</span>
+  </div>
+
+  <h2 style="font-size:20px;font-weight:800;margin-bottom:20px;">✍️ 写评价</h2>
+
+  <div class="review-card">
+    <!-- 商品信息 -->
+    <div class="review-card-header">
+      <div class="review-order-no">订单号：LS20260428001234</div>
+      <div class="review-item">
+        <div class="review-item-img">💎</div>
+        <div>
+          <div class="review-item-name">云端星河 · 18K 白金钻石耳坠</div>
+          <div class="review-item-sku">18K 白金 / 0.3ct / G色</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="review-body">
+
+      <!-- AI 试戴对比提示 -->
+      <div class="ai-score-box">
+        <div>
+          <div class="ai-score-val">92%</div>
+          <div class="ai-score-lbl">AI 匹配度</div>
+        </div>
+        <div class="ai-score-tips">
+          <strong>你的脸型：椭圆脸</strong><br>
+          本款耳饰 AI 推荐理由：修颜设计适合椭圆脸，实际佩戴效果如何？你的反馈将帮助 AI 更精准推荐。
+        </div>
+      </div>
+
+      <!-- 综合评分 -->
+      <div class="section-label">综合评分 <span id="star-label" style="font-size:12px;color:var(--t3);font-weight:400;margin-left:6px;"></span></div>
+      <div class="star-row" id="star-row">
+        <span class="star" data-v="1" onclick="setStar(1)">⭐</span>
+        <span class="star" data-v="2" onclick="setStar(2)">⭐</span>
+        <span class="star" data-v="3" onclick="setStar(3)">⭐</span>
+        <span class="star" data-v="4" onclick="setStar(4)">⭐</span>
+        <span class="star" data-v="5" onclick="setStar(5)">⭐</span>
+      </div>
+
+      <!-- AI 推荐准确度 -->
+      <div class="section-label">AI 推荐准确度</div>
+      <div class="tag-row" id="ai-tags">
+        <span class="tag-btn" onclick="toggleTag(this)">👍 非常准确</span>
+        <span class="tag-btn" onclick="toggleTag(this)">😊 基本符合</span>
+        <span class="tag-btn" onclick="toggleTag(this)">🤔 有点偏差</span>
+        <span class="tag-btn" onclick="toggleTag(this)">❌ 完全不符</span>
+      </div>
+
+      <!-- AR 试戴体验 -->
+      <div class="section-label">AR 试戴体验</div>
+      <div class="tag-row" id="ar-tags">
+        <span class="tag-btn" onclick="toggleTag(this)">✨ 还原度高</span>
+        <span class="tag-btn" onclick="toggleTag(this)">📐 比例准确</span>
+        <span class="tag-btn" onclick="toggleTag(this)">🎨 色彩真实</span>
+        <span class="tag-btn" onclick="toggleTag(this)">💡 有助购买决策</span>
+        <span class="tag-btn" onclick="toggleTag(this)">⚠️ 和实物有差距</span>
+      </div>
+
+      <!-- 商品体验 -->
+      <div class="section-label">商品体验</div>
+      <div class="tag-row" id="goods-tags">
+        <span class="tag-btn" onclick="toggleTag(this)">💎 做工精良</span>
+        <span class="tag-btn" onclick="toggleTag(this)">✅ 与描述一致</span>
+        <span class="tag-btn" onclick="toggleTag(this)">📦 包装精美</span>
+        <span class="tag-btn" onclick="toggleTag(this)">⚡ 物流很快</span>
+        <span class="tag-btn" onclick="toggleTag(this)">😍 超出预期</span>
+        <span class="tag-btn" onclick="toggleTag(this)">😐 一般</span>
+      </div>
+
+      <hr class="divider">
+
+      <!-- 文字评价 -->
+      <div class="section-label">写下你的体验</div>
+      <textarea class="review-textarea" id="review-text" maxlength="500" placeholder="分享你的真实感受，帮助更多爱美的她做决策～&#10;（AI 会学习你的反馈，让推荐越来越准确哦）" oninput="updateCount()"></textarea>
+      <div class="char-count"><span id="char-now">0</span> / 500 字</div>
+
+      <!-- 上传图片 -->
+      <div class="section-label">上传图片（选填）</div>
+      <div class="upload-row">
+        <div class="upload-thumb" onclick="showToast('图片上传功能演示')">
+          <span class="ic">📷</span>添加图片
+        </div>
+        <div class="upload-thumb" onclick="showToast('视频上传功能演示')">
+          <span class="ic">🎬</span>添加视频
+        </div>
+      </div>
+
+      <!-- 匿名 -->
+      <div class="anon-row">
+        <label class="toggle">
+          <input type="checkbox" id="anon-toggle">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+        <span>匿名发布</span>
+        <span style="color:var(--t3);">（开启后仅显示"匿名用户"）</span>
+      </div>
+
+      <!-- 提交 -->
+      <button class="submit-btn" onclick="submitReview()">提交评价</button>
+
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let currentStar = 0;
+const STAR_LABELS = ['', '太差了', '不太满意', '一般般', '比较满意', '非常满意 ✨'];
+
+function setStar(v) {
+  currentStar = v;
+  document.querySelectorAll('.star').forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.v) <= v);
+  });
+  document.getElementById('star-label').textContent = STAR_LABELS[v] || '';
+}
+
+function toggleTag(el) {
+  el.classList.toggle('active');
+}
+
+function updateCount() {
+  const len = document.getElementById('review-text').value.length;
+  document.getElementById('char-now').textContent = len;
+}
+
+function submitReview() {
+  if (currentStar === 0) { showToast('请先给商品打分'); return; }
+  const text = document.getElementById('review-text').value.trim();
+  showToast('提交中...');
+  setTimeout(() => {
+    showToast('🎉 评价成功！获得 50 积分奖励');
+    setTimeout(() => location.href = 'orders.html', 1600);
+  }, 900);
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

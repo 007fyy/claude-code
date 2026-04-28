@@ -288,19 +288,30 @@
 <nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">💎 珑饰</a>
-    <div class="nav-links">
-      <a href="index.html">首页</a>
-      <a href="guide.html">AI 导购</a>
-      <a href="face.html">脸型检测</a>
-      <a href="products.html">商品</a>
-      <a href="#">品牌故事</a>
-      <a href="profile.html" class="active">会员中心</a>
-    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">首页</a></li>
+      <li class="has-drop">
+        <a href="products.html">商品 <span class="drop-arrow">▾</span></a>
+        <div class="nav-drop">
+          <a href="products.html?cat=earrings"><span class="drop-ic">🌙</span>耳饰</a>
+          <a href="products.html?cat=necklace"><span class="drop-ic">✨</span>项链</a>
+          <a href="products.html?cat=bracelet"><span class="drop-ic">💫</span>手链</a>
+          <a href="products.html?cat=ring"><span class="drop-ic">💍</span>戒指</a>
+          <a href="products.html?cat=set"><span class="drop-ic">🎁</span>套装</a>
+        </div>
+      </li>
+      <li><a href="guide.html">AI 选款</a></li>
+      <li><a href="face.html">脸型测试</a></li>
+      <li><a href="profile.html">会员中心</a></li>
+    </ul>
     <div class="nav-right">
-      <div class="nav-search"><span class="ic">🔍</span><input type="text" placeholder="搜索饰品..."></div>
-      <a href="guide.html" class="nav-ai-btn">✨ AI 导购</a>
-      <a href="cart.html" class="nav-icon-btn">🛒<span class="badge">2</span></a>
-      <a href="login.html" class="nav-icon-btn" style="color:var(--dark);">👤</a>
+      <div class="nav-search">
+        <span class="ic">🔍</span>
+        <input type="text" placeholder="搜索耳饰、项链、手链...">
+      </div>
+      <a href="ar.html" class="nav-icon-btn" data-tip="AR 虚拟试戴">📷</a>
+      <a href="cart.html" class="nav-icon-btn" data-tip="购物车">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-user-btn">👤 登录 / 注册</a>
     </div>
   </div>
 </nav>
@@ -354,7 +365,7 @@
             <div class="sidebar-nav-title">其他</div>
             <a href="#" class="sidebar-nav-item" onclick="showToast('地址管理')"><span class="icon">📍</span> 收货地址</a>
             <a href="#" class="sidebar-nav-item" onclick="showToast('消息中心')"><span class="icon">🔔</span> 消息通知<span class="badge">5</span></a>
-            <a href="login.html" class="sidebar-nav-item"><span class="icon">🚪</span> 退出登录</a>
+            <a href="#" class="sidebar-nav-item" onclick="logout();return false;"><span class="icon">🚪</span> 退出登录</a>
           </div>
         </div>
       </div>
@@ -509,5 +520,6 @@ function showToast(msg) {
   clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2500);
 }
 </script>
+<script src="shared.js"></script>
 </body>
 </html>

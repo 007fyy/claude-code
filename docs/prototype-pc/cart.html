@@ -6,6 +6,71 @@
 <title>购物车 — 珑饰 LongShi</title>
 <link rel="stylesheet" href="shared.css">
 <style>
+/* ── 凑单进度条 ── */
+.cart-progress-bar {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  padding: 16px 22px;
+  margin-bottom: 14px;
+  box-shadow: var(--sh);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.cart-progress-text {
+  font-size: 13px;
+  color: var(--t2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cart-progress-text strong { color: var(--red); }
+.cart-progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bd);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.cart-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-dk));
+  transition: width .5s var(--ease);
+}
+.cart-progress-goal {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-dk);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Cart Item ops: AR 试戴 button ── */
+.cart-op-btn.ar { color: var(--gold-dk); }
+.cart-op-btn.ar:hover { color: var(--gold); }
+
+/* ── Trust Badges ── */
+.trust-badges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bd);
+}
+.trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  color: var(--t2);
+  padding: 8px 10px;
+  background: var(--bg);
+  border-radius: 8px;
+}
+.trust-badge .ic { font-size: 15px; flex-shrink: 0; }
+.trust-badge strong { color: var(--dark); font-weight: 700; }
+
 /* ── Cart Layout ── */
 .cart-wrap {
   display: grid;
@@ -377,25 +442,30 @@
 <nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">💎 珑饰</a>
-    <div class="nav-links">
-      <a href="index.html">首页</a>
-      <a href="guide.html">AI 导购</a>
-      <a href="face.html">脸型检测</a>
-      <a href="products.html">商品</a>
-      <a href="#">品牌故事</a>
-      <a href="#">会员中心</a>
-    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">首页</a></li>
+      <li class="has-drop">
+        <a href="products.html">商品 <span class="drop-arrow">▾</span></a>
+        <div class="nav-drop">
+          <a href="products.html?cat=earrings"><span class="drop-ic">🌙</span>耳饰</a>
+          <a href="products.html?cat=necklace"><span class="drop-ic">✨</span>项链</a>
+          <a href="products.html?cat=bracelet"><span class="drop-ic">💫</span>手链</a>
+          <a href="products.html?cat=ring"><span class="drop-ic">💍</span>戒指</a>
+          <a href="products.html?cat=set"><span class="drop-ic">🎁</span>套装</a>
+        </div>
+      </li>
+      <li><a href="guide.html">AI 选款</a></li>
+      <li><a href="face.html">脸型测试</a></li>
+      <li><a href="profile.html">会员中心</a></li>
+    </ul>
     <div class="nav-right">
       <div class="nav-search">
         <span class="ic">🔍</span>
-        <input type="text" placeholder="搜索饰品...">
+        <input type="text" placeholder="搜索耳饰、项链、手链...">
       </div>
-      <a href="guide.html" class="nav-ai-btn">✨ AI 导购</a>
-      <a href="cart.html" class="nav-icon-btn" title="购物车" style="color:var(--dark);">
-        🛒
-        <span class="badge">2</span>
-      </a>
-      <a href="login.html" class="nav-icon-btn" title="我的">👤</a>
+      <a href="ar.html" class="nav-icon-btn" data-tip="AR 虚拟试戴">📷</a>
+      <a href="cart.html" class="nav-icon-btn" data-tip="购物车">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-user-btn">👤 登录 / 注册</a>
     </div>
   </div>
 </nav>
@@ -415,9 +485,18 @@
       <div class="cart-promo-icon">🎁</div>
       <div class="cart-promo-text">
         <div class="cart-promo-title">限时优惠：满 4000 减 200 · 满 8000 减 500</div>
-        <div class="cart-promo-sub">距结束还有 03:12:45 · 加购凑单省更多</div>
+        <div class="cart-promo-sub">距结束还有 <span id="countdownTimer">03:12:45</span> · 加购凑单省更多</div>
       </div>
       <div class="cart-promo-arrow">›</div>
+    </div>
+
+    <!-- 凑单进度条 -->
+    <div class="cart-progress-bar">
+      <div class="cart-progress-text" id="progressText">距享 <strong>满4000减200</strong> 还差</div>
+      <div class="cart-progress-track">
+        <div class="cart-progress-fill" id="progressFill" style="width:146.5%;"></div>
+      </div>
+      <div class="cart-progress-goal" id="progressGoal">已达标 ✓</div>
     </div>
 
     <div class="cart-wrap">
@@ -471,8 +550,9 @@
               <div class="cart-item-subtotal" id="sub1">¥3,980</div>
             </div>
             <div class="cart-item-ops">
-              <button class="cart-op-btn" onclick="moveToWish('item1')">♡ 收藏</button>
-              <button class="cart-op-btn del" onclick="removeItem('item1')">🗑 删除</button>
+              <button class="cart-op-btn ar" data-tip="AR 虚拟试戴" onclick="location.href='ar.html'">📷 试戴</button>
+              <button class="cart-op-btn" data-tip="移至收藏夹" onclick="moveToWish('item1')">♡ 收藏</button>
+              <button class="cart-op-btn del" data-tip="从购物车移除" onclick="removeItem('item1')">🗑 删除</button>
             </div>
           </div>
 
@@ -506,8 +586,9 @@
               <div class="cart-item-subtotal" id="sub2">¥1,880</div>
             </div>
             <div class="cart-item-ops">
-              <button class="cart-op-btn" onclick="moveToWish('item2')">♡ 收藏</button>
-              <button class="cart-op-btn del" onclick="removeItem('item2')">🗑 删除</button>
+              <button class="cart-op-btn ar" data-tip="AR 虚拟试戴" onclick="location.href='ar.html'">📷 试戴</button>
+              <button class="cart-op-btn" data-tip="移至收藏夹" onclick="moveToWish('item2')">♡ 收藏</button>
+              <button class="cart-op-btn del" data-tip="从购物车移除" onclick="removeItem('item2')">🗑 删除</button>
             </div>
           </div>
         </div>
@@ -533,55 +614,59 @@
             <a href="products.html" class="section-more">查看全部 ›</a>
           </div>
           <div class="cart-reco-grid">
-            <div class="product-card" onclick="addRecoToCart(this,'海洋之心蓝宝石项链','¥2,680')">
+            <div class="product-card" onclick="location.href='product.html'">
               <div class="product-card-img" style="background:linear-gradient(135deg,#E8F4F8,#D6EDF5);font-size:40px;">🌊
-                <div class="try-badge">📷 试戴</div>
+                <div class="try-badge" onclick="event.stopPropagation();location.href='ar.html'">📷 试戴</div>
               </div>
               <div class="product-card-body">
                 <div class="product-card-name">海洋之心 · 蓝宝石项链</div>
                 <div class="product-card-price"><span class="price-main">¥2,680</span><span class="price-old">¥3,200</span></div>
-                <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8</span><span class="match-pill">88%</span></div>
+                <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8</span><span class="match-pill">88% 匹配</span></div>
                 <div class="product-card-actions">
-                  <button class="btn btn-dark btn-xs btn-full">加入购物车</button>
+                  <button class="btn btn-lt btn-xs" onclick="event.stopPropagation();location.href='ar.html'">📷 试戴</button>
+                  <button class="btn btn-dark btn-xs" style="flex:1;" onclick="event.stopPropagation();addRecoToCart(this,'海洋之心蓝宝石项链','¥2,680')">加购</button>
                 </div>
               </div>
             </div>
             <div class="product-card" onclick="location.href='product.html'">
               <div class="product-card-img" style="background:linear-gradient(135deg,#F5EDE3,#FFF8F2);font-size:40px;">⭐
-                <div class="try-badge">📷 试戴</div>
+                <div class="try-badge" onclick="event.stopPropagation();location.href='ar.html'">📷 试戴</div>
               </div>
               <div class="product-card-body">
                 <div class="product-card-name">黄金星辰 · 项链套链</div>
                 <div class="product-card-price"><span class="price-main">¥1,980</span><span class="price-tag">8折</span></div>
-                <div class="product-card-meta"><span class="stars">★★★★☆</span><span>4.7</span><span class="match-pill">81%</span></div>
+                <div class="product-card-meta"><span class="stars">★★★★☆</span><span>4.7</span><span class="match-pill">81% 匹配</span></div>
                 <div class="product-card-actions">
-                  <button class="btn btn-dark btn-xs btn-full">加入购物车</button>
+                  <button class="btn btn-lt btn-xs" onclick="event.stopPropagation();location.href='ar.html'">📷 试戴</button>
+                  <button class="btn btn-dark btn-xs" style="flex:1;" onclick="event.stopPropagation();addRecoToCart(this,'黄金星辰项链套链','¥1,980')">加购</button>
                 </div>
               </div>
             </div>
             <div class="product-card" onclick="location.href='product.html'">
               <div class="product-card-img" style="background:linear-gradient(135deg,#E6F5E6,#D6EDD6);font-size:40px;">🍀
-                <div class="try-badge">📷 试戴</div>
+                <div class="try-badge" onclick="event.stopPropagation();location.href='ar.html'">📷 试戴</div>
               </div>
               <div class="product-card-body">
                 <div class="product-card-name">幸运四叶 · 翡翠手链</div>
                 <div class="product-card-price"><span class="price-main">¥3,560</span></div>
-                <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9</span><span class="match-pill">79%</span></div>
+                <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9</span><span class="match-pill">79% 匹配</span></div>
                 <div class="product-card-actions">
-                  <button class="btn btn-dark btn-xs btn-full">加入购物车</button>
+                  <button class="btn btn-lt btn-xs" onclick="event.stopPropagation();location.href='ar.html'">📷 试戴</button>
+                  <button class="btn btn-dark btn-xs" style="flex:1;" onclick="event.stopPropagation();addRecoToCart(this,'幸运四叶翡翠手链','¥3,560')">加购</button>
                 </div>
               </div>
             </div>
             <div class="product-card" onclick="location.href='product.html'">
               <div class="product-card-img" style="background:linear-gradient(135deg,#EEF2FF,#E0E7FF);font-size:40px;">🔮
-                <div class="try-badge">📷 试戴</div>
+                <div class="try-badge" onclick="event.stopPropagation();location.href='ar.html'">📷 试戴</div>
               </div>
               <div class="product-card-body">
                 <div class="product-card-name">紫水晶 · 垂坠耳环</div>
                 <div class="product-card-price"><span class="price-main">¥980</span><span class="price-old">¥1,280</span></div>
-                <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8</span><span class="match-pill">76%</span></div>
+                <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8</span><span class="match-pill">76% 匹配</span></div>
                 <div class="product-card-actions">
-                  <button class="btn btn-dark btn-xs btn-full">加入购物车</button>
+                  <button class="btn btn-lt btn-xs" onclick="event.stopPropagation();location.href='ar.html'">📷 试戴</button>
+                  <button class="btn btn-dark btn-xs" style="flex:1;" onclick="event.stopPropagation();addRecoToCart(this,'紫水晶垂坠耳环','¥980')">加购</button>
                 </div>
               </div>
             </div>
@@ -624,12 +709,12 @@
             <button onclick="applyCoupon()">使用</button>
           </div>
 
-          <!-- Perks -->
-          <div class="summary-perks">
-            <div class="summary-perk"><span class="ic">🔒</span> 支付宝 / 微信支付 / 银行卡</div>
-            <div class="summary-perk"><span class="ic">🚚</span> 顺丰包邮，预计 1-2 日送达</div>
-            <div class="summary-perk"><span class="ic">↩️</span> 30 天无忧退换货保障</div>
-            <div class="summary-perk"><span class="ic">💳</span> 支持分 3/6/12/24 期免息</div>
+          <!-- Trust Badges -->
+          <div class="trust-badges">
+            <div class="trust-badge"><span class="ic">💎</span><span><strong>100%</strong> 正品保证</span></div>
+            <div class="trust-badge"><span class="ic">↩️</span><span><strong>30天</strong> 无忧退换</span></div>
+            <div class="trust-badge"><span class="ic">🚚</span><span><strong>顺丰</strong> 次日达</span></div>
+            <div class="trust-badge"><span class="ic">💳</span><span><strong>12期</strong> 免息分期</span></div>
           </div>
         </div>
       </div>
@@ -693,6 +778,7 @@ function updateSummary() {
   document.getElementById('finalTotal').innerHTML = '<span>¥</span>' + total.toLocaleString();
   document.getElementById('selectedCnt').textContent = cnt;
   document.querySelector('.cart-checkout-btn').textContent = `🔒 去结算 (${cnt}件)`;
+  updateProgress(total);
 }
 
 function toggleAll(cb) {
@@ -732,8 +818,53 @@ function checkout() {
   const cnt = parseInt(document.getElementById('selectedCnt').textContent);
   if (cnt === 0) { showToast('请先选择商品'); return; }
   showToast('正在跳转结算页...');
-  setTimeout(() => showToast('（演示：结算页待实现）'), 1500);
+  setTimeout(() => location.href = 'checkout.html', 800);
 }
+
+function updateProgress(total) {
+  const fillEl = document.getElementById('progressFill');
+  const goalEl = document.getElementById('progressGoal');
+  const textEl = document.getElementById('progressText');
+  if (!fillEl || !goalEl || !textEl) return;
+
+  if (total >= 8000) {
+    fillEl.style.width = '100%';
+    fillEl.style.background = 'linear-gradient(90deg,var(--green),#1E9E50)';
+    goalEl.textContent = '已达标 ✓';
+    goalEl.style.color = 'var(--green)';
+    textEl.innerHTML = '恭喜！已享 <strong>满8000减500</strong>';
+  } else if (total >= 4000) {
+    const pct = ((total - 4000) / 4000) * 100;
+    fillEl.style.width = Math.min(100, pct) + '%';
+    fillEl.style.background = 'linear-gradient(90deg,var(--gold),var(--gold-dk))';
+    const diff = (8000 - total).toLocaleString();
+    goalEl.textContent = '差¥' + diff;
+    goalEl.style.color = 'var(--gold-dk)';
+    textEl.innerHTML = '已享满4000减200，距 <strong>满8000减500</strong> 还差';
+  } else {
+    const pct = (total / 4000) * 100;
+    fillEl.style.width = Math.max(2, pct) + '%';
+    fillEl.style.background = 'linear-gradient(90deg,var(--gold),var(--gold-dk))';
+    const diff = (4000 - total).toLocaleString();
+    goalEl.textContent = '差¥' + diff;
+    goalEl.style.color = 'var(--gold-dk)';
+    textEl.innerHTML = '距享 <strong>满4000减200</strong> 还差';
+  }
+}
+
+let countdownSecs = 3 * 3600 + 12 * 60 + 45;
+function tickCountdown() {
+  if (countdownSecs <= 0) { clearInterval(countdownTimer_); return; }
+  countdownSecs--;
+  const h = Math.floor(countdownSecs / 3600);
+  const m = Math.floor((countdownSecs % 3600) / 60);
+  const s = countdownSecs % 60;
+  const el = document.getElementById('countdownTimer');
+  if (el) el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+const countdownTimer_ = setInterval(tickCountdown, 1000);
+
+updateSummary();
 
 let toastTimer;
 function showToast(msg) {
@@ -744,5 +875,6 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 </script>
+<script src="shared.js"></script>
 </body>
 </html>

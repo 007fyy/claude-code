@@ -216,7 +216,8 @@ async function submitOrder() {
     await payOrder({ order_id })
 
     checkoutVisible.value = false
-    ElMessage.success(`下单成功！订单号：${order_no}`)
+    const amount = selectedRows.value.reduce((s, r) => s + r.price * r.quantity, 0).toFixed(2)
+    router.push({ path: '/payment-result', query: { order_id, order_no, amount } })
     await loadCart()
   } finally {
     submitting.value = false

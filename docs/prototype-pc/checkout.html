@@ -292,15 +292,12 @@
 <nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">💎 珑饰</a>
-    <div class="nav-links">
-      <a href="index.html">首页</a>
-      <a href="guide.html">AI 导购</a>
-      <a href="face.html">脸型检测</a>
-      <a href="products.html">商品</a>
+    <div style="flex:1;display:flex;align-items:center;gap:8px;margin-left:32px;font-size:13px;color:var(--t3);">
+      <span>🔒</span> 安全结算
     </div>
     <div class="nav-right">
-      <a href="cart.html" class="nav-icon-btn">🛒<span class="badge">2</span></a>
-      <a href="login.html" class="nav-icon-btn">👤</a>
+      <a href="cart.html" class="nav-icon-btn" data-tip="购物车">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-icon-btn" data-tip="我的账户">👤</a>
     </div>
   </div>
 </nav>
@@ -490,5 +487,6 @@ function showToast(msg) {
   clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2500);
 }
 </script>
+<script src="shared.js"></script>
 </body>
 </html>

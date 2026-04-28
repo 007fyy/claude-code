@@ -82,6 +82,18 @@
 .price-input:focus { border-color: var(--gold); }
 .price-sep { color: var(--t3); font-size: 12px; }
 
+/* ── JS 动态注入的风格标签小芯片 ── */
+.js-tag-chip {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--gold-lt);
+  color: var(--gold-dk);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* ── Right Content ── */
 .content-area { min-width: 0; }
 
@@ -185,20 +197,27 @@
     <a href="index.html" class="nav-logo">💎 珑饰</a>
     <ul class="nav-links">
       <li><a href="index.html">首页</a></li>
-      <li><a href="products.html" class="active">耳饰</a></li>
-      <li><a href="products.html">项链</a></li>
-      <li><a href="products.html">手链</a></li>
-      <li><a href="products.html">戒指</a></li>
-      <li><a href="products.html">套装</a></li>
+      <li class="has-drop">
+        <a href="products.html">商品 <span class="drop-arrow">▾</span></a>
+        <div class="nav-drop">
+          <a href="products.html?cat=earrings"><span class="drop-ic">🌙</span>耳饰</a>
+          <a href="products.html?cat=necklace"><span class="drop-ic">✨</span>项链</a>
+          <a href="products.html?cat=bracelet"><span class="drop-ic">💫</span>手链</a>
+          <a href="products.html?cat=ring"><span class="drop-ic">💍</span>戒指</a>
+          <a href="products.html?cat=set"><span class="drop-ic">🎁</span>套装</a>
+        </div>
+      </li>
+      <li><a href="guide.html">AI 选款</a></li>
+      <li><a href="face.html">脸型测试</a></li>
+      <li><a href="profile.html">会员中心</a></li>
     </ul>
     <div class="nav-right">
       <div class="nav-search">
         <span class="ic">🔍</span>
         <input type="text" placeholder="搜索耳饰、项链、手链...">
       </div>
-      <a href="guide.html" class="nav-ai-btn">✨ AI 选款</a>
-      <a href="ar.html" class="nav-icon-btn">📷</a>
-      <a href="cart.html" class="nav-icon-btn">🛍️<span class="badge">2</span></a>
+      <a href="ar.html" class="nav-icon-btn" data-tip="AR 虚拟试戴">📷</a>
+      <a href="cart.html" class="nav-icon-btn" data-tip="购物车">🛒<span class="badge">2</span></a>
       <a href="login.html" class="nav-user-btn">👤 登录 / 注册</a>
     </div>
   </div>
@@ -218,17 +237,17 @@
       <div class="filter-group">
         <div class="filter-group-title">品类</div>
         <label class="filter-option">
-          <input type="checkbox" checked>
+          <input type="checkbox" data-filter="category" data-value="earring" checked>
           <span class="filter-option-label">耳饰</span>
           <span class="filter-option-count">1,240</span>
         </label>
         <label class="filter-option">
-          <input type="checkbox">
+          <input type="checkbox" data-filter="category" data-value="necklace">
           <span class="filter-option-label">项链</span>
           <span class="filter-option-count">860</span>
         </label>
         <label class="filter-option">
-          <input type="checkbox">
+          <input type="checkbox" data-filter="category" data-value="bracelet">
           <span class="filter-option-label">手链</span>
           <span class="filter-option-count">420</span>
         </label>
@@ -248,19 +267,19 @@
       <div class="filter-group">
         <div class="filter-group-title">价格区间</div>
         <label class="filter-option">
-          <input type="checkbox">
+          <input type="checkbox" data-filter="price" data-value="0-50">
           <span class="filter-option-label">¥50 以内</span>
         </label>
         <label class="filter-option">
-          <input type="checkbox" checked>
+          <input type="checkbox" data-filter="price" data-value="50-200">
           <span class="filter-option-label">¥50 – 200</span>
         </label>
         <label class="filter-option">
-          <input type="checkbox">
+          <input type="checkbox" data-filter="price" data-value="200-500">
           <span class="filter-option-label">¥200 – 500</span>
         </label>
         <label class="filter-option">
-          <input type="checkbox">
+          <input type="checkbox" data-filter="price" data-value="500-999999">
           <span class="filter-option-label">¥500+</span>
         </label>
         <div class="price-inputs">
@@ -274,19 +293,19 @@
       <div class="filter-group">
         <div class="filter-group-title">风格</div>
         <label class="filter-option">
-          <input type="checkbox">
+          <input type="checkbox" data-filter="style" data-value="简约精致">
           <span class="filter-option-label">简约精致</span>
         </label>
         <label class="filter-option">
-          <input type="checkbox" checked>
+          <input type="checkbox" data-filter="style" data-value="优雅复古">
           <span class="filter-option-label">优雅复古</span>
         </label>
         <label class="filter-option">
-          <input type="checkbox">
+          <input type="checkbox" data-filter="style" data-value="甜美少女">
           <span class="filter-option-label">甜美少女</span>
         </label>
         <label class="filter-option" style="padding-bottom:14px;">
-          <input type="checkbox">
+          <input type="checkbox" data-filter="style" data-value="个性潮酷">
           <span class="filter-option-label">个性潮酷</span>
         </label>
       </div>
@@ -335,7 +354,7 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <div>
           <h1 style="font-size:22px;font-weight:800;color:var(--dark);">耳饰全系</h1>
-          <div style="font-size:13px;color:var(--t2);margin-top:3px;">共 128 件商品 · 已过滤 247 件不适合款</div>
+          <div style="font-size:13px;color:var(--t2);margin-top:3px;" id="result-count">共 0 件商品 · 加载中...</div>
         </div>
         <a href="guide.html" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--gold);font-weight:600;text-decoration:none;border:1.5px solid var(--gold);padding:7px 14px;border-radius:8px;transition:all .15s;" onmouseover="this.style.background='var(--gold)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--gold)'">✨ AI 帮我筛选</a>
       </div>
@@ -354,12 +373,12 @@
       <div class="sort-bar">
         <div class="sort-bar-left">
           <span style="font-size:13px;color:var(--t2);margin-right:8px;">排序：</span>
-          <button class="sort-btn active">综合推荐</button>
-          <button class="sort-btn">销量 ↓</button>
-          <button class="sort-btn">价格 ↑</button>
-          <button class="sort-btn">价格 ↓</button>
-          <button class="sort-btn">新品</button>
-          <button class="sort-btn">评分</button>
+          <button class="sort-btn active" data-sort="default">综合推荐</button>
+          <button class="sort-btn" data-sort="sales">销量 ↓</button>
+          <button class="sort-btn" data-sort="price_asc">价格 ↑</button>
+          <button class="sort-btn" data-sort="price_desc">价格 ↓</button>
+          <button class="sort-btn" data-sort="newest">新品</button>
+          <button class="sort-btn" data-sort="rating">评分</button>
         </div>
         <div class="sort-bar-right">
           <span style="font-size:13px;color:var(--t2);">128 件</span>
@@ -370,121 +389,9 @@
         </div>
       </div>
 
-      <!-- Product Grid -->
-      <div class="product-grid-4">
-
-        <div class="product-card" onclick="location.href='product.html'">
-          <div class="product-card-img" style="background:linear-gradient(135deg,#F5EDE3,#EDE0CE);">🌙<div class="try-badge">📷 试戴</div></div>
-          <div class="product-card-body">
-            <div class="product-card-name">月牙弧形耳环 复古宫廷风</div>
-            <div class="product-card-sub">耳饰 · 925纯银</div>
-            <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">168</span><span class="price-old">¥280</span><span class="price-tag">6折</span></div>
-            <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9 · 2.1k售</span><span class="match-pill">98%</span></div>
-            <div class="product-card-actions">
-              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
-              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加购</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="location.href='product.html'">
-          <div class="product-card-img" style="background:linear-gradient(135deg,#F0ECF5,#E4DCF0);">💫<div class="try-badge">📷 试戴</div></div>
-          <div class="product-card-body">
-            <div class="product-card-name">星月水晶耳坠 甜美少女风</div>
-            <div class="product-card-sub">耳饰 · 925纯银</div>
-            <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">89</span></div>
-            <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9 · 3.4k售</span><span class="match-pill">92%</span></div>
-            <div class="product-card-actions">
-              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
-              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加购</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="location.href='product.html'">
-          <div class="product-card-img" style="background:linear-gradient(135deg,#F5F0E8,#EDE8DC);">🔮</div>
-          <div class="product-card-body">
-            <div class="product-card-name">复古宫廷耳钉 天然珍珠款</div>
-            <div class="product-card-sub">耳饰 · 天然珍珠</div>
-            <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">158</span></div>
-            <div class="product-card-meta"><span class="stars">★★★★☆</span><span>4.7 · 512售</span><span class="match-pill">91%</span></div>
-            <div class="product-card-actions">
-              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
-              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加购</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="location.href='product.html'">
-          <div class="product-card-img" style="background:linear-gradient(135deg,#EAF5EA,#D8F0D8);">🌸<div class="try-badge">📷 试戴</div></div>
-          <div class="product-card-body">
-            <div class="product-card-name">樱花珍珠耳坠 浪漫春意</div>
-            <div class="product-card-sub">耳饰 · 天然淡水珍珠</div>
-            <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">128</span></div>
-            <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8 · 986售</span><span class="match-pill">90%</span></div>
-            <div class="product-card-actions">
-              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
-              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加购</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="location.href='product.html'">
-          <div class="product-card-img" style="background:linear-gradient(135deg,#EAF0F5,#D8E4F5);">⭐</div>
-          <div class="product-card-body">
-            <div class="product-card-name">极简星形耳钉 冷淡风格</div>
-            <div class="product-card-sub">耳饰 · 镀银</div>
-            <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">69</span></div>
-            <div class="product-card-meta"><span class="stars">★★★★☆</span><span>4.6 · 1.2k售</span></div>
-            <div class="product-card-actions">
-              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
-              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加购</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="location.href='product.html'">
-          <div class="product-card-img" style="background:linear-gradient(135deg,#F5E8F0,#F0D8E8);">🌊<div class="try-badge">📷 试戴</div></div>
-          <div class="product-card-body">
-            <div class="product-card-name">海浪形耳坠 度假清新风</div>
-            <div class="product-card-sub">耳饰 · 925纯银</div>
-            <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">138</span></div>
-            <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9 · 1.2k售</span><span class="match-pill">88%</span></div>
-            <div class="product-card-actions">
-              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
-              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加购</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="location.href='product.html'">
-          <div class="product-card-img" style="background:linear-gradient(135deg,#F5EDE3,#EAD8C0);">✨</div>
-          <div class="product-card-body">
-            <div class="product-card-name">极光渐变耳坠 个性彩虹</div>
-            <div class="product-card-sub">耳饰 · 天然宝石</div>
-            <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">198</span></div>
-            <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8 · 423售</span></div>
-            <div class="product-card-actions">
-              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
-              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加购</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="product-card" onclick="location.href='product.html'">
-          <div class="product-card-img" style="background:linear-gradient(135deg,#F0ECF5,#E0D4F0);">💠</div>
-          <div class="product-card-body">
-            <div class="product-card-name">蓝宝石耳钉 高贵典雅</div>
-            <div class="product-card-sub">耳饰 · 天然蓝宝石</div>
-            <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">368</span></div>
-            <div class="product-card-meta"><span class="stars">★★★★★</span><span>5.0 · 88售</span><span class="match-pill">96%</span></div>
-            <div class="product-card-actions">
-              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
-              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加购</button>
-            </div>
-          </div>
-        </div>
-
+      <!-- Product Grid —— 由 products.js 动态填充 -->
+      <div class="product-grid-4" id="product-grid">
+        <!-- JS 渲染前的占位，init() 会立刻替换 -->
       </div>
 
       <!-- Pagination -->
@@ -517,5 +424,7 @@
   <div class="footer-bottom"><span>© 2026 珑饰 LongShi</span><span>隐私政策 · 用户协议</span></div>
 </footer>
 
+<script src="products.js"></script>
+<script src="shared.js"></script>
 </body>
 </html>

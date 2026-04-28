@@ -1,0 +1,220 @@
+{
+  "_comment": "珑饰平台商品种子数据 - 对应 goods_spu + goods_sku 两张表",
+  "goods": [
+    {
+      "id": 1,
+      "name": "月牙弧形耳环",
+      "category": "earring",
+      "sub_category": "drop_earring",
+      "description": "月牙弧形轮廓，顺应椭圆脸自然曲线，佩戴后下颌线更柔和。925银镀18K金，防过敏涂层处理。",
+      "material": "925银",
+      "cover_url": "/assets/goods/crescent-earring/cover.jpg",
+      "detail_images": [
+        "/assets/goods/crescent-earring/detail-1.jpg",
+        "/assets/goods/crescent-earring/detail-2.jpg"
+      ],
+      "mount_type": "ear_lobe",
+      "style_tags": ["优雅复古", "气质通勤", "法式轻奢"],
+      "occasion_tags": ["约会出行", "日常通勤", "职场正式"],
+      "target_face_shapes": ["oval", "oblong"],
+      "sort_weight": 100,
+      "skus": [
+        {
+          "sku_name": "月牙弧形耳环 · 银色925银",
+          "color": "银色",
+          "price": 168.00,
+          "original_price": 280.00,
+          "stock": 38,
+          "ar_asset_url": "/assets/ar/crescent-earring-silver.png",
+          "ar_scale_base": 1.05,
+          "ar_offset_x": -2.0,
+          "ar_offset_y": 4.0,
+          "ar_rotation_offset": 0.0
+        },
+        {
+          "sku_name": "月牙弧形耳环 · 金色镀金",
+          "color": "金色",
+          "price": 128.00,
+          "original_price": 210.00,
+          "stock": 65,
+          "ar_asset_url": "/assets/ar/crescent-earring-gold.png",
+          "ar_scale_base": 1.05,
+          "ar_offset_x": -2.0,
+          "ar_offset_y": 4.0,
+          "ar_rotation_offset": 0.0
+        }
+      ]
+    },
+
+    {
+      "id": 2,
+      "name": "天然淡水珍珠项链",
+      "category": "necklace",
+      "sub_category": "pearl_necklace",
+      "description": "AA级天然淡水珍珠，颗粒饱满，光泽温润。短款40cm设计，平衡圆脸横向比例，拉伸颈部视觉线条。",
+      "material": "天然珍珠+925银扣",
+      "cover_url": "/assets/goods/pearl-necklace/cover.jpg",
+      "detail_images": [
+        "/assets/goods/pearl-necklace/detail-1.jpg",
+        "/assets/goods/pearl-necklace/detail-2.jpg"
+      ],
+      "mount_type": "neck",
+      "style_tags": ["简约精致", "经典优雅", "气质百搭"],
+      "occasion_tags": ["日常通勤", "职场正式", "正式礼仪"],
+      "target_face_shapes": ["round", "square"],
+      "sort_weight": 95,
+      "skus": [
+        {
+          "sku_name": "天然淡水珍珠项链 · 白色40cm",
+          "color": "白色",
+          "size": "40cm",
+          "price": 238.00,
+          "original_price": 398.00,
+          "stock": 42,
+          "ar_asset_url": "/assets/ar/pearl-necklace-white-40.png",
+          "ar_scale_base": 0.90,
+          "ar_offset_x": 0.0,
+          "ar_offset_y": 8.0,
+          "ar_rotation_offset": 0.0
+        },
+        {
+          "sku_name": "天然淡水珍珠项链 · 白色45cm",
+          "color": "白色",
+          "size": "45cm",
+          "price": 258.00,
+          "original_price": 420.00,
+          "stock": 28,
+          "ar_asset_url": "/assets/ar/pearl-necklace-white-45.png",
+          "ar_scale_base": 0.95,
+          "ar_offset_x": 0.0,
+          "ar_offset_y": 12.0,
+          "ar_rotation_offset": 0.0
+        }
+      ]
+    },
+
+    {
+      "id": 3,
+      "name": "几何六边形耳钉",
+      "category": "earring",
+      "sub_category": "stud_earring",
+      "description": "正六边形几何轮廓，简洁线条为方脸增添柔和感。直径10mm，不夸张不沉闷，全天候佩戴无负担。",
+      "material": "316L医用钢镀金",
+      "cover_url": "/assets/goods/hex-stud/cover.jpg",
+      "detail_images": [
+        "/assets/goods/hex-stud/detail-1.jpg"
+      ],
+      "mount_type": "ear_lobe",
+      "style_tags": ["简约极简", "个性先锋", "ins风"],
+      "occasion_tags": ["日常通勤", "派对聚会"],
+      "target_face_shapes": ["square", "heart"],
+      "sort_weight": 88,
+      "skus": [
+        {
+          "sku_name": "几何六边形耳钉 · 金色",
+          "color": "金色",
+          "price": 89.00,
+          "original_price": 139.00,
+          "stock": 120,
+          "ar_asset_url": "/assets/ar/hex-stud-gold.png",
+          "ar_scale_base": 0.70,
+          "ar_offset_x": 0.0,
+          "ar_offset_y": 2.0,
+          "ar_rotation_offset": 0.0
+        },
+        {
+          "sku_name": "几何六边形耳钉 · 银色",
+          "color": "银色",
+          "price": 79.00,
+          "original_price": 119.00,
+          "stock": 98,
+          "ar_asset_url": "/assets/ar/hex-stud-silver.png",
+          "ar_scale_base": 0.70,
+          "ar_offset_x": 0.0,
+          "ar_offset_y": 2.0,
+          "ar_rotation_offset": 0.0
+        }
+      ]
+    },
+
+    {
+      "id": 4,
+      "name": "锁骨链竹节项链",
+      "category": "necklace",
+      "sub_category": "chain_necklace",
+      "description": "竹节形节点设计，垂直视觉引导缩短长脸比例。18K真空镀金，耐汗液不褪色，日常可免摘。",
+      "material": "黄铜18K真空镀金",
+      "cover_url": "/assets/goods/bamboo-necklace/cover.jpg",
+      "detail_images": [
+        "/assets/goods/bamboo-necklace/detail-1.jpg",
+        "/assets/goods/bamboo-necklace/detail-2.jpg"
+      ],
+      "mount_type": "neck",
+      "style_tags": ["优雅复古", "法式轻奢", "气质通勤"],
+      "occasion_tags": ["日常通勤", "约会出行"],
+      "target_face_shapes": ["oblong", "diamond"],
+      "sort_weight": 82,
+      "skus": [
+        {
+          "sku_name": "锁骨链竹节项链 · 金色38cm",
+          "color": "金色",
+          "size": "38cm",
+          "price": 158.00,
+          "original_price": 248.00,
+          "stock": 56,
+          "ar_asset_url": "/assets/ar/bamboo-necklace-gold-38.png",
+          "ar_scale_base": 0.85,
+          "ar_offset_x": 0.0,
+          "ar_offset_y": 6.0,
+          "ar_rotation_offset": 0.0
+        }
+      ]
+    },
+
+    {
+      "id": 5,
+      "name": "水滴形天然石耳坠",
+      "category": "earring",
+      "sub_category": "drop_earring",
+      "description": "水滴轮廓搭配天然紫晶/月光石，修饰菱形脸颧骨线条，垂坠感增加脸部纵向延伸。银色925银针，不易过敏。",
+      "material": "925银+天然石",
+      "cover_url": "/assets/goods/drop-stone-earring/cover.jpg",
+      "detail_images": [
+        "/assets/goods/drop-stone-earring/detail-1.jpg",
+        "/assets/goods/drop-stone-earring/detail-2.jpg",
+        "/assets/goods/drop-stone-earring/detail-3.jpg"
+      ],
+      "mount_type": "ear_lobe",
+      "style_tags": ["甜美少女", "仙气飘飘", "小众设计"],
+      "occasion_tags": ["约会出行", "派对聚会"],
+      "target_face_shapes": ["diamond", "heart", "oval"],
+      "sort_weight": 90,
+      "skus": [
+        {
+          "sku_name": "水滴形耳坠 · 紫晶款",
+          "color": "紫色",
+          "price": 198.00,
+          "original_price": 320.00,
+          "stock": 31,
+          "ar_asset_url": "/assets/ar/drop-earring-amethyst.png",
+          "ar_scale_base": 1.15,
+          "ar_offset_x": -3.0,
+          "ar_offset_y": 6.0,
+          "ar_rotation_offset": 0.0
+        },
+        {
+          "sku_name": "水滴形耳坠 · 月光石款",
+          "color": "白蓝",
+          "price": 228.00,
+          "original_price": 360.00,
+          "stock": 19,
+          "ar_asset_url": "/assets/ar/drop-earring-moonstone.png",
+          "ar_scale_base": 1.15,
+          "ar_offset_x": -3.0,
+          "ar_offset_y": 6.0,
+          "ar_rotation_offset": 0.0
+        }
+      ]
+    }
+  ]
+}

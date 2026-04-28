@@ -78,6 +78,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { sendCode as apiSendCode, login as apiLogin, updatePrefs } from '@/api/user'
 
 const router = useRouter()
 const formRef = ref(null)
@@ -89,7 +90,7 @@ const obAnswers = reactive(['', '', ''])
 
 const form = reactive({ phone: '', code: '' })
 const rules = {
-  phone: [{ required: true, pattern: /^1\d{10}$/, message: '请输入正确手机号', trigger: 'blur' }],
+  phone: [{ required: true, pattern: /^1[3-9]\d{9}$/, message: '请输入正确手机号', trigger: 'blur' }],
   code:  [{ required: true, len: 6, message: '请输入6位验证码', trigger: 'blur' }],
 }
 
@@ -99,37 +100,44 @@ const obQuestions = [
   { q: '你通常对哪类饰品感兴趣？', options: ['耳饰', '项链', '手链', '戒指'] },
 ]
 
-function sendCode() {
-  if (!/^1\d{10}$/.test(form.phone)) {
+async function sendCode() {
+  if (!/^1[3-9]\d{9}$/.test(form.phone)) {
     ElMessage.warning('请先输入正确手机号')
     return
   }
-  ElMessage.success('验证码已发送（演示：123456）')
-  countdown.value = 60
-  const t = setInterval(() => {
-    if (--countdown.value <= 0) clearInterval(t)
-  }, 1000)
+  try {
+    await apiSendCode(form.phone)
+    ElMessage.success('验证码已发送，请查看后端控制台')
+    countdown.value = 60
+    const t = setInterval(() => {
+      if (--countdown.value <= 0) clearInterval(t)
+    }, 1000)
+  } catch {
+    // error already shown by http interceptor
+  }
 }
 
 async function doLogin() {
   await formRef.value.validate()
   loading.value = true
-  setTimeout(() => {
-    loading.value = false
-    localStorage.setItem('token', 'mock_token')
-    localStorage.setItem('user', JSON.stringify({ phone: form.phone, name: '用户' + form.phone.slice(-4) }))
+  try {
+    const res = await apiLogin(form.phone, form.code)
+    const { token, user_info } = res.data
+    localStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(user_info))
     showOnboarding.value = true
-  }, 800)
+  } catch {
+    // error already shown by http interceptor
+  } finally {
+    loading.value = false
+  }
 }
 
 function mockWechat() {
-  localStorage.setItem('token', 'mock_token')
-  localStorage.setItem('user', JSON.stringify({ phone: '138****8888', name: '微信用户' }))
-  showOnboarding.value = true
+  ElMessage.info('微信登录暂未接入，请使用手机号登录')
 }
 
 function skipLogin() {
-  localStorage.setItem('token', 'guest')
   router.push('/home')
 }
 
@@ -140,8 +148,13 @@ function selectOb(opt) {
   }
 }
 
-function finishOnboarding() {
-  localStorage.setItem('onboarding', JSON.stringify(obAnswers))
+async function finishOnboarding() {
+  const [occasion, style] = obAnswers
+  try {
+    await updatePrefs({ occasion_prefs: [occasion], style_prefs: [style] })
+  } catch {
+    // non-blocking — proceed even if prefs save fails
+  }
   router.push('/home')
 }
 </script>

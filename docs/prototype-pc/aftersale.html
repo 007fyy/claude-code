@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>售后记录 · 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.page-main { max-width: var(--max); margin: 0 auto; padding: 28px 32px; }
+.as-wrap { display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: start; }
+
+/* sidebar — 复用 orders 样式 */
+.profile-sidebar { background: var(--card); border-radius: 12px; box-shadow: var(--sh); overflow: hidden; }
+.profile-user-card { display: flex; align-items: center; gap: 12px; padding: 20px; border-bottom: 1px solid var(--bd); }
+.profile-avatar-sm { width: 42px; height: 42px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.profile-user-name { font-size: 14px; font-weight: 700; }
+.profile-user-level { font-size: 12px; color: var(--gold-dk); margin-top: 2px; }
+.sidebar-nav { padding: 12px 0; }
+.sidebar-nav-group { margin-bottom: 4px; }
+.sidebar-nav-title { font-size: 11px; color: var(--t3); font-weight: 700; padding: 8px 20px 4px; text-transform: uppercase; letter-spacing: .5px; }
+.sidebar-nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; color: var(--t2); transition: all .15s; border-left: 3px solid transparent; text-decoration: none; }
+.sidebar-nav-item:hover { color: var(--dark); background: var(--bg); }
+.sidebar-nav-item.active { color: var(--dark); background: #FEF6EE; border-left-color: var(--gold); font-weight: 600; }
+.sidebar-nav-item .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.badge { background: var(--red); color: #fff; border-radius: 10px; font-size: 10px; font-weight: 700; padding: 1px 5px; margin-left: 4px; }
+
+/* main content */
+.as-panel { background: var(--card); border-radius: 12px; box-shadow: var(--sh); overflow: hidden; }
+.as-panel-header { padding: 18px 22px; border-bottom: 1px solid var(--bd); display: flex; align-items: center; justify-content: space-between; }
+.as-panel-title { font-size: 15px; font-weight: 700; }
+
+.as-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--bd); padding: 0 22px; }
+.as-tab { padding: 12px 18px; font-size: 13px; font-weight: 600; color: var(--t2); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .15s; }
+.as-tab:hover { color: var(--dark); }
+.as-tab.active { color: var(--gold-dk); border-bottom-color: var(--gold); }
+
+.as-list { padding: 12px 0; }
+.as-card { border-bottom: 1px solid var(--bd); padding: 20px 22px; transition: background .15s; }
+.as-card:last-child { border-bottom: none; }
+.as-card:hover { background: #FAFAFA; }
+.as-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.as-card-sn { font-size: 12px; color: var(--t3); }
+.as-card-status { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.status-processing { background: #FEF9EC; color: var(--orange); }
+.status-approved   { background: #EAFAF1; color: var(--green); }
+.status-rejected   { background: #FDEDEC; color: var(--red); }
+.status-done       { background: #EBF5FB; color: var(--blue); }
+
+.as-card-body { display: flex; gap: 16px; align-items: flex-start; }
+.as-item-img { width: 72px; height: 72px; border-radius: 8px; background: linear-gradient(135deg,#F5EDE3,#F0E8D8); display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0; cursor: pointer; }
+.as-item-info { flex: 1; min-width: 0; }
+.as-item-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.as-item-sku  { font-size: 12px; color: var(--t2); margin-bottom: 6px; }
+.as-item-reason { font-size: 12px; color: var(--t2); background: var(--bg); padding: 6px 10px; border-radius: 6px; }
+.as-item-meta { font-size: 12px; color: var(--t3); margin-top: 6px; }
+.as-card-actions { display: flex; gap: 8px; margin-top: 14px; justify-content: flex-end; }
+
+.btn { padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .15s; font-family: inherit; }
+.btn-out  { background: transparent; border: 1.5px solid var(--bd); color: var(--t2); }
+.btn-out:hover { border-color: var(--dark); color: var(--dark); }
+.btn-gold { background: linear-gradient(135deg,var(--gold),var(--gold-dk)); color: #fff; }
+.btn-gold:hover { opacity: .9; transform: translateY(-1px); }
+.btn-xs { padding: 5px 12px; font-size: 12px; }
+
+.empty-state { text-align: center; padding: 60px 20px; color: var(--t3); }
+.empty-state .ic { font-size: 48px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; }
+
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--dark); color: #fff; padding: 10px 22px; border-radius: 8px; font-size: 13px; font-weight: 600; z-index: 9999; opacity: 0; transition: opacity .2s; white-space: nowrap; pointer-events: none; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <ul class="nav-links">
+      <li><a href="index.html">首页</a></li>
+      <li class="has-drop">
+        <a href="products.html">商品 <span class="drop-arrow">▾</span></a>
+        <div class="nav-drop">
+          <a href="products.html?cat=earrings"><span class="drop-ic">🌙</span>耳饰</a>
+          <a href="products.html?cat=necklace"><span class="drop-ic">✨</span>项链</a>
+          <a href="products.html?cat=bracelet"><span class="drop-ic">💫</span>手链</a>
+          <a href="products.html?cat=ring"><span class="drop-ic">💍</span>戒指</a>
+          <a href="products.html?cat=set"><span class="drop-ic">🎁</span>套装</a>
+        </div>
+      </li>
+      <li><a href="guide.html">AI 选款</a></li>
+      <li><a href="face.html">脸型测试</a></li>
+      <li><a href="profile.html">会员中心</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-search">
+        <span class="ic">🔍</span>
+        <input type="text" placeholder="搜索耳饰、项链、手链...">
+      </div>
+      <a href="ar.html" class="nav-icon-btn" data-tip="AR 虚拟试戴">📷</a>
+      <a href="cart.html" class="nav-icon-btn" data-tip="购物车">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-user-btn">👤 登录 / 注册</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-main">
+  <div class="breadcrumb">
+    <a href="index.html">首页</a><span class="sep">›</span>
+    <a href="profile.html">个人中心</a><span class="sep">›</span>
+    <span class="cur">售后记录</span>
+  </div>
+
+  <div class="as-wrap">
+    <!-- Sidebar -->
+    <div class="profile-sidebar">
+      <div class="profile-user-card">
+        <div class="profile-avatar-sm" id="sidebar-avatar">王</div>
+        <div>
+          <div class="profile-user-name" id="sidebar-name">王小颜</div>
+          <div class="profile-user-level">💎 珑饰黄金会员</div>
+        </div>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-nav-group">
+          <div class="sidebar-nav-title">我的账户</div>
+          <a href="profile.html" class="sidebar-nav-item"><span class="icon">🏠</span> 个人中心</a>
+        </div>
+        <div class="sidebar-nav-group">
+          <div class="sidebar-nav-title">我的交易</div>
+          <a href="orders.html" class="sidebar-nav-item"><span class="icon">📦</span> 我的订单<span class="badge">2</span></a>
+          <a href="wishlist.html" class="sidebar-nav-item"><span class="icon">❤️</span> 我的收藏</a>
+          <a href="aftersale.html" class="sidebar-nav-item active"><span class="icon">↩️</span> 售后记录</a>
+        </div>
+        <div class="sidebar-nav-group">
+          <div class="sidebar-nav-title">我的资产</div>
+          <a href="#" class="sidebar-nav-item" onclick="showToast('优惠券中心')"><span class="icon">🎟️</span> 优惠券<span class="badge">3</span></a>
+          <a href="#" class="sidebar-nav-item" onclick="showToast('积分中心')"><span class="icon">⭐</span> 积分中心</a>
+        </div>
+        <div class="sidebar-nav-group">
+          <div class="sidebar-nav-title">其他</div>
+          <a href="#" class="sidebar-nav-item" onclick="showToast('收货地址')"><span class="icon">📍</span> 收货地址</a>
+          <a href="#" class="sidebar-nav-item" onclick="logout();return false;"><span class="icon">🚪</span> 退出登录</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="as-panel">
+      <div class="as-panel-header">
+        <span class="as-panel-title">售后记录</span>
+        <span style="font-size:12px;color:var(--t3);">如需帮助，请联系在线客服</span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="as-tabs">
+        <div class="as-tab active" onclick="switchTab(this)">全部 (3)</div>
+        <div class="as-tab" onclick="switchTab(this)">申请中 (1)</div>
+        <div class="as-tab" onclick="switchTab(this)">已通过 (1)</div>
+        <div class="as-tab" onclick="switchTab(this)">已拒绝 (1)</div>
+      </div>
+
+      <!-- List -->
+      <div class="as-list">
+
+        <!-- Card 1: 申请中 -->
+        <div class="as-card">
+          <div class="as-card-header">
+            <div>
+              <div class="as-card-sn">售后单号：AS20260428001 · 申请时间：2026-04-28 16:42</div>
+            </div>
+            <span class="as-card-status status-processing">⏳ 申请中</span>
+          </div>
+          <div class="as-card-body">
+            <div class="as-item-img" onclick="location.href='product.html'">💎</div>
+            <div class="as-item-info">
+              <div class="as-item-name">云端星河 · 18K 白金钻石耳坠</div>
+              <div class="as-item-sku">18K 白金 / 0.3ct / G色 × 1件 · ¥3,980</div>
+              <div class="as-item-reason">退货原因：佩戴效果与 AR 试戴展示不符，实物与预期有差异</div>
+              <div class="as-item-meta">退款方式：原路退回 · 预计退款 ¥3,980</div>
+            </div>
+          </div>
+          <div class="as-card-actions">
+            <button class="btn btn-out btn-xs" onclick="showToast('正在联系客服...')">联系客服</button>
+            <button class="btn btn-out btn-xs" onclick="cancelApply(this)">撤销申请</button>
+          </div>
+        </div>
+
+        <!-- Card 2: 已通过 -->
+        <div class="as-card">
+          <div class="as-card-header">
+            <div>
+              <div class="as-card-sn">售后单号：AS20260415003 · 申请时间：2026-04-15 10:08</div>
+            </div>
+            <span class="as-card-status status-approved">✅ 退款成功</span>
+          </div>
+          <div class="as-card-body">
+            <div class="as-item-img" style="background:linear-gradient(135deg,#F5E6F5,#EDD6ED);" onclick="location.href='product.html'">🌸</div>
+            <div class="as-item-info">
+              <div class="as-item-name">樱花漫舞 · 18K 玫瑰金粉钻耳钉</div>
+              <div class="as-item-sku">18K 玫瑰金 / 0.2ct / 粉钻 × 1件 · ¥2,680</div>
+              <div class="as-item-reason">退货原因：尺寸偏小，与商品描述不符</div>
+              <div class="as-item-meta">退款已到账：¥2,680 · 到账时间：2026-04-17</div>
+            </div>
+          </div>
+          <div class="as-card-actions">
+            <button class="btn btn-out btn-xs" onclick="location.href='product.html'">再次购买</button>
+          </div>
+        </div>
+
+        <!-- Card 3: 已拒绝 -->
+        <div class="as-card">
+          <div class="as-card-header">
+            <div>
+              <div class="as-card-sn">售后单号：AS20260410007 · 申请时间：2026-04-10 09:55</div>
+            </div>
+            <span class="as-card-status status-rejected">❌ 已拒绝</span>
+          </div>
+          <div class="as-card-body">
+            <div class="as-item-img" style="background:linear-gradient(135deg,#E6F5E6,#D6EDD6);" onclick="location.href='product.html'">🍀</div>
+            <div class="as-item-info">
+              <div class="as-item-name">四叶幸运 · 925银翡翠吊坠项链</div>
+              <div class="as-item-sku">925银 / 翡翠 / 40cm × 1件 · ¥880</div>
+              <div class="as-item-reason">退货原因：个人不喜欢（非质量问题）</div>
+              <div class="as-item-meta" style="color:var(--red);">拒绝原因：超出7天无理由退换时限，非质量问题不予受理</div>
+            </div>
+          </div>
+          <div class="as-card-actions">
+            <button class="btn btn-out btn-xs" onclick="showToast('已提交申诉')">申诉</button>
+            <button class="btn btn-out btn-xs" onclick="showToast('正在联系客服...')">联系客服</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function switchTab(el) {
+  document.querySelectorAll('.as-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function cancelApply(btn) {
+  if (!confirm('确认撤销此售后申请？')) return;
+  const card = btn.closest('.as-card');
+  card.querySelector('.as-card-status').className = 'as-card-status status-done';
+  card.querySelector('.as-card-status').textContent = '已撤销';
+  btn.closest('.as-card-actions').innerHTML = '';
+  showToast('售后申请已撤销');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// 侧边栏用户信息同步
+(function() {
+  const raw = localStorage.getItem('ls_user');
+  if (!raw) return;
+  try {
+    const u = JSON.parse(raw);
+    const avatarEl = document.getElementById('sidebar-avatar');
+    const nameEl   = document.getElementById('sidebar-name');
+    if (avatarEl) avatarEl.textContent = (u.name||'我').charAt(0);
+    if (nameEl)   nameEl.textContent   = u.name || '用户';
+  } catch {}
+})();
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

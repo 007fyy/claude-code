@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>珑饰 · 管理后台</title>
+<style>
+:root {
+  --gold:    #C4906A;
+  --gold-lt: #F5EDE3;
+  --gold-dk: #9E7050;
+  --dark:    #1A1714;
+  --bg:      #F4F6F9;
+  --card:    #FFFFFF;
+  --bd:      #E8E8E8;
+  --t1:      #1A1714;
+  --t2:      #6B6B6B;
+  --t3:      #B0B0B0;
+  --green:   #27AE60;
+  --green-lt:#EAFAF1;
+  --red:     #E74C3C;
+  --red-lt:  #FDEDEC;
+  --orange:  #F39C12;
+  --orange-lt:#FEF9EC;
+  --blue:    #2980B9;
+  --blue-lt: #EBF5FB;
+  --sidebar: 220px;
+  --r:       8px;
+  --sh:      0 2px 10px rgba(0,0,0,.07);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: -apple-system,'PingFang SC','Microsoft YaHei',sans-serif; background: var(--bg); color: var(--t1); font-size: 14px; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; }
+
+/* ── Layout ── */
+.layout { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar);
+  background: var(--dark);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+.sidebar-brand {
+  padding: 20px 20px 16px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  letter-spacing: .5px;
+}
+.sidebar-brand span { color: var(--gold); }
+.sidebar-nav { padding: 12px 0; flex: 1; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  font-size: 13.5px;
+  color: rgba(255,255,255,.65);
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all .15s;
+}
+.nav-item:hover { color: #fff; background: rgba(255,255,255,.06); }
+.nav-item.active { color: #fff; background: rgba(196,144,106,.18); border-left-color: var(--gold); }
+.nav-item .ic { font-size: 16px; width: 20px; text-align: center; }
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  font-size: 12px;
+  color: rgba(255,255,255,.3);
+}
+
+/* ── Main ── */
+.main { flex: 1; overflow-y: auto; }
+.topbar {
+  height: 56px;
+  background: var(--card);
+  border-bottom: 1px solid var(--bd);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: var(--sh);
+}
+.topbar-title { font-size: 16px; font-weight: 700; }
+.topbar-right { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--t2); }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px; }
+
+.page-content { padding: 24px 28px; }
+
+/* ── Section ── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── Cards ── */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.kpi-card {
+  background: var(--card);
+  border-radius: var(--r);
+  padding: 20px 22px;
+  box-shadow: var(--sh);
+}
+.kpi-label { font-size: 12px; color: var(--t2); margin-bottom: 8px; }
+.kpi-value { font-size: 26px; font-weight: 800; color: var(--dark); }
+.kpi-delta { font-size: 12px; color: var(--green); margin-top: 4px; }
+.kpi-delta.down { color: var(--red); }
+
+/* ── Panel ── */
+.panel {
+  background: var(--card);
+  border-radius: var(--r);
+  box-shadow: var(--sh);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--bd);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panel-title { font-size: 14px; font-weight: 700; }
+
+/* ── Table ── */
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 11px 16px; text-align: left; border-bottom: 1px solid var(--bd); font-size: 13px; }
+th { font-size: 12px; color: var(--t2); font-weight: 600; background: var(--bg); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #FAFAFA; }
+
+/* ── Badge ── */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-green  { background: var(--green-lt); color: var(--green); }
+.badge-orange { background: var(--orange-lt); color: var(--orange); }
+.badge-red    { background: var(--red-lt); color: var(--red); }
+.badge-blue   { background: var(--blue-lt); color: var(--blue); }
+.badge-gray   { background: #F0F0F0; color: var(--t2); }
+
+/* ── Buttons ── */
+.btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: opacity .15s;
+}
+.btn:hover { opacity: .85; }
+.btn-primary { background: var(--gold); color: #fff; }
+.btn-dark    { background: var(--dark); color: #fff; }
+.btn-ghost   { background: transparent; border: 1.5px solid var(--bd); color: var(--t2); }
+.btn-danger  { background: var(--red-lt); color: var(--red); }
+.btn-success { background: var(--green-lt); color: var(--green); }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+
+/* ── Progress bar ── */
+.progress-bar { height: 6px; border-radius: 3px; background: var(--bd); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; background: var(--gold); transition: width .4s; }
+
+/* ── Modal ── */
+.modal-mask {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-mask.open { display: flex; }
+.modal {
+  background: var(--card);
+  border-radius: 12px;
+  width: 440px;
+  max-width: 90vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  overflow: hidden;
+}
+.modal-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--bd);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title { font-size: 15px; font-weight: 700; }
+.modal-close { font-size: 20px; color: var(--t3); cursor: pointer; line-height: 1; }
+.modal-close:hover { color: var(--t1); }
+.modal-body { padding: 22px; }
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--bd); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ── Form ── */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 12px; color: var(--t2); font-weight: 600; margin-bottom: 6px; }
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid var(--bd);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s;
+}
+.form-input:focus { border-color: var(--gold); }
+.form-hint { font-size: 11px; color: var(--t3); margin-top: 4px; }
+
+/* ── Chart placeholder ── */
+.chart-box {
+  height: 180px;
+  background: linear-gradient(180deg, var(--gold-lt) 0%, #fff 100%);
+  border-radius: var(--r);
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 16px;
+  overflow: hidden;
+}
+.chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.chart-bar { width: 100%; border-radius: 4px 4px 0 0; background: var(--gold); opacity: .75; min-height: 4px; }
+.chart-bar-label { font-size: 10px; color: var(--t3); }
+
+/* ── Feedback list ── */
+.feedback-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--bd);
+}
+.feedback-row:last-child { border-bottom: none; }
+.feedback-reason { flex: 1; font-size: 13px; }
+.feedback-count { font-size: 12px; color: var(--t2); white-space: nowrap; }
+.feedback-bar-wrap { width: 120px; }
+
+/* ── Two-col grid ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* ── Pending tasks ── */
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--bd);
+  font-size: 13px;
+}
+.task-item:last-child { border-bottom: none; }
+.task-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">💎 珑饰 <span>Admin</span></div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-sec="dashboard">
+        <span class="ic">📊</span>资源看板
+      </div>
+      <div class="nav-item" data-sec="goods">
+        <span class="ic">🛍️</span>商品管理
+      </div>
+      <div class="nav-item" data-sec="orders">
+        <span class="ic">📦</span>订单审核
+      </div>
+      <div class="nav-item" data-sec="feedback">
+        <span class="ic">🤖</span>退货与AI反馈
+      </div>
+    </nav>
+    <div class="sidebar-footer">v1.0.0 · 珑饰管理系统</div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">资源看板</div>
+      <div class="topbar-right">
+        <span id="js-clock"></span>
+        <div class="avatar">管</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ════════════════════════════════
+           SECTION 1：资源看板
+      ════════════════════════════════ -->
+      <div class="section active" id="sec-dashboard">
+
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">今日 GMV</div>
+            <div class="kpi-value" id="kpi-gmv">—</div>
+            <div class="kpi-delta" id="kpi-gmv-delta">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">今日订单数</div>
+            <div class="kpi-value" id="kpi-orders">—</div>
+            <div class="kpi-delta" id="kpi-orders-delta">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">待处理退款</div>
+            <div class="kpi-value" id="kpi-refunds" style="color:var(--red);">—</div>
+            <div class="kpi-delta down" id="kpi-refunds-delta">—</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">AR 试戴次数</div>
+            <div class="kpi-value" id="kpi-ar-tries">—</div>
+            <div class="kpi-delta" id="kpi-ar-tries-delta">—</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <!-- 近 7 日销售趋势 -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">近 7 日销售趋势（GMV）</span>
+            </div>
+            <div style="padding:16px 20px 8px;">
+              <div class="chart-box" id="js-chart"></div>
+            </div>
+          </div>
+
+          <!-- 待办事项 -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">⚡ 待处理事项</span>
+            </div>
+            <div class="task-item">
+              <div class="task-dot" style="background:var(--orange);"></div>
+              <span>3 件退款申请 待审核</span>
+              <span style="margin-left:auto;"><button class="btn btn-ghost btn-sm" onclick="switchSection('feedback')">去处理</button></span>
+            </div>
+            <div class="task-item">
+              <div class="task-dot" style="background:var(--blue);"></div>
+              <span>5 件订单 待发货</span>
+              <span style="margin-left:auto;"><button class="btn btn-ghost btn-sm" onclick="switchSection('orders')">去处理</button></span>
+            </div>
+            <div class="task-item">
+              <div class="task-dot" style="background:var(--green);"></div>
+              <span>AR 资产库：12 件商品已配置</span>
+              <span style="margin-left:auto;"><span class="badge badge-green">正常</span></span>
+            </div>
+            <div class="task-item">
+              <div class="task-dot" style="background:var(--t3);"></div>
+              <span>上次 AI 模型反馈同步：2小时前</span>
+              <span style="margin-left:auto;"><span class="badge badge-gray">已同步</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 分类销量占比 -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">分类销量占比</span>
+          </div>
+          <table>
+            <thead><tr><th>品类</th><th>订单数</th><th>GMV</th><th>占比</th><th>趋势</th></tr></thead>
+            <tbody id="cat-tbody"></tbody>
+          </table>
+        </div>
+
+      </div><!-- /sec-dashboard -->
+
+
+      <!-- ════════════════════════════════
+           SECTION 2：商品管理
+      ════════════════════════════════ -->
+      <div class="section" id="sec-goods">
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">SPU 列表（来自 jewelry.json）</span>
+            <span style="font-size:12px;color:var(--t3);" id="goods-load-status">加载中...</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>商品名称</th>
+                <th>品类</th>
+                <th>材质</th>
+                <th>SKU 数量</th>
+                <th>起售价</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="goods-tbody">
+              <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--t3);">⏳ 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- SKU AR 配置面板（点击'编辑'后展开） -->
+        <div class="panel" id="sku-panel" style="display:none;">
+          <div class="panel-header">
+            <span class="panel-title" id="sku-panel-title">SKU AR 配置</span>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('sku-panel').style.display='none'">收起</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>SKU 名称</th>
+                <th>颜色</th>
+                <th>价格</th>
+                <th>库存</th>
+                <th>AR 资产</th>
+                <th>ar_scale_base</th>
+                <th>ar_offset_y</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="sku-tbody"></tbody>
+          </table>
+        </div>
+
+      </div><!-- /sec-goods -->
+
+
+      <!-- ════════════════════════════════
+           SECTION 3：订单审核
+      ════════════════════════════════ -->
+      <div class="section" id="sec-orders">
+
+        <!-- 状态 Tab -->
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <button class="btn btn-dark" id="otab-all"     onclick="filterOrders('all',this)">全部 (8)</button>
+          <button class="btn btn-ghost" id="otab-pending" onclick="filterOrders('pending',this)">待发货 (5)</button>
+          <button class="btn btn-ghost" id="otab-shipped" onclick="filterOrders('shipped',this)">已发货 (2)</button>
+          <button class="btn btn-ghost" id="otab-done"   onclick="filterOrders('done',this)">已完成 (1)</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">订单列表</span>
+            <span style="font-size:12px;color:var(--t3);">点击"发货"立即更新前端状态</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>订单号</th>
+                <th>商品</th>
+                <th>金额</th>
+                <th>收货人</th>
+                <th>下单时间</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+        </div>
+
+      </div><!-- /sec-orders -->
+
+
+      <!-- ════════════════════════════════
+           SECTION 4：退货与 AI 反馈
+      ════════════════════════════════ -->
+      <div class="section" id="sec-feedback">
+
+        <div class="two-col" style="margin-bottom:20px;">
+
+          <!-- 待审核退款 -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">⏳ 待审核退款申请</span>
+              <span class="badge badge-orange">3 条</span>
+            </div>
+            <table>
+              <thead><tr><th>订单号</th><th>原因</th><th>金额</th><th>操作</th></tr></thead>
+              <tbody id="refund-tbody"></tbody>
+            </table>
+          </div>
+
+          <!-- AI 自优化摘要 -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">🤖 AI 负反馈摘要</span>
+              <span style="font-size:12px;color:var(--t3);">已用于模型下一轮迭代</span>
+            </div>
+            <div style="padding:14px 20px;font-size:12px;color:var(--t2);border-bottom:1px solid var(--bd);">
+              本周共收集到 <strong style="color:var(--dark);">18 条</strong> 退货负反馈，
+              其中 <strong style="color:var(--red);">12 条</strong> 关联 AI 推荐结果，
+              已标记为训练样本。
+            </div>
+            <div id="ai-feedback-list"></div>
+          </div>
+        </div>
+
+        <!-- 退货原因统计 -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">📉 退货原因维度分布</span>
+            <span style="font-size:12px;color:var(--t2);">数据来源：本月退货申请 · 共 18 件</span>
+          </div>
+          <div id="reason-list"></div>
+        </div>
+
+      </div><!-- /sec-feedback -->
+
+    </div><!-- /page-content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+
+<!-- ══ AR 编辑弹窗 ══ -->
+<div class="modal-mask" id="ar-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">编辑 AR 参数</span>
+      <span class="modal-close" onclick="closeModal()">×</span>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--t2);margin-bottom:16px;" id="modal-sku-name"></p>
+      <div class="form-group">
+        <label class="form-label">ar_scale_base（缩放比例）</label>
+        <input class="form-input" type="number" id="modal-scale" step="0.05" min="0.1" max="3">
+        <div class="form-hint">建议范围：0.5 ~ 2.0，控制 AR 贴图在脸部的相对大小</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ar_offset_x（水平偏移）</label>
+        <input class="form-input" type="number" id="modal-offset-x" step="0.5">
+        <div class="form-hint">正值向右，单位：像素基准偏移量</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ar_offset_y（垂直偏移）</label>
+        <input class="form-input" type="number" id="modal-offset-y" step="0.5">
+        <div class="form-hint">正值向下，单位：像素基准偏移量</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ar_rotation_offset（旋转角度）</label>
+        <input class="form-input" type="number" id="modal-rotation" step="1" min="-180" max="180">
+        <div class="form-hint">单位：度（°），正值顺时针</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveARParams()">保存（本地预览）</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 发货弹窗 ══ -->
+<div class="modal-mask" id="ship-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">填写发货信息</span>
+      <span class="modal-close" onclick="closeShipModal()">×</span>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--t2);margin-bottom:16px;" id="ship-order-no"></p>
+      <div class="form-group">
+        <label class="form-label">快递公司</label>
+        <select class="form-input" id="ship-company">
+          <option>顺丰速运</option>
+          <option>圆通速递</option>
+          <option>中通快递</option>
+          <option>京东快递</option>
+          <option>韵达快递</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">运单号</label>
+        <input class="form-input" type="text" id="ship-tracking" placeholder="请输入运单号">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeShipModal()">取消</button>
+      <button class="btn btn-primary" onclick="confirmShip()">确认发货</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ════════════════════════════════════════════
+// 1. 时钟
+// ════════════════════════════════════════════
+function updateClock() {
+  const now = new Date()
+  const str = now.toLocaleString('zh-CN', { hour12: false })
+  document.getElementById('js-clock').textContent = str
+}
+updateClock()
+setInterval(updateClock, 1000)
+
+
+// ════════════════════════════════════════════
+// 2. Section 切换
+// ════════════════════════════════════════════
+const SECTION_TITLES = {
+  dashboard: '资源看板',
+  goods:     '商品管理',
+  orders:    '订单审核',
+  feedback:  '退货与AI反馈',
+}
+
+function switchSection(key) {
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'))
+
+  const sec = document.getElementById('sec-' + key)
+  if (sec) sec.classList.add('active')
+
+  const navItem = document.querySelector(`.nav-item[data-sec="${key}"]`)
+  if (navItem) navItem.classList.add('active')
+
+  document.getElementById('topbar-title').textContent = SECTION_TITLES[key] ?? key
+}
+
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => switchSection(el.dataset.sec))
+})
+
+
+// ════════════════════════════════════════════
+// 3. 看板：KPI + 柱状图 + 分类销量
+// ════════════════════════════════════════════
+function renderDashboard(data) {
+  // KPI
+  const kpi = data.kpi
+  document.getElementById('kpi-gmv').textContent         = '¥' + kpi.gmv_today.toLocaleString()
+  document.getElementById('kpi-gmv-delta').textContent   = `↑ ${kpi.gmv_delta_pct}% vs 昨日`
+  document.getElementById('kpi-orders').textContent       = kpi.orders_today
+  document.getElementById('kpi-orders-delta').textContent = `↑ ${kpi.orders_delta} vs 昨日`
+  document.getElementById('kpi-refunds').textContent      = kpi.refunds_pending
+  document.getElementById('kpi-refunds-delta').textContent= `↑ ${kpi.refunds_delta} vs 昨日`
+  document.getElementById('kpi-ar-tries').textContent     = kpi.ar_tries_today
+  document.getElementById('kpi-ar-tries-delta').textContent = `↑ ${kpi.ar_tries_delta_pct}%`
+
+  // 销售趋势柱状图
+  const trend  = data.sales_trend
+  const maxVal = Math.max(...trend.map(d => d.gmv))
+  document.getElementById('js-chart').innerHTML = trend.map(d => `
+    <div class="chart-bar-wrap">
+      <div class="chart-bar" style="height:${Math.round(d.gmv / maxVal * 130)}px;"></div>
+      <div class="chart-bar-label">${d.day}</div>
+    </div>
+  `).join('')
+
+  // 分类销量占比
+  const COLOR_VAR = { gold: 'var(--gold)', blue: 'var(--blue)', orange: 'var(--orange)', gray: 'var(--t3)' }
+  const TREND_STYLE = { up: 'color:var(--green)', down: 'color:var(--red)', flat: 'color:var(--t3)' }
+  const TREND_ARROW = { up: '↑', down: '↓', flat: '—' }
+  const catTbody = document.getElementById('cat-tbody')
+  if (catTbody) {
+    catTbody.innerHTML = data.category_sales.map(c => {
+      const color = COLOR_VAR[c.bar_color] ?? 'var(--gold)'
+      const tStyle = TREND_STYLE[c.trend_dir] ?? ''
+      const arrow  = TREND_ARROW[c.trend_dir] ?? ''
+      const trendTxt = c.trend_dir === 'flat' ? '—' : `${arrow} ${c.trend_pct}%`
+      return `
+      <tr>
+        <td>${c.name}</td><td>${c.orders}</td><td>¥${c.gmv.toLocaleString()}</td>
+        <td><div class="progress-bar"><div class="progress-fill" style="width:${c.bar_pct}%;background:${color};"></div></div></td>
+        <td><span style="${tStyle};">${trendTxt}</span></td>
+      </tr>`
+    }).join('')
+  }
+}
+
+
+// ════════════════════════════════════════════
+// 4. 商品管理：从 jewelry.json 加载
+// ════════════════════════════════════════════
+const CATEGORY_LABEL = {
+  earring:'耳饰', necklace:'项链', bracelet:'手链', hairpin:'发饰', brooch:'胸针'
+}
+
+let goodsData = []
+let editingSku = null  // { spuId, skuIdx, sku }
+
+async function loadGoods() {
+  const statusEl = document.getElementById('goods-load-status')
+  try {
+    const res  = await fetch('../jewelry.json')
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const data = await res.json()
+    goodsData  = data.goods ?? []
+    statusEl.textContent = `共 ${goodsData.length} 个 SPU`
+    renderGoodsTable()
+  } catch (err) {
+    statusEl.textContent = '⚠️ 加载失败（需 HTTP 服务器）'
+    document.getElementById('goods-tbody').innerHTML =
+      `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--red);">
+        数据加载失败：${err.message}<br>
+        <small style="color:var(--t3);">请用 HTTP 服务器打开此文件（如 Live Server）</small>
+      </td></tr>`
+  }
+}
+
+function renderGoodsTable() {
+  const tbody = document.getElementById('goods-tbody')
+  if (!goodsData.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--t3);">暂无数据</td></tr>`
+    return
+  }
+  tbody.innerHTML = goodsData.map(spu => {
+    const minPrice = Math.min(...spu.skus.map(s => s.price))
+    const hasAR    = spu.skus.some(s => s.ar_asset_url)
+    return `
+    <tr>
+      <td style="color:var(--t3);font-size:12px;">#${spu.id}</td>
+      <td><strong>${spu.name}</strong></td>
+      <td>${CATEGORY_LABEL[spu.category] ?? spu.category}</td>
+      <td style="color:var(--t2);">${spu.material}</td>
+      <td><span class="badge badge-blue">${spu.skus.length} 个 SKU</span></td>
+      <td>¥${minPrice}</td>
+      <td>${hasAR ? '<span class="badge badge-green">AR 已配置</span>' : '<span class="badge badge-gray">无 AR</span>'}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" style="margin-right:6px;" onclick="expandSku(${spu.id})">编辑 SKU</button>
+      </td>
+    </tr>`
+  }).join('')
+}
+
+function expandSku(spuId) {
+  const spu    = goodsData.find(g => g.id === spuId)
+  if (!spu) return
+  const panel  = document.getElementById('sku-panel')
+  const title  = document.getElementById('sku-panel-title')
+  const tbody  = document.getElementById('sku-tbody')
+
+  title.textContent = `${spu.name} · SKU 列表`
+  panel.style.display = ''
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  tbody.innerHTML = spu.skus.map((sku, idx) => `
+    <tr>
+      <td>${sku.sku_name}</td>
+      <td>${sku.color || '—'}</td>
+      <td>¥${sku.price}</td>
+      <td>${sku.stock}</td>
+      <td style="font-size:11px;color:var(--t3);">${sku.ar_asset_url ? sku.ar_asset_url.split('/').pop() : '—'}</td>
+      <td id="scale-${spuId}-${idx}">${sku.ar_scale_base ?? '—'}</td>
+      <td id="offsety-${spuId}-${idx}">${sku.ar_offset_y ?? '—'}</td>
+      <td>
+        <button class="btn btn-primary btn-sm" onclick="openARModal(${spuId}, ${idx})">编辑 AR</button>
+      </td>
+    </tr>
+  `).join('')
+}
+
+
+// ════════════════════════════════════════════
+// 5. AR 参数编辑弹窗
+// ════════════════════════════════════════════
+function openARModal(spuId, skuIdx) {
+  const spu = goodsData.find(g => g.id === spuId)
+  if (!spu) return
+  const sku = spu.skus[skuIdx]
+  editingSku = { spuId, skuIdx, sku }
+
+  document.getElementById('modal-sku-name').textContent = `SKU：${sku.sku_name}`
+  document.getElementById('modal-scale').value    = sku.ar_scale_base    ?? 1
+  document.getElementById('modal-offset-x').value = sku.ar_offset_x      ?? 0
+  document.getElementById('modal-offset-y').value = sku.ar_offset_y      ?? 0
+  document.getElementById('modal-rotation').value = sku.ar_rotation_offset ?? 0
+  document.getElementById('ar-modal').classList.add('open')
+}
+
+function closeModal() {
+  document.getElementById('ar-modal').classList.remove('open')
+  editingSku = null
+}
+
+function saveARParams() {
+  if (!editingSku) return
+  const { spuId, skuIdx, sku } = editingSku
+  sku.ar_scale_base     = parseFloat(document.getElementById('modal-scale').value)
+  sku.ar_offset_x       = parseFloat(document.getElementById('modal-offset-x').value)
+  sku.ar_offset_y       = parseFloat(document.getElementById('modal-offset-y').value)
+  sku.ar_rotation_offset = parseFloat(document.getElementById('modal-rotation').value)
+
+  // 更新表格里的显示
+  const scaleEl  = document.getElementById(`scale-${spuId}-${skuIdx}`)
+  const offsetEl = document.getElementById(`offsety-${spuId}-${skuIdx}`)
+  if (scaleEl)  scaleEl.textContent  = sku.ar_scale_base
+  if (offsetEl) offsetEl.textContent = sku.ar_offset_y
+
+  closeModal()
+  showToast('✓ AR 参数已更新（仅本地预览）')
+}
+
+
+// ════════════════════════════════════════════
+// 6. 订单数据 & 发货逻辑
+// ════════════════════════════════════════════
+let orderData = []
+
+const STATUS_LABEL = {
+  pending: { text:'待发货', cls:'badge-orange' },
+  shipped: { text:'已发货', cls:'badge-blue' },
+  done:    { text:'已完成', cls:'badge-green' },
+}
+
+let currentFilter = 'all'
+let shippingOrderId = null
+
+function renderOrders() {
+  const filtered = currentFilter === 'all'
+    ? orderData
+    : orderData.filter(o => o.status === currentFilter)
+
+  const tbody = document.getElementById('orders-tbody')
+  tbody.innerHTML = filtered.map(order => {
+    const s = STATUS_LABEL[order.status] ?? { text:order.status, cls:'badge-gray' }
+    const actionBtn = order.status === 'pending'
+      ? `<button class="btn btn-success btn-sm" onclick="openShipModal('${order.id}')">发货</button>`
+      : order.status === 'shipped'
+        ? `<span style="font-size:11px;color:var(--t3);">${order.tracking}</span>`
+        : `<span style="font-size:11px;color:var(--t3);">—</span>`
+    return `
+    <tr>
+      <td style="font-size:11px;color:var(--t3);">${order.id}</td>
+      <td>${order.goods}</td>
+      <td>¥${order.amount}</td>
+      <td>${order.receiver}</td>
+      <td style="color:var(--t2);">${order.time}</td>
+      <td><span class="badge ${s.cls}">${s.text}</span></td>
+      <td>${actionBtn}</td>
+    </tr>`
+  }).join('')
+}
+
+function filterOrders(key, btn) {
+  currentFilter = key
+  document.querySelectorAll('#sec-orders .btn').forEach(b => {
+    b.className = b === btn ? 'btn btn-dark' : 'btn btn-ghost'
+  })
+  renderOrders()
+}
+
+function openShipModal(orderId) {
+  shippingOrderId = orderId
+  const order = orderData.find(o => o.id === orderId)
+  document.getElementById('ship-order-no').textContent = `订单号：${orderId}  · ${order?.goods ?? ''}`
+  document.getElementById('ship-tracking').value = ''
+  document.getElementById('ship-modal').classList.add('open')
+}
+
+function closeShipModal() {
+  document.getElementById('ship-modal').classList.remove('open')
+  shippingOrderId = null
+}
+
+function confirmShip() {
+  const tracking = document.getElementById('ship-tracking').value.trim()
+  if (!tracking) {
+    alert('请填写运单号')
+    return
+  }
+  const company = document.getElementById('ship-company').value
+  const order = orderData.find(o => o.id === shippingOrderId)
+  if (order) {
+    order.status   = 'shipped'
+    order.tracking = `${company} ${tracking}`
+  }
+  closeShipModal()
+  renderOrders()
+  showToast(`✓ 订单 ${shippingOrderId} 已标记发货`)
+}
+
+
+// ════════════════════════════════════════════
+// 7. 退货与 AI 反馈
+// ════════════════════════════════════════════
+function renderFeedback(data) {
+  // 待审核
+  const refundTbody = document.getElementById('refund-tbody')
+  refundTbody.innerHTML = data.refunds.map(r => `
+    <tr>
+      <td style="font-size:11px;color:var(--t3);">${r.id}</td>
+      <td style="font-size:12px;">
+        ${r.ai_related ? '<span class="badge badge-orange" style="margin-right:4px;">AI关联</span>' : ''}
+        ${r.reason}
+      </td>
+      <td>¥${r.amount}</td>
+      <td>
+        <button class="btn btn-success btn-sm" style="margin-right:4px;" onclick="approveRefund(this,'${r.id}')">通过</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectRefund(this,'${r.id}')">拒绝</button>
+      </td>
+    </tr>
+  `).join('')
+
+  // AI 负反馈摘要
+  const aiList = document.getElementById('ai-feedback-list')
+  aiList.innerHTML = data.ai_feedback.map(item => `
+    <div class="feedback-row">
+      <div class="feedback-reason">
+        <div style="font-weight:600;margin-bottom:2px;">${item.reason}：${item.count} 次</div>
+        <div style="font-size:11px;color:var(--t3);">${item.desc}</div>
+      </div>
+    </div>
+  `).join('')
+
+  // 退货原因分布
+  const reasonList = document.getElementById('reason-list')
+  const maxCount = Math.max(...data.return_reasons.map(r => r.count))
+  reasonList.innerHTML = data.return_reasons.map(r => {
+    const pct    = Math.round(r.count / r.total * 100)
+    const barPct = Math.round(r.count / maxCount * 100)
+    return `
+    <div class="feedback-row">
+      <div class="feedback-reason">${r.label}</div>
+      <div class="feedback-bar-wrap">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${barPct}%;background:${r.label.includes('AI') ? 'var(--red)' : 'var(--gold)'};"></div>
+        </div>
+      </div>
+      <div class="feedback-count">${r.count} 次 · ${pct}%</div>
+    </div>`
+  }).join('')
+}
+
+function approveRefund(btn, orderId) {
+  btn.closest('tr').innerHTML = `
+    <td colspan="4" style="color:var(--green);font-size:12px;padding:12px 16px;">
+      ✓ 退款已通过 · 订单 ${orderId} 将在 1-3 个工作日到账
+    </td>`
+  showToast('✓ 退款审核通过')
+}
+
+function rejectRefund(btn, orderId) {
+  btn.closest('tr').querySelector('.btn-danger').textContent = '已拒绝'
+  btn.closest('tr').querySelector('.btn-success').remove()
+  btn.disabled = true
+  showToast('退款申请已拒绝')
+}
+
+
+// ════════════════════════════════════════════
+// 8. Toast 提示
+// ════════════════════════════════════════════
+function showToast(msg) {
+  const el = document.createElement('div')
+  el.textContent = msg
+  Object.assign(el.style, {
+    position: 'fixed', bottom: '28px', left: '50%',
+    transform: 'translateX(-50%)',
+    background: 'var(--dark)', color: '#fff',
+    padding: '10px 20px', borderRadius: '8px',
+    fontSize: '13px', fontWeight: '600',
+    zIndex: '9999', opacity: '0',
+    transition: 'opacity .2s',
+    whiteSpace: 'nowrap',
+  })
+  document.body.appendChild(el)
+  requestAnimationFrame(() => { el.style.opacity = '1' })
+  setTimeout(() => {
+    el.style.opacity = '0'
+    setTimeout(() => el.remove(), 300)
+  }, 2200)
+}
+
+// ════════════════════════════════════════════
+// 9. 关闭弹窗（点遮罩）
+// ════════════════════════════════════════════
+document.getElementById('ar-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal()
+})
+document.getElementById('ship-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeShipModal()
+})
+
+
+// ════════════════════════════════════════════
+// 10. 初始化：从 admin.json 加载所有数据
+// ════════════════════════════════════════════
+async function init() {
+  try {
+    const res  = await fetch('admin.json')
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const data = await res.json()
+    orderData  = data.orders ?? []
+    renderDashboard(data)
+    renderOrders()
+    renderFeedback(data)
+  } catch (err) {
+    console.error('admin.json 加载失败：', err.message)
+  }
+  loadGoods()
+}
+
+init()
+</script>
+</body>
+</html>

@@ -1,11 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from database import engine, Base
 import models  # noqa: F401 – registers ORM models before table creation
+from config import BizError
 
-from routers import goods, cart, order
+from routers import goods, cart, order, auth as auth_router, user as user_router
 
-app = FastAPI(title="饰品 VTryOn API", version="1.0.0", docs_url="/docs")
+app = FastAPI(title="珑饰 API", version="1.0.0", docs_url="/docs")
+
+
+@app.exception_handler(BizError)
+async def biz_error_handler(request, exc: BizError):
+    return JSONResponse({"code": exc.code, "message": exc.message, "data": None})
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +28,8 @@ def startup():
     Base.metadata.create_all(bind=engine)
 
 
+app.include_router(auth_router.router, prefix="/api/v1")
+app.include_router(user_router.router, prefix="/api/v1")
 app.include_router(goods.router, prefix="/api/v1/goods", tags=["goods"])
 app.include_router(cart.router, prefix="/api/v1/cart", tags=["cart"])
 app.include_router(order.router, prefix="/api/v1/order", tags=["order"])

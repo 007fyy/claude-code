@@ -574,25 +574,30 @@
 <nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">💎 珑饰</a>
-    <div class="nav-links">
-      <a href="index.html">首页</a>
-      <a href="guide.html">AI 导购</a>
-      <a href="face.html">脸型检测</a>
-      <a href="products.html" class="active">商品</a>
-      <a href="#">品牌故事</a>
-      <a href="#">会员中心</a>
-    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">首页</a></li>
+      <li class="has-drop">
+        <a href="products.html">商品 <span class="drop-arrow">▾</span></a>
+        <div class="nav-drop">
+          <a href="products.html?cat=earrings"><span class="drop-ic">🌙</span>耳饰</a>
+          <a href="products.html?cat=necklace"><span class="drop-ic">✨</span>项链</a>
+          <a href="products.html?cat=bracelet"><span class="drop-ic">💫</span>手链</a>
+          <a href="products.html?cat=ring"><span class="drop-ic">💍</span>戒指</a>
+          <a href="products.html?cat=set"><span class="drop-ic">🎁</span>套装</a>
+        </div>
+      </li>
+      <li><a href="guide.html">AI 选款</a></li>
+      <li><a href="face.html">脸型测试</a></li>
+      <li><a href="profile.html">会员中心</a></li>
+    </ul>
     <div class="nav-right">
       <div class="nav-search">
         <span class="ic">🔍</span>
-        <input type="text" placeholder="搜索饰品...">
+        <input type="text" placeholder="搜索耳饰、项链、手链...">
       </div>
-      <a href="guide.html" class="nav-ai-btn">✨ AI 导购</a>
-      <a href="cart.html" class="nav-icon-btn" title="购物车">
-        🛒
-        <span class="badge">2</span>
-      </a>
-      <a href="login.html" class="nav-icon-btn" title="我的">👤</a>
+      <a href="ar.html" class="nav-icon-btn" data-tip="AR 虚拟试戴">📷</a>
+      <a href="cart.html" class="nav-icon-btn" data-tip="购物车">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-user-btn">👤 登录 / 注册</a>
     </div>
   </div>
 </nav>
@@ -1062,5 +1067,7 @@ document.querySelectorAll('.pd-thumb').forEach((thumb, i) => {
   });
 });
 </script>
+<script src="detail.js"></script>
+<script src="shared.js"></script>
 </body>
 </html>

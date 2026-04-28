@@ -9,8 +9,8 @@
     <div class="user-card">
       <div class="avatar">👤</div>
       <div class="user-info">
-        <div class="user-name">{{ user.name }}</div>
-        <div class="user-phone">{{ user.phone }}</div>
+        <div class="user-name">{{ user.nickname || user.phone || '游客' }}</div>
+        <div class="user-phone">{{ user.phone || '未登录' }}</div>
       </div>
       <el-button size="small" plain>编辑资料</el-button>
     </div>
@@ -92,17 +92,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Setting } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import BottomTab from '../components/BottomTab.vue'
+import { getMe } from '@/api/user'
 
 const router = useRouter()
 
-const rawUser = JSON.parse(localStorage.getItem('user') || '{}')
-const user = ref({ name: rawUser.name || '游客', phone: rawUser.phone || '未登录' })
-const faceType = ref(localStorage.getItem('faceType') || '')
+const user = ref({ nickname: '游客', phone: '未登录' })
+const faceType = ref('')
+
+onMounted(async () => {
+  const token = localStorage.getItem('token')
+  if (!token) return
+  try {
+    const res = await getMe()
+    user.value = res.data
+    if (res.data.face_shape) faceType.value = res.data.face_shape
+  } catch {
+    // token invalid — fall through with defaults
+  }
+})
 
 const orderTabs = [
   { icon: '⏰', label: '待付款', path: '/orders?status=pending', count: 0 },

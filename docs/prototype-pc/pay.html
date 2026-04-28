@@ -264,12 +264,11 @@
 <nav class="nav">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo">💎 珑饰</a>
-    <div class="nav-links">
-      <a href="index.html">首页</a>
-      <a href="products.html">商品</a>
+    <div style="flex:1;display:flex;align-items:center;gap:8px;margin-left:32px;font-size:13px;color:var(--t3);">
+      <span>🔒</span> 安全支付 · SSL 加密传输
     </div>
     <div class="nav-right">
-      <a href="login.html" class="nav-icon-btn">👤</a>
+      <a href="login.html" class="nav-icon-btn" data-tip="我的账户">👤</a>
     </div>
   </div>
 </nav>
@@ -536,5 +535,6 @@ document.getElementById('panel-wechat').style.display = 'none';
 document.getElementById('panel-bank').style.display = 'none';
 document.getElementById('panel-install').style.display = 'none';
 </script>
+<script src="shared.js"></script>
 </body>
 </html>

@@ -1,0 +1,61 @@
+{
+  "kpi": {
+    "gmv_today": 12480,
+    "gmv_delta_pct": 18.4,
+    "gmv_delta_dir": "up",
+    "orders_today": 87,
+    "orders_delta": 11,
+    "orders_delta_dir": "up",
+    "refunds_pending": 3,
+    "refunds_delta": 1,
+    "refunds_delta_dir": "down",
+    "ar_tries_today": 342,
+    "ar_tries_delta_pct": 29.6,
+    "ar_tries_delta_dir": "up"
+  },
+  "sales_trend": [
+    { "day": "4/22", "gmv": 8200 },
+    { "day": "4/23", "gmv": 9600 },
+    { "day": "4/24", "gmv": 7800 },
+    { "day": "4/25", "gmv": 11200 },
+    { "day": "4/26", "gmv": 10400 },
+    { "day": "4/27", "gmv": 13800 },
+    { "day": "今日",  "gmv": 12480 }
+  ],
+  "category_sales": [
+    { "name": "耳饰", "orders": 48, "gmv": 6890, "bar_pct": 55, "bar_color": "gold",   "trend_pct": 21, "trend_dir": "up"   },
+    { "name": "项链", "orders": 22, "gmv": 3640, "bar_pct": 29, "bar_color": "blue",   "trend_pct": 8,  "trend_dir": "up"   },
+    { "name": "手链", "orders": 10, "gmv": 1280, "bar_pct": 10, "bar_color": "orange", "trend_pct": 3,  "trend_dir": "down" },
+    { "name": "发饰", "orders":  7, "gmv":  670, "bar_pct":  5, "bar_color": "gray",   "trend_pct": 0,  "trend_dir": "flat" }
+  ],
+  "orders": [
+    { "id": "LS202604280001", "goods": "月牙弧形耳环 · 银色",           "amount": 168, "receiver": "王小颜", "time": "04-28 09:12", "status": "pending" },
+    { "id": "LS202604280002", "goods": "天然淡水珍珠项链 · 白色40cm",   "amount": 238, "receiver": "李思思", "time": "04-28 09:45", "status": "pending" },
+    { "id": "LS202604280003", "goods": "几何六边形耳钉 · 金色 ×2",      "amount": 178, "receiver": "张晓雪", "time": "04-28 10:03", "status": "pending" },
+    { "id": "LS202604270012", "goods": "水滴形耳坠 · 月光石款",          "amount": 228, "receiver": "刘梦涵", "time": "04-27 18:30", "status": "shipped", "tracking": "SF1234567890" },
+    { "id": "LS202604270008", "goods": "锁骨链竹节项链 · 金色38cm",      "amount": 158, "receiver": "陈悦",   "time": "04-27 14:22", "status": "pending" },
+    { "id": "LS202604270005", "goods": "月牙弧形耳环 · 金色",            "amount": 128, "receiver": "周晶晶", "time": "04-27 11:18", "status": "pending" },
+    { "id": "LS202604260019", "goods": "几何六边形耳钉 · 银色",          "amount":  79, "receiver": "吴丽",   "time": "04-26 16:55", "status": "shipped", "tracking": "YT9876543210" },
+    { "id": "LS202604250031", "goods": "天然淡水珍珠项链 · 白色45cm",    "amount": 258, "receiver": "赵婷",   "time": "04-25 10:10", "status": "done" }
+  ],
+  "refunds": [
+    { "id": "LS202604260019", "reason": "佩戴效果不符合预期（AI推荐不匹配）",          "amount":  79, "ai_related": true  },
+    { "id": "LS202604250031", "reason": "尺寸偏差，图片与实物不符",                     "amount": 258, "ai_related": false },
+    { "id": "LS202604240007", "reason": "因不修饰脸型退货（椭圆脸推荐方形感耳环）",   "amount": 168, "ai_related": true  }
+  ],
+  "ai_feedback": [
+    { "reason": "因不修饰脸型退货",        "count": 5, "pct": 72, "desc": "AI 脸型匹配模块已收录为负样本，下轮迭代降权" },
+    { "reason": "AR 试戴与实物差距大",     "count": 3, "pct": 43, "desc": "ar_scale_base / ar_offset 参数待复核" },
+    { "reason": "推荐风格与用户偏好不符",  "count": 2, "pct": 29, "desc": "用户画像数据稀疏，已标记冷启动用户群" },
+    { "reason": "材质过敏（展示信息不足）", "count": 1, "pct": 14, "desc": "商品材质标签将强制显示过敏提示" },
+    { "reason": "其他原因",                "count": 7, "pct": 100, "desc": "归入通用退货流程，不影响 AI 权重" }
+  ],
+  "return_reasons": [
+    { "label": "因不修饰脸型退货（AI 推荐不匹配）", "count": 5, "total": 18 },
+    { "label": "AR 试戴与实物差距大",               "count": 3, "total": 18 },
+    { "label": "图片与实物颜色差异",                 "count": 3, "total": 18 },
+    { "label": "推荐风格与用户偏好不符",             "count": 2, "total": 18 },
+    { "label": "材质过敏或不适",                     "count": 1, "total": 18 },
+    { "label": "其他/不说明",                        "count": 4, "total": 18 }
+  ]
+}

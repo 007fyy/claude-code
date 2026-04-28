@@ -6,6 +6,15 @@ const http = axios.create({
   timeout: 10000,
 })
 
+// 自动注入 token
+http.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 http.interceptors.response.use(
   (res) => {
     const data = res.data

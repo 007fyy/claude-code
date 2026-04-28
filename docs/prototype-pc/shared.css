@@ -59,12 +59,15 @@ ul { list-style: none; }
    ═══════════════════════════════════════════════════ */
 .nav {
   height: var(--nav-h);
-  background: var(--card);
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--bd);
   position: sticky;
   top: 0;
   z-index: 999;
-  box-shadow: 0 1px 8px rgba(0,0,0,.06);
+  box-shadow: 0 1px 12px rgba(0,0,0,.06);
+  overflow: visible;
 }
 
 .nav-inner {
@@ -118,6 +121,64 @@ ul { list-style: none; }
   margin-top: 2px;
   border-radius: 1px;
 }
+
+/* ── Nav Dropdown ── */
+.has-drop {
+  position: relative;
+}
+.has-drop .drop-arrow {
+  font-size: 10px;
+  opacity: .6;
+  transition: transform .2s;
+  display: inline-block;
+}
+.has-drop:hover .drop-arrow { transform: rotate(180deg); }
+
+.nav-drop {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.05);
+  padding: 8px;
+  min-width: 140px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-6px);
+  transition: opacity .18s, transform .18s;
+  z-index: 100;
+}
+.nav-drop::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top: none;
+  border-bottom-color: var(--card);
+}
+.has-drop:hover .nav-drop {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.nav-drop a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--t1);
+  border-radius: 8px;
+  transition: background .13s, color .13s;
+  text-decoration: none;
+}
+.nav-drop a:hover { background: var(--gold-lt); color: var(--gold-dk); }
+.nav-drop a .drop-ic { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
 
 .nav-right {
   display: flex;
@@ -192,6 +253,34 @@ ul { list-style: none; }
   display: flex; align-items: center; justify-content: center;
   padding: 0 3px;
   border: 1.5px solid white;
+}
+
+/* CSS Tooltip (data-tip) */
+.nav-icon-btn[data-tip] {
+  overflow: visible;
+}
+.nav-icon-btn[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: -34px;
+  left: 50%;
+  transform: translateX(-50%) scale(.9);
+  background: var(--dark);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s, transform .15s;
+  letter-spacing: .3px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+.nav-icon-btn[data-tip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
 }
 
 .nav-user-btn {
@@ -545,3 +634,72 @@ ul { list-style: none; }
 .tc  { text-align: center; }
 .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card-base { background: var(--card); border-radius: var(--r-lg); box-shadow: var(--sh); }
+
+/* ═══════════════════════════════════════════════════
+   GENERAL [data-tip] TOOLTIP
+   用法：<button data-tip="提示文字">
+   ═══════════════════════════════════════════════════ */
+[data-tip] { position: relative; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(.9);
+  background: var(--dark);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 5px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s, transform .15s;
+  z-index: 200;
+  box-shadow: 0 3px 10px rgba(0,0,0,.18);
+}
+[data-tip]:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+/* nav icon tooltips override to appear below */
+.nav-icon-btn[data-tip]::after {
+  bottom: auto;
+  top: calc(100% + 8px);
+  transform: translateX(-50%) scale(.9);
+}
+.nav-icon-btn[data-tip]:hover::after {
+  transform: translateX(-50%) scale(1);
+}
+
+/* ═══════════════════════════════════════════════════
+   SCROLLBAR (Webkit)
+   ═══════════════════════════════════════════════════ */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--t3); }
+
+/* ═══════════════════════════════════════════════════
+   FOCUS RING
+   ═══════════════════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════
+   PRODUCT CARD — quick-action overlay on hover
+   ═══════════════════════════════════════════════════ */
+.product-card-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(26,23,20,.18) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .22s;
+}
+.product-card:hover .product-card-img::after { opacity: 1; }
