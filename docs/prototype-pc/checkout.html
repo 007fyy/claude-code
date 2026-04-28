@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>确认订单 — 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Steps Bar ── */
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 24px 0 36px;
+}
+.cs-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+.cs-step-circle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800;
+  border: 2px solid var(--bd);
+  background: var(--card);
+  color: var(--t3);
+}
+.cs-step.done .cs-step-circle { background: var(--green); border-color: var(--green); color: white; }
+.cs-step.active .cs-step-circle { background: var(--dark); border-color: var(--dark); color: white; }
+.cs-step-label { font-size: 12px; color: var(--t3); font-weight: 600; white-space: nowrap; }
+.cs-step.done .cs-step-label, .cs-step.active .cs-step-label { color: var(--dark); }
+.cs-line {
+  width: 100px; height: 2px;
+  background: var(--bd);
+  margin-bottom: 20px;
+}
+.cs-line.done { background: var(--green); }
+
+/* ── Layout ── */
+.checkout-wrap {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 28px;
+  padding-bottom: 64px;
+  align-items: start;
+}
+
+/* ── Section Card ── */
+.ck-card {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.ck-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--bd);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--dark);
+}
+.ck-card-header a { font-size: 13px; font-weight: 600; color: var(--gold-dk); }
+
+/* ── Address ── */
+.addr-list { padding: 16px 24px; display: flex; flex-direction: column; gap: 12px; }
+.addr-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border: 2px solid var(--bd);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .18s;
+}
+.addr-card:hover { border-color: var(--gold); }
+.addr-card.selected { border-color: var(--dark); background: #FAFAFA; }
+.addr-radio {
+  width: 18px; height: 18px;
+  border: 2px solid var(--bd);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.addr-card.selected .addr-radio { border-color: var(--dark); background: var(--dark); }
+.addr-card.selected .addr-radio::after { content: ''; width: 7px; height: 7px; background: white; border-radius: 50%; display: block; }
+.addr-info { flex: 1; }
+.addr-name { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+.addr-phone { font-size: 13px; color: var(--t2); margin-bottom: 4px; }
+.addr-full { font-size: 13px; color: var(--t1); line-height: 1.5; }
+.addr-tag {
+  font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px;
+  background: var(--gold-lt); color: var(--gold-dk);
+  display: inline-block; margin-left: 8px;
+}
+.addr-ops { display: flex; gap: 10px; flex-shrink: 0; }
+.addr-op-btn { font-size: 12px; color: var(--t2); cursor: pointer; background: none; border: none; padding: 0; }
+.addr-op-btn:hover { color: var(--gold-dk); }
+
+.addr-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 2px dashed var(--bd);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2);
+  cursor: pointer;
+  transition: all .18s;
+}
+.addr-add-btn:hover { border-color: var(--gold); color: var(--gold-dk); }
+
+/* ── Delivery ── */
+.delivery-opts { padding: 16px 24px; display: flex; flex-direction: column; gap: 10px; }
+.delivery-opt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 2px solid var(--bd);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .18s;
+}
+.delivery-opt:hover { border-color: var(--gold); }
+.delivery-opt.selected { border-color: var(--dark); background: #FAFAFA; }
+.delivery-opt-icon { font-size: 24px; }
+.delivery-opt-info { flex: 1; }
+.delivery-opt-name { font-size: 14px; font-weight: 700; color: var(--dark); }
+.delivery-opt-sub { font-size: 12px; color: var(--t2); margin-top: 2px; }
+.delivery-opt-price { font-size: 14px; font-weight: 700; color: var(--green); }
+
+/* ── Products List ── */
+.ck-items { padding: 0; }
+.ck-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--bd-2);
+}
+.ck-item:last-child { border-bottom: none; }
+.ck-item-img {
+  width: 72px; height: 72px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+}
+.ck-item-name { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.ck-item-sku { font-size: 12px; color: var(--t2); }
+.ck-item-qty { font-size: 13px; color: var(--t2); margin-left: auto; flex-shrink: 0; }
+.ck-item-price { font-size: 16px; font-weight: 800; color: var(--dark); flex-shrink: 0; width: 90px; text-align: right; }
+
+/* ── Order Note ── */
+.ck-note { padding: 16px 24px; }
+.ck-note textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--bd);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--t1);
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  transition: border-color .18s;
+}
+.ck-note textarea:focus { border-color: var(--gold); }
+
+/* ── Summary Panel ── */
+.ck-summary {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  overflow: hidden;
+  position: sticky;
+  top: calc(var(--nav-h) + 20px);
+}
+.ck-summary-header { padding: 18px 20px; border-bottom: 1px solid var(--bd); font-size: 15px; font-weight: 800; color: var(--dark); }
+.ck-summary-body { padding: 20px; }
+
+.ck-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 12px; }
+.ck-row .lbl { color: var(--t2); }
+.ck-row .val { font-weight: 600; color: var(--dark); }
+.ck-row .val.save { color: var(--green); }
+.ck-row .val.free { color: var(--green); font-weight: 700; }
+
+.ck-coupon {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--bd);
+  border-bottom: 1px solid var(--bd);
+}
+.ck-coupon input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1.5px solid var(--bd);
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color .15s;
+}
+.ck-coupon input:focus { border-color: var(--gold); }
+.ck-coupon button {
+  padding: 9px 16px;
+  background: var(--dark);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ck-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 20px;
+}
+.ck-total-lbl { font-size: 15px; font-weight: 700; color: var(--dark); }
+.ck-total-val { font-size: 30px; font-weight: 900; color: var(--dark); }
+.ck-total-val span { font-size: 18px; }
+
+.ck-submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.ck-submit-btn:hover { background: linear-gradient(135deg, var(--gold-dk), #7A5530); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(196,144,106,.4); }
+
+.ck-perks { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+.ck-perk { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--t2); }
+
+/* ── Invoice ── */
+.invoice-opts { padding: 16px 24px; display: flex; gap: 10px; }
+.invoice-opt {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px;
+  border: 1.5px solid var(--bd);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2);
+  transition: all .15s;
+}
+.invoice-opt:hover { border-color: var(--dark); color: var(--dark); }
+.invoice-opt.selected { border-color: var(--dark); background: var(--dark); color: white; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 40px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--dark); color: white;
+  padding: 14px 28px; border-radius: 40px;
+  font-size: 14px; font-weight: 600;
+  opacity: 0; transition: all .3s var(--ease);
+  pointer-events: none; z-index: 9999; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="guide.html">AI 导购</a>
+      <a href="face.html">脸型检测</a>
+      <a href="products.html">商品</a>
+    </div>
+    <div class="nav-right">
+      <a href="cart.html" class="nav-icon-btn">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-icon-btn">👤</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-main">
+  <div class="container">
+    <!-- Steps -->
+    <div class="checkout-steps">
+      <div class="cs-step done"><div class="cs-step-circle">✓</div><div class="cs-step-label">购物车</div></div>
+      <div class="cs-line done"></div>
+      <div class="cs-step active"><div class="cs-step-circle">2</div><div class="cs-step-label">确认订单</div></div>
+      <div class="cs-line"></div>
+      <div class="cs-step"><div class="cs-step-circle">3</div><div class="cs-step-label">付款</div></div>
+      <div class="cs-line"></div>
+      <div class="cs-step"><div class="cs-step-circle">4</div><div class="cs-step-label">完成</div></div>
+    </div>
+
+    <div class="checkout-wrap">
+      <div>
+        <!-- Address -->
+        <div class="ck-card">
+          <div class="ck-card-header">
+            📍 收货地址
+            <a href="#" onclick="showToast('地址管理功能')">管理地址</a>
+          </div>
+          <div class="addr-list">
+            <div class="addr-card selected" onclick="selectAddr(this)">
+              <div class="addr-radio"></div>
+              <div class="addr-info">
+                <div class="addr-name">李小明 <span class="addr-tag">默认</span></div>
+                <div class="addr-phone">138****8888</div>
+                <div class="addr-full">广东省深圳市南山区科技园南区 × × 路 × × 大厦 1801</div>
+              </div>
+              <div class="addr-ops">
+                <button class="addr-op-btn" onclick="event.stopPropagation();showToast('编辑地址')">编辑</button>
+              </div>
+            </div>
+            <div class="addr-card" onclick="selectAddr(this)">
+              <div class="addr-radio"></div>
+              <div class="addr-info">
+                <div class="addr-name">李小明（公司）</div>
+                <div class="addr-phone">138****8888</div>
+                <div class="addr-full">广东省深圳市福田区 × × 科技园 B 栋 603</div>
+              </div>
+              <div class="addr-ops">
+                <button class="addr-op-btn" onclick="event.stopPropagation();showToast('编辑地址')">编辑</button>
+              </div>
+            </div>
+            <div class="addr-add-btn" onclick="showToast('添加新地址')">
+              ＋ 添加新收货地址
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery -->
+        <div class="ck-card">
+          <div class="ck-card-header">🚚 配送方式</div>
+          <div class="delivery-opts">
+            <div class="delivery-opt selected" onclick="selectDelivery(this)">
+              <span class="delivery-opt-icon">📦</span>
+              <div class="delivery-opt-info">
+                <div class="delivery-opt-name">顺丰速运 · 次日达</div>
+                <div class="delivery-opt-sub">下单后当日发货，预计明日 18:00 前送达</div>
+              </div>
+              <span class="delivery-opt-price">免费</span>
+            </div>
+            <div class="delivery-opt" onclick="selectDelivery(this)">
+              <span class="delivery-opt-icon">⚡</span>
+              <div class="delivery-opt-info">
+                <div class="delivery-opt-name">顺丰特快 · 当日达</div>
+                <div class="delivery-opt-sub">12:00 前下单，当日 20:00 前送达（限部分城市）</div>
+              </div>
+              <span class="delivery-opt-price" style="color:var(--dark);">¥28</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products -->
+        <div class="ck-card">
+          <div class="ck-card-header">🛍️ 订单商品（2 件）</div>
+          <div class="ck-items">
+            <div class="ck-item">
+              <div class="ck-item-img" style="background:linear-gradient(135deg,#F5EDE3,#F0E8D8);">💎</div>
+              <div style="flex:1;min-width:0;">
+                <div class="ck-item-name">云端星河 · 18K 白金钻石耳坠</div>
+                <div class="ck-item-sku">18K 白金 / 0.3ct / G色</div>
+              </div>
+              <div class="ck-item-qty">×1</div>
+              <div class="ck-item-price">¥3,980</div>
+            </div>
+            <div class="ck-item">
+              <div class="ck-item-img" style="background:linear-gradient(135deg,#F5E6F5,#EDD6ED);">🌸</div>
+              <div style="flex:1;min-width:0;">
+                <div class="ck-item-name">樱花漫舞 · 18K 玫瑰金粉钻耳钉</div>
+                <div class="ck-item-sku">18K 玫瑰金 / 0.2ct / 粉钻</div>
+              </div>
+              <div class="ck-item-qty">×1</div>
+              <div class="ck-item-price">¥1,880</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice -->
+        <div class="ck-card">
+          <div class="ck-card-header">🧾 发票</div>
+          <div class="invoice-opts">
+            <div class="invoice-opt selected" onclick="selectInvoice(this)">不需要发票</div>
+            <div class="invoice-opt" onclick="selectInvoice(this)">增值税普通发票</div>
+            <div class="invoice-opt" onclick="selectInvoice(this)">增值税专用发票</div>
+          </div>
+        </div>
+
+        <!-- Note -->
+        <div class="ck-card">
+          <div class="ck-card-header">📝 订单备注</div>
+          <div class="ck-note">
+            <textarea rows="3" placeholder="如有特殊要求请在此备注（如礼品包装、指定时间段配送等）..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="ck-summary">
+        <div class="ck-summary-header">订单摘要</div>
+        <div class="ck-summary-body">
+          <div class="ck-row"><span class="lbl">商品金额</span><span class="val">¥5,860</span></div>
+          <div class="ck-row"><span class="lbl">运费</span><span class="val free">免费</span></div>
+          <div class="ck-row"><span class="lbl">会员折扣</span><span class="val save">- ¥0</span></div>
+          <div class="ck-coupon">
+            <input type="text" placeholder="输入优惠码..." id="coupon">
+            <button onclick="applyCoupon()">使用</button>
+          </div>
+          <div class="ck-total-row">
+            <span class="ck-total-lbl">实付金额</span>
+            <span class="ck-total-val"><span>¥</span>5,860</span>
+          </div>
+          <button class="ck-submit-btn" onclick="submitOrder()">🔒 提交订单</button>
+          <div class="ck-perks">
+            <div class="ck-perk">🔒 支付宝 / 微信 / 银行卡支持</div>
+            <div class="ck-perk">✅ 正品保障 · 平台担保交易</div>
+            <div class="ck-perk">↩️ 30 天无忧退换货</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+  <div class="footer-main">
+    <div><div class="footer-brand">💎 珑饰</div><div class="footer-tagline">AI 驱动的智能珠宝电商平台</div></div>
+    <div class="footer-col"><h4>帮助</h4><a href="#">购物流程</a><a href="#">退换货</a><a href="#">联系客服</a></div>
+    <div class="footer-col"><h4>保障</h4><a href="#">正品承诺</a><a href="#">安全支付</a><a href="#">隐私政策</a></div>
+    <div class="footer-col"><h4>关于</h4><a href="#">品牌故事</a><a href="#">联系我们</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 珑饰 LongShi</span><span>ICP备XXXXXXXX号</span></div>
+</footer>
+
+<script>
+function selectAddr(card) {
+  document.querySelectorAll('.addr-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+function selectDelivery(opt) {
+  document.querySelectorAll('.delivery-opt').forEach(o => o.classList.remove('selected'));
+  opt.classList.add('selected');
+}
+function selectInvoice(opt) {
+  document.querySelectorAll('.invoice-opt').forEach(o => o.classList.remove('selected'));
+  opt.classList.add('selected');
+}
+function applyCoupon() {
+  const v = document.getElementById('coupon').value.trim();
+  if (!v) { showToast('请输入优惠码'); return; }
+  v.toUpperCase() === 'LS200' ? showToast('✅ 优惠码生效：减 ¥200') : showToast('❌ 优惠码无效');
+}
+function submitOrder() {
+  showToast('正在提交订单...');
+  setTimeout(() => location.href = 'pay.html', 1000);
+}
+let tt;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>

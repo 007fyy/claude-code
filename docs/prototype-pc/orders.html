@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的订单 — 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.orders-wrap { display:grid;grid-template-columns:260px 1fr;gap:28px;padding:32px 0 64px;align-items:start; }
+
+/* Sidebar reuse (same as profile) */
+.profile-sidebar { position:sticky;top:calc(var(--nav-h)+20px); }
+.profile-user-card { background:linear-gradient(135deg,var(--dark),#4A3020);border-radius:var(--r-lg);padding:20px;color:white;margin-bottom:16px;display:flex;align-items:center;gap:14px; }
+.profile-avatar-sm { width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dk));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:white;flex-shrink:0; }
+.profile-user-name { font-size:16px;font-weight:800; }
+.profile-user-level { font-size:11px;color:rgba(255,255,255,.6);margin-top:3px; }
+.sidebar-nav { background:var(--card);border-radius:var(--r-lg);box-shadow:var(--sh);overflow:hidden; }
+.sidebar-nav-group { padding:8px 0;border-bottom:1px solid var(--bd-2); }
+.sidebar-nav-group:last-child { border-bottom:none; }
+.sidebar-nav-title { font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;padding:10px 20px 6px; }
+.sidebar-nav-item { display:flex;align-items:center;gap:12px;padding:12px 20px;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;transition:all .15s;text-decoration:none; }
+.sidebar-nav-item:hover { background:var(--bg);color:var(--dark); }
+.sidebar-nav-item.active { background:var(--gold-lt);color:var(--gold-dk); }
+.sidebar-nav-item .icon { font-size:16px;width:20px;text-align:center; }
+.sidebar-nav-item .badge { margin-left:auto;background:var(--red);color:white;font-size:10px;font-weight:800;padding:2px 6px;border-radius:10px; }
+
+/* ── Order Tabs ── */
+.order-tabs {
+  display: flex;
+  background: var(--card);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  overflow: hidden;
+  box-shadow: var(--sh);
+  border-bottom: 1px solid var(--bd);
+  margin-bottom: 0;
+}
+.order-tab {
+  flex: 1;
+  padding: 16px 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2);
+  cursor: pointer;
+  transition: all .15s;
+  border-bottom: 3px solid transparent;
+  position: relative;
+}
+.order-tab:hover { color: var(--dark); background: var(--bg); }
+.order-tab.active { color: var(--dark); border-bottom-color: var(--gold); font-weight: 800; }
+.order-tab .tab-badge {
+  position: absolute;
+  top: 10px; right: calc(50% - 24px);
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* ── Search/Filter bar ── */
+.orders-toolbar {
+  background: var(--card);
+  padding: 14px 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid var(--bd);
+}
+.orders-search {
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 8px 14px;
+  gap: 8px;
+  flex: 1;
+  border: 1.5px solid transparent;
+  transition: all .2s;
+}
+.orders-search:focus-within { border-color: var(--gold); background: white; }
+.orders-search input { border: none; background: transparent; font-size: 13px; outline: none; flex: 1; }
+.orders-search input::placeholder { color: var(--t3); }
+
+/* ── Order List ── */
+.orders-list {
+  background: var(--card);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+.order-card {
+  border-bottom: 8px solid var(--bd-2);
+}
+.order-card:last-child { border-bottom: none; }
+
+.order-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #FAFAF9;
+  border-bottom: 1px solid var(--bd-2);
+}
+.order-card-sn { font-size: 13px; color: var(--t2); }
+.order-card-sn strong { color: var(--dark); font-weight: 700; }
+.order-card-time { font-size: 12px; color: var(--t3); }
+.order-card-status { font-size: 13px; font-weight: 700; }
+.status-pending { color: var(--orange); }
+.status-paid { color: var(--blue); }
+.status-shipped { color: var(--blue); }
+.status-done { color: var(--green); }
+.status-refund { color: var(--red); }
+
+.order-card-items { padding: 16px 20px; }
+.order-card-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.order-card-item:last-child { margin-bottom: 0; }
+.order-card-item-img {
+  width: 72px; height: 72px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform .18s;
+}
+.order-card-item-img:hover { transform: scale(1.05); }
+.order-card-item-info { flex: 1; min-width: 0; }
+.order-card-item-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 4px;
+  cursor: pointer;
+  transition: color .15s;
+}
+.order-card-item-name:hover { color: var(--gold-dk); }
+.order-card-item-sku { font-size: 12px; color: var(--t2); }
+.order-card-item-qty { font-size: 13px; color: var(--t2); flex-shrink: 0; }
+.order-card-item-price { font-size: 15px; font-weight: 800; color: var(--dark); flex-shrink: 0; width: 90px; text-align: right; }
+
+.order-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--bd-2);
+}
+.order-card-total { font-size: 13px; color: var(--t2); }
+.order-card-total strong { font-size: 18px; font-weight: 900; color: var(--dark); }
+.order-card-actions { display: flex; gap: 8px; }
+
+/* Logistics tracking mini -->*/
+.logistics-mini {
+  margin: 0 20px 16px;
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--t2);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.logistics-mini:hover { background: var(--gold-lt); }
+.logistics-mini .icon { font-size: 20px; flex-shrink: 0; }
+.logistics-mini strong { color: var(--dark); font-weight: 700; display: block; margin-bottom: 2px; }
+
+/* Empty -->*/
+.orders-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+.orders-empty .icon { font-size: 64px; margin-bottom: 16px; }
+.orders-empty .title { font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+.orders-empty .sub { font-size: 13px; color: var(--t2); margin-bottom: 24px; }
+
+/* Pagination -->*/
+.orders-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 20px;
+  background: var(--card);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+.page-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid var(--bd);
+  color: var(--t2);
+  cursor: pointer;
+  transition: all .15s;
+  background: white;
+}
+.page-btn:hover { border-color: var(--dark); color: var(--dark); }
+.page-btn.active { background: var(--dark); color: white; border-color: var(--dark); }
+
+/* Toast */
+.toast { position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:white;padding:14px 28px;border-radius:40px;font-size:14px;font-weight:600;opacity:0;transition:all .3s var(--ease);pointer-events:none;z-index:9999;white-space:nowrap; }
+.toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="guide.html">AI 导购</a>
+      <a href="face.html">脸型检测</a>
+      <a href="products.html">商品</a>
+      <a href="profile.html">会员中心</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search"><span class="ic">🔍</span><input type="text" placeholder="搜索饰品..."></div>
+      <a href="cart.html" class="nav-icon-btn">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-icon-btn" style="color:var(--dark);">👤</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-main">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">首页</a><span class="sep">›</span>
+      <a href="profile.html">个人中心</a><span class="sep">›</span>
+      <span class="cur">我的订单</span>
+    </div>
+
+    <div class="orders-wrap">
+      <!-- Sidebar -->
+      <div class="profile-sidebar">
+        <div class="profile-user-card">
+          <div class="profile-avatar-sm">李</div>
+          <div>
+            <div class="profile-user-name">李小明</div>
+            <div class="profile-user-level">💎 珑饰黄金会员</div>
+          </div>
+        </div>
+        <div class="sidebar-nav">
+          <div class="sidebar-nav-group">
+            <div class="sidebar-nav-title">我的账户</div>
+            <a href="profile.html" class="sidebar-nav-item"><span class="icon">🏠</span> 个人中心</a>
+          </div>
+          <div class="sidebar-nav-group">
+            <div class="sidebar-nav-title">我的交易</div>
+            <a href="orders.html" class="sidebar-nav-item active"><span class="icon">📦</span> 我的订单<span class="badge">2</span></a>
+            <a href="wishlist.html" class="sidebar-nav-item"><span class="icon">❤️</span> 我的收藏</a>
+            <a href="aftersale.html" class="sidebar-nav-item"><span class="icon">↩️</span> 售后记录</a>
+          </div>
+          <div class="sidebar-nav-group">
+            <div class="sidebar-nav-title">我的资产</div>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('优惠券中心')"><span class="icon">🎟️</span> 优惠券<span class="badge">3</span></a>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('积分中心')"><span class="icon">⭐</span> 积分中心</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Main -->
+      <div>
+        <!-- Tabs -->
+        <div class="order-tabs">
+          <div class="order-tab active" onclick="switchTab(this,0)">全部<span class="tab-badge" style="right:calc(50% - 32px);">14</span></div>
+          <div class="order-tab" onclick="switchTab(this,1)">待付款<span class="tab-badge" style="right:calc(50% - 32px);">1</span></div>
+          <div class="order-tab" onclick="switchTab(this,2)">待发货</div>
+          <div class="order-tab" onclick="switchTab(this,3)">待收货<span class="tab-badge" style="right:calc(50% - 32px);">1</span></div>
+          <div class="order-tab" onclick="switchTab(this,4)">待评价<span class="tab-badge" style="right:calc(50% - 32px);">3</span></div>
+          <div class="order-tab" onclick="switchTab(this,5)">售后</div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="orders-toolbar">
+          <div class="orders-search">
+            <span style="font-size:15px;color:var(--t3);">🔍</span>
+            <input type="text" placeholder="搜索订单号、商品名称...">
+          </div>
+          <select class="form-input" style="width:140px;padding:8px 12px;font-size:13px;">
+            <option>全部时间</option>
+            <option>近 3 个月</option>
+            <option>近半年</option>
+            <option>今年</option>
+          </select>
+        </div>
+
+        <!-- Orders List -->
+        <div class="orders-list" id="ordersList">
+
+          <!-- Order 1: 已发货 -->
+          <div class="order-card">
+            <div class="order-card-header">
+              <div>
+                <div class="order-card-sn">订单号：<strong>LS20260428001234</strong></div>
+                <div class="order-card-time">下单时间：2026-04-28 14:32</div>
+              </div>
+              <span class="order-card-status status-shipped">🚚 已发货</span>
+            </div>
+            <div class="order-card-items">
+              <div class="order-card-item">
+                <div class="order-card-item-img" style="background:linear-gradient(135deg,#F5EDE3,#F0E8D8);" onclick="location.href='product.html'">💎</div>
+                <div class="order-card-item-info">
+                  <div class="order-card-item-name" onclick="location.href='product.html'">云端星河 · 18K 白金钻石耳坠</div>
+                  <div class="order-card-item-sku">18K 白金 / 0.3ct / G色</div>
+                </div>
+                <div class="order-card-item-qty">×1</div>
+                <div class="order-card-item-price">¥3,980</div>
+              </div>
+              <div class="order-card-item">
+                <div class="order-card-item-img" style="background:linear-gradient(135deg,#F5E6F5,#EDD6ED);" onclick="location.href='product.html'">🌸</div>
+                <div class="order-card-item-info">
+                  <div class="order-card-item-name" onclick="location.href='product.html'">樱花漫舞 · 18K 玫瑰金粉钻耳钉</div>
+                  <div class="order-card-item-sku">18K 玫瑰金 / 0.2ct / 粉钻</div>
+                </div>
+                <div class="order-card-item-qty">×1</div>
+                <div class="order-card-item-price">¥1,880</div>
+              </div>
+            </div>
+            <div class="logistics-mini" onclick="location.href='order-detail.html'">
+              <span class="icon">📦</span>
+              <div>
+                <strong>顺丰速运 SF1234567890 · 运输中</strong>
+                2026-04-28 16:20 已从深圳南山营业点发出，预计明日送达
+              </div>
+              <span style="color:var(--t3);font-size:18px;margin-left:auto;">›</span>
+            </div>
+            <div class="order-card-footer">
+              <div class="order-card-total">共 2 件 · 合计：<strong>¥5,860</strong></div>
+              <div class="order-card-actions">
+                <button class="btn btn-out btn-xs" onclick="location.href='order-detail.html'">订单详情</button>
+                <button class="btn btn-dark btn-xs" onclick="showToast('确认收货后可评价')">确认收货</button>
+                <button class="btn btn-gold btn-xs" onclick="location.href='ar.html'">再次试戴</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order 2: 待付款 -->
+          <div class="order-card">
+            <div class="order-card-header">
+              <div>
+                <div class="order-card-sn">订单号：<strong>LS20260427009876</strong></div>
+                <div class="order-card-time">下单时间：2026-04-27 21:15 · <span style="color:var(--red);">剩余 23:18 后自动取消</span></div>
+              </div>
+              <span class="order-card-status status-pending">⏳ 待付款</span>
+            </div>
+            <div class="order-card-items">
+              <div class="order-card-item">
+                <div class="order-card-item-img" style="background:linear-gradient(135deg,#EEF2FF,#E0E7FF);" onclick="location.href='product.html'">🔮</div>
+                <div class="order-card-item-info">
+                  <div class="order-card-item-name" onclick="location.href='product.html'">紫水晶 · 垂坠耳环</div>
+                  <div class="order-card-item-sku">18K 黄金 / 天然紫水晶</div>
+                </div>
+                <div class="order-card-item-qty">×1</div>
+                <div class="order-card-item-price">¥980</div>
+              </div>
+            </div>
+            <div class="order-card-footer">
+              <div class="order-card-total">共 1 件 · 合计：<strong>¥980</strong></div>
+              <div class="order-card-actions">
+                <button class="btn btn-out btn-xs" onclick="showToast('订单已取消')">取消订单</button>
+                <button class="btn btn-out btn-xs" onclick="location.href='order-detail.html'">订单详情</button>
+                <button class="btn btn-gold btn-xs" onclick="location.href='pay.html'">立即支付</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order 3: 已完成 待评价 -->
+          <div class="order-card">
+            <div class="order-card-header">
+              <div>
+                <div class="order-card-sn">订单号：<strong>LS20260320005678</strong></div>
+                <div class="order-card-time">下单时间：2026-03-20 09:15</div>
+              </div>
+              <span class="order-card-status status-done">✅ 已完成</span>
+            </div>
+            <div class="order-card-items">
+              <div class="order-card-item">
+                <div class="order-card-item-img" style="background:linear-gradient(135deg,#E8F4F8,#D6EDF5);" onclick="location.href='product.html'">🌊</div>
+                <div class="order-card-item-info">
+                  <div class="order-card-item-name" onclick="location.href='product.html'">海洋之心 · 蓝宝石项链</div>
+                  <div class="order-card-item-sku">18K 白金 / 天然蓝宝石</div>
+                </div>
+                <div class="order-card-item-qty">×1</div>
+                <div class="order-card-item-price">¥2,680</div>
+              </div>
+            </div>
+            <div class="order-card-footer">
+              <div class="order-card-total">共 1 件 · 合计：<strong>¥2,680</strong></div>
+              <div class="order-card-actions">
+                <button class="btn btn-out btn-xs" onclick="location.href='order-detail.html'">订单详情</button>
+                <button class="btn btn-out btn-xs" onclick="location.href='aftersale.html'">申请售后</button>
+                <button class="btn btn-gold btn-xs" onclick="location.href='review.html'">去评价 ✍️</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /orders-list -->
+
+        <!-- Pagination -->
+        <div class="orders-pagination">
+          <button class="page-btn">‹</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span style="font-size:13px;color:var(--t3);">...</span>
+          <button class="page-btn">7</button>
+          <button class="page-btn">›</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+  <div class="footer-main">
+    <div><div class="footer-brand">💎 珑饰</div><div class="footer-tagline">AI 驱动的智能珠宝电商平台</div></div>
+    <div class="footer-col"><h4>购物指南</h4><a href="#">AI 导购</a><a href="#">AR 试戴</a></div>
+    <div class="footer-col"><h4>客户服务</h4><a href="#">在线客服</a><a href="#">退换货</a></div>
+    <div class="footer-col"><h4>关于珑饰</h4><a href="#">品牌故事</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 珑饰 LongShi</span><span>ICP备XXXXXXXX号</span></div>
+</footer>
+
+<script>
+function switchTab(tab, idx) {
+  document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  if (idx === 1) { showToast('显示待付款订单'); }
+  else if (idx === 5) { showToast('显示售后订单'); }
+}
+let tt;
+function showToast(msg) {
+  const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>

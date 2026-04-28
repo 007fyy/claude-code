@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AR 虚拟试戴 — 珑饰 LongShi</title>
+<!-- 虚拟试戴页面 -->
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── AR Page Full-screen Layout ── */
+body { overflow: hidden; }
+
+.ar-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  height: calc(100vh - var(--nav-h));
+  gap: 0;
+}
+
+/* ── Camera Area ── */
+.ar-camera {
+  position: relative;
+  background: #0A0A0A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ar-camera-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, #1A1714 0%, #0A0A0A 100%);
+}
+
+/* Face Detection Frame */
+.ar-face-frame {
+  position: relative;
+  z-index: 2;
+  width: 480px;
+  height: 560px;
+}
+
+.ar-face-oval {
+  width: 100%;
+  height: 100%;
+  border: 2px solid rgba(196,144,106,.6);
+  border-radius: 50% / 55%;
+  position: relative;
+  animation: pulseFrame 3s ease-in-out infinite;
+}
+@keyframes pulseFrame {
+  0%, 100% { border-color: rgba(196,144,106,.4); box-shadow: 0 0 0 0 rgba(196,144,106,.2); }
+  50%       { border-color: rgba(196,144,106,.9); box-shadow: 0 0 40px 8px rgba(196,144,106,.15); }
+}
+
+/* Corner brackets */
+.ar-face-oval::before, .ar-face-oval::after {
+  content: '';
+  position: absolute;
+  width: 30px; height: 30px;
+  border-color: var(--gold);
+  border-style: solid;
+}
+.ar-face-oval::before {
+  top: -2px; left: -2px;
+  border-width: 3px 0 0 3px;
+  border-radius: 4px 0 0 0;
+}
+.ar-face-oval::after {
+  bottom: -2px; right: -2px;
+  border-width: 0 3px 3px 0;
+  border-radius: 0 0 4px 0;
+}
+
+/* Emoji face placeholder */
+.ar-face-emoji {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 200px;
+  opacity: .18;
+  filter: grayscale(1);
+  line-height: 1;
+}
+
+/* Jewelry overlay */
+.ar-jewelry-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.ar-earring-left {
+  position: absolute;
+  left: 6px;
+  top: 38%;
+  font-size: 52px;
+  filter: drop-shadow(0 4px 16px rgba(196,144,106,.8)) brightness(1.2);
+  animation: earringSwing 4s ease-in-out infinite;
+  transform-origin: top center;
+}
+.ar-earring-right {
+  position: absolute;
+  right: 6px;
+  top: 38%;
+  font-size: 52px;
+  filter: drop-shadow(0 4px 16px rgba(196,144,106,.8)) brightness(1.2);
+  animation: earringSwing 4s ease-in-out infinite reverse;
+  transform-origin: top center;
+}
+@keyframes earringSwing {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* Detection dots */
+.ar-dot {
+  position: absolute;
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  opacity: .7;
+  animation: dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { opacity: .4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
+
+/* Scan line */
+.ar-scan-line {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation: scanDown 2.4s linear infinite;
+  opacity: .6;
+}
+@keyframes scanDown {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+/* ── AR Overlay Controls ── */
+.ar-top-bar {
+  position: absolute;
+  top: 20px; left: 20px; right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+.ar-status-pill {
+  background: rgba(39,174,96,.15);
+  border: 1px solid rgba(39,174,96,.4);
+  color: #2ecc71;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ar-status-dot {
+  width: 7px; height: 7px;
+  background: #2ecc71;
+  border-radius: 50%;
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+
+.ar-ctrl-btns {
+  display: flex;
+  gap: 10px;
+}
+.ar-ctrl-btn {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,.12);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background .2s;
+  color: white;
+}
+.ar-ctrl-btn:hover { background: rgba(255,255,255,.22); }
+
+/* Bottom bar */
+.ar-bottom-bar {
+  position: absolute;
+  bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 10;
+}
+.ar-shot-btn {
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: white;
+  border: 4px solid rgba(255,255,255,.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
+.ar-shot-btn:hover { transform: scale(1.05); box-shadow: 0 6px 28px rgba(0,0,0,.5); }
+.ar-shot-btn:active { transform: scale(.95); }
+.ar-action-btn {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background .2s;
+  color: white;
+}
+.ar-action-btn:hover { background: rgba(255,255,255,.25); }
+
+/* Tips overlay */
+.ar-tip {
+  position: absolute;
+  bottom: 110px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+  color: rgba(255,255,255,.85);
+  font-size: 12px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  white-space: nowrap;
+  z-index: 5;
+}
+
+/* Flash */
+.ar-flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity .1s;
+}
+.ar-flash.active { opacity: 1; }
+
+/* ── Right Panel ── */
+.ar-panel {
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--bd);
+  overflow-y: auto;
+}
+
+.ar-panel-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--bd);
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 5;
+}
+.ar-panel-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+.ar-panel-sub { font-size: 12px; color: var(--t2); }
+
+/* Product Info Strip */
+.ar-current-product {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--gold-lt);
+  border-bottom: 1px solid #EDD8BF;
+}
+.ar-current-img {
+  width: 56px; height: 56px;
+  border-radius: 10px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.ar-current-name { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+.ar-current-price { font-size: 16px; font-weight: 800; color: var(--gold-dk); }
+.ar-current-tag { font-size: 11px; color: var(--gold-dk); opacity: .7; }
+
+/* Category tabs */
+.ar-cat-tabs {
+  display: flex;
+  padding: 14px 20px 0;
+  gap: 0;
+  border-bottom: 1px solid var(--bd);
+}
+.ar-cat-tab {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2);
+  padding: 8px 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.ar-cat-tab:hover { color: var(--dark); }
+.ar-cat-tab.active { color: var(--dark); border-bottom-color: var(--gold); }
+
+/* Product Grid in Panel */
+.ar-products {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex: 1;
+}
+.ar-prod-card {
+  border: 2px solid var(--bd);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all .2s;
+}
+.ar-prod-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.ar-prod-card.active { border-color: var(--gold); background: var(--gold-lt); }
+.ar-prod-thumb {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #F5EDE3, #F0E8D8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  position: relative;
+}
+.ar-prod-thumb .ar-active-badge {
+  position: absolute;
+  top: 6px; right: 6px;
+  background: var(--gold);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  opacity: 0;
+}
+.ar-prod-card.active .ar-active-badge { opacity: 1; }
+.ar-prod-info { padding: 8px 10px 10px; }
+.ar-prod-name { font-size: 12px; font-weight: 600; color: var(--dark); margin-bottom: 3px; line-height: 1.3; }
+.ar-prod-price { font-size: 14px; font-weight: 800; color: var(--dark); }
+
+.ar-prod-card:nth-child(2) .ar-prod-thumb { background: linear-gradient(135deg,#E8F4F8,#D6EDF5); }
+.ar-prod-card:nth-child(3) .ar-prod-thumb { background: linear-gradient(135deg,#F5E6F5,#EDD6ED); }
+.ar-prod-card:nth-child(4) .ar-prod-thumb { background: linear-gradient(135deg,#E6F5E6,#D6EDD6); }
+.ar-prod-card:nth-child(5) .ar-prod-thumb { background: linear-gradient(135deg,#F5F0E6,#EDE8D6); }
+.ar-prod-card:nth-child(6) .ar-prod-thumb { background: linear-gradient(135deg,#EEF2FF,#E0E7FF); }
+
+/* Buy strip */
+.ar-buy-strip {
+  padding: 16px 20px;
+  border-top: 1px solid var(--bd);
+  background: var(--card);
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ar-match-mini {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--gold-lt);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+}
+.ar-match-mini strong { color: var(--gold-dk); font-size: 18px; }
+
+/* Screenshot saved overlay */
+.ar-saved-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.ar-saved-overlay.show { opacity: 1; pointer-events: all; }
+.ar-saved-card {
+  background: white;
+  border-radius: 20px;
+  padding: 36px 40px;
+  text-align: center;
+  max-width: 360px;
+}
+.ar-saved-emoji { font-size: 56px; margin-bottom: 16px; }
+.ar-saved-title { font-size: 20px; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
+.ar-saved-sub { font-size: 13px; color: var(--t2); margin-bottom: 24px; }
+.ar-saved-actions { display: flex; gap: 12px; }
+
+/* ── Lighting modes ── */
+.ar-lighting {
+  position: absolute;
+  top: 70px; right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+}
+.ar-light-btn {
+  width: 42px; height: 42px;
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all .2s;
+  color: white;
+}
+.ar-light-btn:hover, .ar-light-btn.active { background: rgba(196,144,106,.5); border-color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="guide.html">AI 导购</a>
+      <a href="face.html">脸型检测</a>
+      <a href="products.html">商品</a>
+      <a href="#">品牌故事</a>
+      <a href="#">会员中心</a>
+    </div>
+    <div class="nav-right">
+      <a href="product.html" class="btn btn-lt btn-sm">← 返回商品详情</a>
+      <a href="cart.html" class="nav-icon-btn" title="购物车">
+        🛒
+        <span class="badge">2</span>
+      </a>
+      <a href="login.html" class="nav-icon-btn" title="我的">👤</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ AR LAYOUT ═══ -->
+<div class="ar-layout">
+
+  <!-- ── Camera Area ── -->
+  <div class="ar-camera">
+    <div class="ar-camera-bg"></div>
+
+    <!-- Face Frame -->
+    <div class="ar-face-frame">
+      <div class="ar-face-oval">
+        <!-- Face placeholder -->
+        <div class="ar-face-emoji">🧑</div>
+
+        <!-- Jewelry overlay -->
+        <div class="ar-jewelry-overlay">
+          <span class="ar-earring-left" id="jewelry-left">💎</span>
+          <span class="ar-earring-right" id="jewelry-right">💎</span>
+        </div>
+
+        <!-- Detection dots -->
+        <div class="ar-dot" style="top:22%;left:30%;animation-delay:.1s;"></div>
+        <div class="ar-dot" style="top:22%;right:30%;animation-delay:.3s;"></div>
+        <div class="ar-dot" style="top:38%;left:20%;animation-delay:.5s;"></div>
+        <div class="ar-dot" style="top:38%;right:20%;animation-delay:.2s;"></div>
+        <div class="ar-dot" style="top:55%;left:42%;animation-delay:.7s;"></div>
+        <div class="ar-dot" style="top:55%;right:42%;animation-delay:.4s;"></div>
+        <div class="ar-dot" style="top:68%;left:50%;transform:translateX(-50%);animation-delay:.6s;"></div>
+
+        <!-- Scan line -->
+        <div class="ar-scan-line"></div>
+      </div>
+    </div>
+
+    <!-- Flash -->
+    <div class="ar-flash" id="arFlash"></div>
+
+    <!-- Top bar -->
+    <div class="ar-top-bar">
+      <div class="ar-status-pill">
+        <div class="ar-status-dot"></div>
+        人脸检测中 · 实时追踪
+      </div>
+      <div class="ar-ctrl-btns">
+        <button class="ar-ctrl-btn" title="切换摄像头" onclick="showToast('已切换前置摄像头')">🔄</button>
+        <button class="ar-ctrl-btn" title="帮助" onclick="showTip()">❓</button>
+        <a href="product.html" class="ar-ctrl-btn" title="关闭 AR" style="text-decoration:none;color:white;">✕</a>
+      </div>
+    </div>
+
+    <!-- Lighting buttons -->
+    <div class="ar-lighting">
+      <button class="ar-light-btn active" title="自然光" onclick="setLight(this,'natural')">☀️</button>
+      <button class="ar-light-btn" title="暖光" onclick="setLight(this,'warm')">🕯️</button>
+      <button class="ar-light-btn" title="冷光" onclick="setLight(this,'cool')">💡</button>
+      <button class="ar-light-btn" title="夜间" onclick="setLight(this,'night')">🌙</button>
+    </div>
+
+    <!-- Tip -->
+    <div class="ar-tip" id="arTip">请将面部置于框内 · 保持约 40cm 距离</div>
+
+    <!-- Bottom bar -->
+    <div class="ar-bottom-bar">
+      <button class="ar-action-btn" title="上传本地图片" onclick="showToast('请选择本地照片')">🖼️</button>
+      <button class="ar-shot-btn" onclick="takeShot()" title="拍摄试戴照片">📸</button>
+      <button class="ar-action-btn" title="分享" onclick="showToast('图片已复制到剪贴板')">🔗</button>
+    </div>
+  </div>
+
+  <!-- ── Right Panel ── -->
+  <div class="ar-panel">
+    <!-- Header -->
+    <div class="ar-panel-header">
+      <div class="ar-panel-title">✨ AR 虚拟试戴</div>
+      <div class="ar-panel-sub">点击下方商品即可实时切换，查看效果</div>
+    </div>
+
+    <!-- Current Product -->
+    <div class="ar-current-product">
+      <div class="ar-current-img">💎</div>
+      <div style="flex:1;min-width:0;">
+        <div class="ar-current-tag">当前试戴</div>
+        <div class="ar-current-name truncate">云端星河 · 18K 白金钻石耳坠</div>
+        <div class="ar-current-price">¥3,980</div>
+      </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="ar-cat-tabs">
+      <div class="ar-cat-tab active" onclick="switchCat(this)">耳环</div>
+      <div class="ar-cat-tab" onclick="switchCat(this)">项链</div>
+      <div class="ar-cat-tab" onclick="switchCat(this)">戒指</div>
+      <div class="ar-cat-tab" onclick="switchCat(this)">手链</div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="ar-products" id="arProductGrid">
+      <div class="ar-prod-card active" onclick="selectProduct(this,'💎','云端星河钻石耳坠','¥3,980','💎')">
+        <div class="ar-prod-thumb">
+          💎
+          <span class="ar-active-badge">试戴中</span>
+        </div>
+        <div class="ar-prod-info">
+          <div class="ar-prod-name">云端星河钻石耳坠</div>
+          <div class="ar-prod-price">¥3,980</div>
+        </div>
+      </div>
+      <div class="ar-prod-card" onclick="selectProduct(this,'🌊','海洋之心蓝宝石','¥2,680','🌊')">
+        <div class="ar-prod-thumb">
+          🌊
+          <span class="ar-active-badge">试戴中</span>
+        </div>
+        <div class="ar-prod-info">
+          <div class="ar-prod-name">海洋之心蓝宝石耳环</div>
+          <div class="ar-prod-price">¥2,680</div>
+        </div>
+      </div>
+      <div class="ar-prod-card" onclick="selectProduct(this,'🌸','樱花漫舞粉钻','¥1,880','🌸')">
+        <div class="ar-prod-thumb">
+          🌸
+          <span class="ar-active-badge">试戴中</span>
+        </div>
+        <div class="ar-prod-info">
+          <div class="ar-prod-name">樱花漫舞粉钻耳钉</div>
+          <div class="ar-prod-price">¥1,880</div>
+        </div>
+      </div>
+      <div class="ar-prod-card" onclick="selectProduct(this,'⭐','黄金星辰耳饰','¥1,280','⭐')">
+        <div class="ar-prod-thumb">
+          ⭐
+          <span class="ar-active-badge">试戴中</span>
+        </div>
+        <div class="ar-prod-info">
+          <div class="ar-prod-name">黄金星辰耳饰</div>
+          <div class="ar-prod-price">¥1,280</div>
+        </div>
+      </div>
+      <div class="ar-prod-card" onclick="selectProduct(this,'🔮','紫水晶耳坠','¥980','🔮')">
+        <div class="ar-prod-thumb">
+          🔮
+          <span class="ar-active-badge">试戴中</span>
+        </div>
+        <div class="ar-prod-info">
+          <div class="ar-prod-name">紫水晶垂坠耳环</div>
+          <div class="ar-prod-price">¥980</div>
+        </div>
+      </div>
+      <div class="ar-prod-card" onclick="selectProduct(this,'🌙','月牙圆舞曲','¥2,180','🌙')">
+        <div class="ar-prod-thumb">
+          🌙
+          <span class="ar-active-badge">试戴中</span>
+        </div>
+        <div class="ar-prod-info">
+          <div class="ar-prod-name">月牙圆舞曲耳钩</div>
+          <div class="ar-prod-price">¥2,180</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buy Strip -->
+    <div class="ar-buy-strip">
+      <div class="ar-match-mini">
+        <span>✨ AI 脸型匹配度</span>
+        <strong id="matchScore">92%</strong>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <button class="btn btn-dark btn-sm btn-full" onclick="addToCart()">🛒 加入购物车</button>
+        <button class="btn btn-gold btn-sm btn-full" onclick="buyNow()">⚡ 立即购买</button>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--t3);">试戴不满意？可查看全部商品</div>
+    </div>
+  </div>
+</div>
+
+<!-- Screenshot Overlay -->
+<div class="ar-saved-overlay" id="savedOverlay">
+  <div class="ar-saved-card">
+    <div class="ar-saved-emoji">📸</div>
+    <div class="ar-saved-title">试戴截图已保存！</div>
+    <div class="ar-saved-sub">您的虚拟试戴效果图已保存到本地<br>也可以分享给朋友看看效果</div>
+    <div class="ar-saved-actions">
+      <button class="btn btn-out btn-sm btn-full" onclick="closeSaved()">继续试戴</button>
+      <button class="btn btn-gold btn-sm btn-full" onclick="location.href='cart.html'">去购买</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const products = {
+  earrings: [
+    { name: '云端星河钻石耳坠', price: '¥3,980', emoji: '💎', match: '92%' },
+    { name: '海洋之心蓝宝石耳环', price: '¥2,680', emoji: '🌊', match: '88%' },
+    { name: '樱花漫舞粉钻耳钉', price: '¥1,880', emoji: '🌸', match: '85%' },
+  ]
+};
+
+function selectProduct(card, emoji, name, price, jEmoji) {
+  // Remove active from all
+  document.querySelectorAll('.ar-prod-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+
+  // Update jewelry
+  document.getElementById('jewelry-left').textContent = jEmoji;
+  document.getElementById('jewelry-right').textContent = jEmoji;
+
+  // Update current product strip
+  document.querySelector('.ar-current-img').textContent = emoji;
+  document.querySelector('.ar-current-name').textContent = name;
+  document.querySelector('.ar-current-price').textContent = price;
+
+  // Update match score (random for demo)
+  const scores = ['79%','82%','85%','88%','91%','92%','94%'];
+  document.getElementById('matchScore').textContent = scores[Math.floor(Math.random()*scores.length)];
+
+  showToast(`已切换：${name}`);
+}
+
+function switchCat(tab) {
+  document.querySelectorAll('.ar-cat-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  showToast('正在加载该分类商品...');
+}
+
+function takeShot() {
+  const flash = document.getElementById('arFlash');
+  flash.classList.add('active');
+  setTimeout(() => {
+    flash.classList.remove('active');
+    document.getElementById('savedOverlay').classList.add('show');
+  }, 120);
+}
+
+function closeSaved() {
+  document.getElementById('savedOverlay').classList.remove('show');
+}
+
+function setLight(btn, mode) {
+  document.querySelectorAll('.ar-light-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const modes = { natural:'自然光', warm:'暖光效果', cool:'冷光效果', night:'夜间模式' };
+  showToast(`已切换：${modes[mode]}`);
+}
+
+function addToCart() {
+  showToast('✅ 已加入购物车！');
+  setTimeout(() => location.href = 'cart.html', 1200);
+}
+function buyNow() { location.href = 'cart.html'; }
+
+function showTip() {
+  showToast('请将面部置于框内，保持约 40cm 距离，光线充足效果更佳');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

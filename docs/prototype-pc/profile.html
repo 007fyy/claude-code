@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人中心 — 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Layout ── */
+.profile-wrap {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  padding: 32px 0 64px;
+  align-items: start;
+}
+
+/* ── Sidebar ── */
+.profile-sidebar { position: sticky; top: calc(var(--nav-h) + 20px); }
+
+.profile-user-card {
+  background: linear-gradient(135deg, var(--dark) 0%, #4A3020 100%);
+  border-radius: var(--r-lg);
+  padding: 28px 24px;
+  color: white;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.profile-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; font-weight: 800;
+  color: white;
+  margin: 0 auto 14px;
+  border: 3px solid rgba(255,255,255,.3);
+  position: relative;
+}
+.profile-avatar .edit-badge {
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 24px; height: 24px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  border: 2px solid white;
+  cursor: pointer;
+}
+.profile-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+.profile-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(196,144,106,.3);
+  border: 1px solid rgba(196,144,106,.5);
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.12);
+}
+.profile-stat { text-align: center; }
+.profile-stat:not(:last-child) { border-right: 1px solid rgba(255,255,255,.12); }
+.profile-stat-num { font-size: 20px; font-weight: 900; }
+.profile-stat-label { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 2px; }
+
+/* Sidebar Nav */
+.sidebar-nav {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+.sidebar-nav-group { padding: 8px 0; border-bottom: 1px solid var(--bd-2); }
+.sidebar-nav-group:last-child { border-bottom: none; }
+.sidebar-nav-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 10px 20px 6px;
+}
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2);
+  cursor: pointer;
+  transition: all .15s;
+  text-decoration: none;
+}
+.sidebar-nav-item:hover { background: var(--bg); color: var(--dark); }
+.sidebar-nav-item.active { background: var(--gold-lt); color: var(--gold-dk); }
+.sidebar-nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+.sidebar-nav-item .badge {
+  margin-left: auto;
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+/* ── Main Content ── */
+.profile-main {}
+
+/* Stats Cards */
+.profile-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.overview-card {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  box-shadow: var(--sh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+}
+.overview-card:hover { transform: translateY(-4px); box-shadow: var(--sh-md); }
+.overview-card .icon { font-size: 28px; }
+.overview-card .num { font-size: 28px; font-weight: 900; color: var(--dark); }
+.overview-card .label { font-size: 12px; color: var(--t2); }
+
+/* Section Card */
+.section-card {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.section-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--bd);
+}
+.section-card-title { font-size: 15px; font-weight: 800; color: var(--dark); }
+.section-card-more { font-size: 13px; color: var(--t2); text-decoration: none; transition: color .15s; }
+.section-card-more:hover { color: var(--gold-dk); }
+
+/* Orders preview */
+.orders-preview { padding: 12px 24px; }
+.order-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--bd-2);
+  cursor: pointer;
+  transition: background .15s;
+}
+.order-preview-item:last-child { border-bottom: none; }
+.order-preview-item:hover { background: #FAFAFA; margin: 0 -24px; padding: 14px 24px; border-radius: 8px; }
+.order-preview-imgs { display: flex; gap: 4px; }
+.order-preview-img {
+  width: 52px; height: 52px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.order-preview-info { flex: 1; min-width: 0; }
+.order-preview-sn { font-size: 12px; color: var(--t3); margin-bottom: 3px; }
+.order-preview-desc { font-size: 13px; font-weight: 600; color: var(--dark); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.order-preview-time { font-size: 12px; color: var(--t3); }
+.order-preview-status {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.status-pending { background: #FFF3E0; color: var(--orange); }
+.status-shipped { background: #E8F4FD; color: var(--blue); }
+.status-done { background: var(--green-lt); color: var(--green); }
+.order-preview-price { font-size: 15px; font-weight: 800; color: var(--dark); flex-shrink: 0; }
+
+/* Coupons */
+.coupons-grid { padding: 16px 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.coupon-card {
+  border: 1.5px solid var(--bd);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all .2s;
+}
+.coupon-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.coupon-card-top {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+  color: white;
+  padding: 14px;
+  text-align: center;
+}
+.coupon-amount { font-size: 28px; font-weight: 900; }
+.coupon-amount span { font-size: 16px; }
+.coupon-condition { font-size: 11px; opacity: .8; margin-top: 2px; }
+.coupon-card-bottom { padding: 10px 14px; }
+.coupon-name { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+.coupon-expire { font-size: 11px; color: var(--t3); }
+
+/* Wishlist mini */
+.wishlist-mini { padding: 16px 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.wishlist-mini-item {
+  cursor: pointer;
+  transition: all .2s;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid var(--bd);
+}
+.wishlist-mini-item:hover { border-color: var(--gold); transform: translateY(-2px); }
+.wishlist-mini-img {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+}
+.wishlist-mini-price { padding: 6px 8px; font-size: 13px; font-weight: 800; color: var(--dark); }
+
+/* Points -->*/
+.points-section { padding: 20px 24px; }
+.points-balance {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.points-num { font-size: 40px; font-weight: 900; color: var(--dark); }
+.points-unit { font-size: 14px; color: var(--t2); }
+.points-history { display: flex; flex-direction: column; gap: 10px; }
+.points-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--bd-2); }
+.points-row:last-child { border-bottom: none; }
+.points-row-info { display: flex; flex-direction: column; gap: 3px; }
+.points-row-title { font-size: 13px; font-weight: 600; color: var(--dark); }
+.points-row-time { font-size: 12px; color: var(--t3); }
+.points-row-change { font-size: 16px; font-weight: 800; }
+.points-row-change.plus { color: var(--green); }
+.points-row-change.minus { color: var(--red); }
+
+/* Quick actions -->*/
+.quick-actions { padding: 16px 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .18s;
+  text-decoration: none;
+}
+.quick-action:hover { background: var(--bg); transform: translateY(-2px); }
+.quick-action .icon { font-size: 28px; }
+.quick-action .label { font-size: 12px; font-weight: 600; color: var(--t2); text-align: center; }
+
+/* Toast */
+.toast { position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:white;padding:14px 28px;border-radius:40px;font-size:14px;font-weight:600;opacity:0;transition:all .3s var(--ease);pointer-events:none;z-index:9999;white-space:nowrap; }
+.toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="guide.html">AI 导购</a>
+      <a href="face.html">脸型检测</a>
+      <a href="products.html">商品</a>
+      <a href="#">品牌故事</a>
+      <a href="profile.html" class="active">会员中心</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search"><span class="ic">🔍</span><input type="text" placeholder="搜索饰品..."></div>
+      <a href="guide.html" class="nav-ai-btn">✨ AI 导购</a>
+      <a href="cart.html" class="nav-icon-btn">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-icon-btn" style="color:var(--dark);">👤</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-main">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">首页</a>
+      <span class="sep">›</span>
+      <span class="cur">个人中心</span>
+    </div>
+
+    <div class="profile-wrap">
+      <!-- Sidebar -->
+      <div class="profile-sidebar">
+        <div class="profile-user-card">
+          <div class="profile-avatar">
+            李
+            <div class="edit-badge" onclick="showToast('更换头像')">✏️</div>
+          </div>
+          <div class="profile-name">李小明</div>
+          <div class="profile-level">💎 珑饰黄金会员</div>
+          <div class="profile-stats">
+            <div class="profile-stat"><div class="profile-stat-num">14</div><div class="profile-stat-label">累计订单</div></div>
+            <div class="profile-stat"><div class="profile-stat-num">3</div><div class="profile-stat-label">优惠券</div></div>
+            <div class="profile-stat"><div class="profile-stat-num">2,460</div><div class="profile-stat-label">积分</div></div>
+          </div>
+        </div>
+
+        <div class="sidebar-nav">
+          <div class="sidebar-nav-group">
+            <div class="sidebar-nav-title">我的账户</div>
+            <a href="profile.html" class="sidebar-nav-item active"><span class="icon">🏠</span> 个人中心</a>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('账号设置')"><span class="icon">⚙️</span> 账号设置</a>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('实名认证')"><span class="icon">🪪</span> 实名认证</a>
+          </div>
+          <div class="sidebar-nav-group">
+            <div class="sidebar-nav-title">我的交易</div>
+            <a href="orders.html" class="sidebar-nav-item"><span class="icon">📦</span> 我的订单<span class="badge">2</span></a>
+            <a href="wishlist.html" class="sidebar-nav-item"><span class="icon">❤️</span> 我的收藏</a>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('足迹功能')"><span class="icon">👣</span> 浏览足迹</a>
+            <a href="aftersale.html" class="sidebar-nav-item"><span class="icon">↩️</span> 售后记录</a>
+          </div>
+          <div class="sidebar-nav-group">
+            <div class="sidebar-nav-title">我的资产</div>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('优惠券中心')"><span class="icon">🎟️</span> 优惠券<span class="badge">3</span></a>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('积分中心')"><span class="icon">⭐</span> 积分中心</a>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('余额')"><span class="icon">💰</span> 账户余额</a>
+          </div>
+          <div class="sidebar-nav-group">
+            <div class="sidebar-nav-title">其他</div>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('地址管理')"><span class="icon">📍</span> 收货地址</a>
+            <a href="#" class="sidebar-nav-item" onclick="showToast('消息中心')"><span class="icon">🔔</span> 消息通知<span class="badge">5</span></a>
+            <a href="login.html" class="sidebar-nav-item"><span class="icon">🚪</span> 退出登录</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main -->
+      <div class="profile-main">
+        <!-- Overview -->
+        <div class="profile-overview-grid">
+          <a href="orders.html" class="overview-card" style="text-decoration:none;">
+            <span class="icon">⏳</span><span class="num" style="color:var(--orange);">1</span><span class="label">待付款</span>
+          </a>
+          <a href="orders.html" class="overview-card" style="text-decoration:none;">
+            <span class="icon">🚚</span><span class="num" style="color:var(--blue);">1</span><span class="label">待收货</span>
+          </a>
+          <a href="orders.html" class="overview-card" style="text-decoration:none;">
+            <span class="icon">✍️</span><span class="num" style="color:var(--gold-dk);">3</span><span class="label">待评价</span>
+          </a>
+          <a href="aftersale.html" class="overview-card" style="text-decoration:none;">
+            <span class="icon">↩️</span><span class="num">0</span><span class="label">售后中</span>
+          </a>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title">📦 最近订单</span>
+            <a href="orders.html" class="section-card-more">全部订单 ›</a>
+          </div>
+          <div class="orders-preview">
+            <div class="order-preview-item" onclick="location.href='order-detail.html'">
+              <div class="order-preview-imgs">
+                <div class="order-preview-img" style="background:linear-gradient(135deg,#F5EDE3,#F0E8D8);">💎</div>
+                <div class="order-preview-img" style="background:linear-gradient(135deg,#F5E6F5,#EDD6ED);">🌸</div>
+              </div>
+              <div class="order-preview-info">
+                <div class="order-preview-sn">订单号：LS20260428001234</div>
+                <div class="order-preview-desc">云端星河钻石耳坠 · 樱花漫舞粉钻耳钉</div>
+                <div class="order-preview-time">2026-04-28 14:32</div>
+              </div>
+              <span class="order-preview-status status-shipped">已发货</span>
+              <span class="order-preview-price">¥5,860</span>
+            </div>
+            <div class="order-preview-item" onclick="location.href='order-detail.html'">
+              <div class="order-preview-imgs">
+                <div class="order-preview-img" style="background:linear-gradient(135deg,#E8F4F8,#D6EDF5);">🌊</div>
+              </div>
+              <div class="order-preview-info">
+                <div class="order-preview-sn">订单号：LS20260320005678</div>
+                <div class="order-preview-desc">海洋之心 · 蓝宝石项链</div>
+                <div class="order-preview-time">2026-03-20 09:15</div>
+              </div>
+              <span class="order-preview-status status-done">已完成</span>
+              <span class="order-preview-price">¥2,680</span>
+            </div>
+            <div class="order-preview-item" onclick="location.href='order-detail.html'">
+              <div class="order-preview-imgs">
+                <div class="order-preview-img" style="background:linear-gradient(135deg,#E6F5E6,#D6EDD6);">🍀</div>
+              </div>
+              <div class="order-preview-info">
+                <div class="order-preview-sn">订单号：LS20260215009012</div>
+                <div class="order-preview-desc">幸运四叶 · 翡翠手链</div>
+                <div class="order-preview-time">2026-02-15 16:48</div>
+              </div>
+              <span class="order-preview-status status-done">已完成</span>
+              <span class="order-preview-price">¥3,560</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coupons -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title">🎟️ 我的优惠券 <span style="font-size:13px;font-weight:600;color:var(--gold-dk);">3 张可用</span></span>
+            <a href="#" class="section-card-more" onclick="showToast('优惠券中心')">领券中心 ›</a>
+          </div>
+          <div class="coupons-grid">
+            <div class="coupon-card">
+              <div class="coupon-card-top"><div class="coupon-amount"><span>¥</span>200</div><div class="coupon-condition">满 4000 可用</div></div>
+              <div class="coupon-card-bottom"><div class="coupon-name">新人专属优惠券</div><div class="coupon-expire">有效期至 2026-05-31</div></div>
+            </div>
+            <div class="coupon-card">
+              <div class="coupon-card-top" style="background:linear-gradient(135deg,#1A6FA8,#2980B9);"><div class="coupon-amount"><span>¥</span>500</div><div class="coupon-condition">满 8000 可用</div></div>
+              <div class="coupon-card-bottom"><div class="coupon-name">黄金会员专属券</div><div class="coupon-expire">有效期至 2026-06-30</div></div>
+            </div>
+            <div class="coupon-card">
+              <div class="coupon-card-top" style="background:linear-gradient(135deg,var(--green),#219A52);"><div class="coupon-amount" style="font-size:22px;">9.5折</div><div class="coupon-condition">全品类可用</div></div>
+              <div class="coupon-card-bottom"><div class="coupon-name">生日折扣券</div><div class="coupon-expire">有效期至 2026-05-10</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wishlist mini -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <span class="section-card-title">❤️ 我的收藏</span>
+            <a href="wishlist.html" class="section-card-more">全部收藏 ›</a>
+          </div>
+          <div class="wishlist-mini">
+            <div class="wishlist-mini-item" onclick="location.href='product.html'">
+              <div class="wishlist-mini-img" style="background:linear-gradient(135deg,#F5EDE3,#F0E8D8);">💎</div>
+              <div class="wishlist-mini-price">¥3,980</div>
+            </div>
+            <div class="wishlist-mini-item" onclick="location.href='product.html'">
+              <div class="wishlist-mini-img" style="background:linear-gradient(135deg,#E8F4F8,#D6EDF5);">🌊</div>
+              <div class="wishlist-mini-price">¥2,680</div>
+            </div>
+            <div class="wishlist-mini-item" onclick="location.href='product.html'">
+              <div class="wishlist-mini-img" style="background:linear-gradient(135deg,#EEF2FF,#E0E7FF);">🔮</div>
+              <div class="wishlist-mini-price">¥980</div>
+            </div>
+            <div class="wishlist-mini-item" onclick="location.href='product.html'" style="display:flex;align-items:center;justify-content:center;border:2px dashed var(--bd);background:none;">
+              <span style="font-size:24px;color:var(--t3);">+</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-card">
+          <div class="section-card-header"><span class="section-card-title">⚡ 快捷功能</span></div>
+          <div class="quick-actions">
+            <a href="face.html" class="quick-action"><span class="icon">👤</span><span class="label">脸型检测</span></a>
+            <a href="guide.html" class="quick-action"><span class="icon">✨</span><span class="label">AI 导购</span></a>
+            <a href="ar.html" class="quick-action"><span class="icon">📷</span><span class="label">AR 试戴</span></a>
+            <a href="#" class="quick-action" onclick="showToast('客服功能')"><span class="icon">💬</span><span class="label">在线客服</span></a>
+            <a href="#" class="quick-action" onclick="showToast('签到功能')"><span class="icon">📅</span><span class="label">每日签到</span></a>
+            <a href="#" class="quick-action" onclick="showToast('邀请好友')"><span class="icon">👥</span><span class="label">邀请好友</span></a>
+            <a href="#" class="quick-action" onclick="showToast('申请开票')"><span class="icon">🧾</span><span class="label">申请发票</span></a>
+            <a href="#" class="quick-action" onclick="showToast('帮助中心')"><span class="icon">❓</span><span class="label">帮助中心</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+  <div class="footer-main">
+    <div><div class="footer-brand">💎 珑饰</div><div class="footer-tagline">AI 驱动的智能珠宝电商平台</div></div>
+    <div class="footer-col"><h4>购物指南</h4><a href="#">AI 导购</a><a href="#">AR 试戴</a><a href="#">脸型测试</a></div>
+    <div class="footer-col"><h4>客户服务</h4><a href="#">在线客服</a><a href="#">退换货</a><a href="#">物流查询</a></div>
+    <div class="footer-col"><h4>关于珑饰</h4><a href="#">品牌故事</a><a href="#">联系我们</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 珑饰 LongShi</span><span>ICP备XXXXXXXX号</span></div>
+</footer>
+
+<script>
+let tt;
+function showToast(msg) {
+  const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>

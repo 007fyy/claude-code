@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>珑饰 LongShi · 发现最适合你的那一件</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Hero ── */
+.hero {
+  background: linear-gradient(120deg, #1A1714 0%, #2D1F14 45%, #5C3A1E 100%);
+  min-height: 540px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(196,144,106,.18) 0%, transparent 60%);
+}
+.hero-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 80px 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(196,144,106,.2);
+  border: 1px solid rgba(196,144,106,.4);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.hero-title {
+  font-size: 56px;
+  font-weight: 800;
+  color: white;
+  line-height: 1.15;
+  margin-bottom: 18px;
+  letter-spacing: -.5px;
+}
+.hero-title em {
+  font-style: normal;
+  color: var(--gold);
+  display: block;
+}
+.hero-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,.6);
+  margin-bottom: 36px;
+  line-height: 1.7;
+  max-width: 420px;
+}
+.hero-actions { display: flex; gap: 14px; align-items: center; }
+.hero-stat {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+.hero-stat-item { }
+.hero-stat-num { font-size: 26px; font-weight: 800; color: white; }
+.hero-stat-lbl { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 2px; }
+.hero-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: 380px;
+}
+.hero-ring {
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  border: 1px solid rgba(196,144,106,.25);
+  position: absolute;
+  animation: spin 20s linear infinite;
+}
+.hero-ring-2 {
+  width: 260px;
+  height: 260px;
+  border: 1px solid rgba(196,144,106,.15);
+  animation-duration: 30s;
+  animation-direction: reverse;
+}
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.hero-main-jewel {
+  font-size: 120px;
+  filter: drop-shadow(0 8px 32px rgba(196,144,106,.5));
+  position: relative;
+  z-index: 1;
+}
+.hero-float {
+  position: absolute;
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+}
+.hero-float.f1 { top: 40px; right: 20px; }
+.hero-float.f2 { bottom: 60px; left: 10px; }
+.hero-float.f3 { bottom: 30px; right: 30px; }
+.hero-float-ic { font-size: 22px; }
+
+/* ── Features ── */
+.features {
+  background: white;
+  border-bottom: 1px solid var(--bd);
+}
+.features-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 32px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 28px 32px;
+  border-right: 1px solid var(--bd);
+  transition: background .18s;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+.feature-item:last-child { border-right: none; }
+.feature-item:hover { background: var(--gold-lt); }
+.feature-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.feature-icon.ai { background: linear-gradient(135deg, #1A1714, #3D2E20); }
+.feature-icon.ar { background: linear-gradient(135deg, #C4906A, #9E7050); }
+.feature-icon.face { background: linear-gradient(135deg, #2980B9, #1A6FA0); }
+.feature-title { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+.feature-sub   { font-size: 13px; color: var(--t2); line-height: 1.5; }
+
+/* ── Product Grid ── */
+.product-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* ── Banner Row ── */
+.banner-strip {
+  background: linear-gradient(90deg, #1A1714 0%, #4A3020 50%, #7B5130 100%);
+  border-radius: var(--r-lg);
+  padding: 40px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
+}
+.banner-strip::after {
+  content: '💎';
+  position: absolute;
+  right: 200px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 100px;
+  opacity: .08;
+}
+.banner-strip-title { font-size: 28px; font-weight: 800; color: white; margin-bottom: 6px; }
+.banner-strip-sub   { font-size: 14px; color: rgba(255,255,255,.65); }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">首页</a></li>
+      <li><a href="products.html?cat=earrings">耳饰</a></li>
+      <li><a href="products.html?cat=necklace">项链</a></li>
+      <li><a href="products.html?cat=bracelet">手链</a></li>
+      <li><a href="products.html?cat=ring">戒指</a></li>
+      <li><a href="products.html?cat=set">套装</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-search">
+        <span class="ic">🔍</span>
+        <input type="text" placeholder="搜索耳饰、项链、手链...">
+      </div>
+      <a href="guide.html" class="nav-ai-btn">✨ AI 选款</a>
+      <a href="ar.html" class="nav-icon-btn" title="AR 试戴">📷</a>
+      <a href="cart.html" class="nav-icon-btn">
+        🛍️ <span class="badge">2</span>
+      </a>
+      <a href="login.html" class="nav-user-btn">👤 登录 / 注册</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-main">
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-tag">✦ 2026 秋冬新品系列</div>
+        <h1 class="hero-title">
+          宫廷典雅
+          <em>为你而生</em>
+        </h1>
+        <p class="hero-sub">精选天然珍珠 · 925纯银 · 天然宝石<br>每一件都经过严苛工艺品控，专为都市女性而设计</p>
+        <div class="hero-actions">
+          <a href="products.html" class="btn btn-gold btn-lg">探索新品系列</a>
+          <a href="guide.html" class="btn btn-lg" style="background:rgba(255,255,255,.12);color:white;border:1.5px solid rgba(255,255,255,.25);">
+            ✨ AI 帮我选款
+          </a>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">50K+</div>
+            <div class="hero-stat-lbl">精选款式</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">98%</div>
+            <div class="hero-stat-lbl">好评率</div>
+          </div>
+          <div class="hero-stat-item">
+            <div class="hero-stat-num">AI选款</div>
+            <div class="hero-stat-lbl">精准匹配</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-ring"></div>
+        <div class="hero-ring hero-ring-2"></div>
+        <div class="hero-main-jewel">🌙</div>
+        <div class="hero-float f1">
+          <span class="hero-float-ic">😊</span>
+          <div>
+            <div style="font-size:11px;opacity:.7;">脸型匹配</div>
+            <div>椭圆脸 · 98%</div>
+          </div>
+        </div>
+        <div class="hero-float f2">
+          <span class="hero-float-ic">📷</span>
+          <div>
+            <div style="font-size:11px;opacity:.7;">AR 试戴</div>
+            <div>实时预览</div>
+          </div>
+        </div>
+        <div class="hero-float f3">
+          <span style="font-size:13px;">⭐ 4.9 · 2,100+ 已购</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ── -->
+  <section class="features">
+    <div class="features-inner">
+      <a href="guide.html" class="feature-item">
+        <div class="feature-icon ai">✨</div>
+        <div>
+          <div class="feature-title">AI 智能导购</div>
+          <div class="feature-sub">3步点选，AI 主动为你推荐最适合的款式，无需专业搭配知识</div>
+        </div>
+      </a>
+      <a href="ar.html" class="feature-item">
+        <div class="feature-icon ar">📷</div>
+        <div>
+          <div class="feature-title">AR 虚拟试戴</div>
+          <div class="feature-sub">无需下载 App，浏览器内实时戴上查看效果，所见即所得</div>
+        </div>
+      </a>
+      <a href="face.html" class="feature-item">
+        <div class="feature-icon face">😊</div>
+        <div>
+          <div class="feature-title">脸型精准推荐</div>
+          <div class="feature-sub">一张正面照，分析脸型与肤色，过滤不适合的款式，真正懂你</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── RECOMMENDED ── -->
+  <section style="padding: 56px 0;">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-title"><span>✦</span>为你专属推荐</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="background:var(--gold-lt);color:var(--gold-dk);font-size:13px;font-weight:700;padding:6px 14px;border-radius:20px;">😊 椭圆脸 · 暖色调</div>
+          <a href="face.html" style="font-size:13px;color:var(--t2);text-decoration:none;">更新脸型档案 ›</a>
+        </div>
+      </div>
+      <div class="product-grid-4">
+
+        <div class="product-card" onclick="location.href='product.html'">
+          <div class="product-card-img" style="background:linear-gradient(135deg,#F5EDE3,#EDE0CE);">
+            🌙
+            <div class="try-badge"><span>📷</span> 立即试戴</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-name">月牙弧形耳环 · 复古宫廷风</div>
+            <div class="product-card-sub">耳饰 · 925纯银</div>
+            <div class="product-card-price">
+              <span class="price-unit">¥</span><span class="price-main">168</span>
+              <span class="price-old">¥280</span>
+              <span class="price-tag">6折</span>
+            </div>
+            <div class="product-card-meta">
+              <span class="stars">★★★★★</span>
+              <span>4.9</span>
+              <span>·</span>
+              <span>2,100+ 已售</span>
+              <span class="match-pill">匹配 98%</span>
+            </div>
+            <div class="product-card-actions">
+              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加入购物车</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" onclick="location.href='product.html'">
+          <div class="product-card-img" style="background:linear-gradient(135deg,#EAF0F5,#D8E8F0);">
+            📿
+            <div class="try-badge"><span>📷</span> 立即试戴</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-name">天然珍珠项链 · 简约极简风</div>
+            <div class="product-card-sub">项链 · 镀金</div>
+            <div class="product-card-price">
+              <span class="price-unit">¥</span><span class="price-main">238</span>
+            </div>
+            <div class="product-card-meta">
+              <span class="stars">★★★★★</span>
+              <span>4.8</span>
+              <span>·</span>
+              <span>876 已售</span>
+              <span class="match-pill">匹配 95%</span>
+            </div>
+            <div class="product-card-actions">
+              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加入购物车</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" onclick="location.href='product.html'">
+          <div class="product-card-img" style="background:linear-gradient(135deg,#F0ECF5,#E4DCF0);">
+            💫
+            <div class="try-badge"><span>📷</span> 立即试戴</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-name">星月水晶耳坠 · 甜美少女风</div>
+            <div class="product-card-sub">耳饰 · 925纯银</div>
+            <div class="product-card-price">
+              <span class="price-unit">¥</span><span class="price-main">89</span>
+            </div>
+            <div class="product-card-meta">
+              <span class="stars">★★★★★</span>
+              <span>4.9</span>
+              <span>·</span>
+              <span>3,400+ 已售</span>
+              <span class="match-pill">匹配 92%</span>
+            </div>
+            <div class="product-card-actions">
+              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加入购物车</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" onclick="location.href='product.html'">
+          <div class="product-card-img" style="background:linear-gradient(135deg,#F5F0E8,#EDE8DC);">
+            🔮
+            <div class="try-badge"><span>📷</span> 立即试戴</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-name">复古宫廷耳钉 · 宫廷优雅风</div>
+            <div class="product-card-sub">耳饰 · 天然珍珠</div>
+            <div class="product-card-price">
+              <span class="price-unit">¥</span><span class="price-main">158</span>
+            </div>
+            <div class="product-card-meta">
+              <span class="stars">★★★★☆</span>
+              <span>4.7</span>
+              <span>·</span>
+              <span>512 已售</span>
+              <span class="match-pill">匹配 91%</span>
+            </div>
+            <div class="product-card-actions">
+              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加入购物车</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AI GUIDE BANNER ── -->
+  <section style="padding: 0 0 56px;">
+    <div class="container">
+      <div class="banner-strip">
+        <div>
+          <div class="banner-strip-title">不知道选什么？让 AI 帮你决定</div>
+          <div class="banner-strip-sub">3步点选，综合脸型 · 场合 · 风格 · 预算，生成专属推荐清单</div>
+        </div>
+        <div style="display:flex;gap:14px;position:relative;z-index:1;">
+          <a href="guide.html" class="btn btn-gold btn-lg">✨ 开始 AI 选款</a>
+          <a href="face.html" class="btn btn-lg" style="background:rgba(255,255,255,.1);color:white;border:1.5px solid rgba(255,255,255,.2);">📷 脸型检测</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOT SELLING ── -->
+  <section style="padding: 0 0 64px; background: white;">
+    <div class="container" style="padding-top:56px;">
+      <div class="section-head">
+        <div class="section-title"><span>🔥</span>热销榜单</div>
+        <a href="products.html" class="section-more">查看全部 ›</a>
+      </div>
+      <div class="product-grid-4">
+
+        <div class="product-card" onclick="location.href='product.html'">
+          <div class="product-card-img" style="background:linear-gradient(135deg,#EAF5EA,#D8F0D8);">
+            🌸
+            <div class="try-badge"><span>📷</span> 立即试戴</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-name">樱花珍珠耳坠 · 浪漫春意</div>
+            <div class="product-card-sub">耳饰 · 天然淡水珍珠</div>
+            <div class="product-card-price">
+              <span class="price-unit">¥</span><span class="price-main">128</span>
+            </div>
+            <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8 · 986已售</span></div>
+            <div class="product-card-actions">
+              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加入购物车</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" onclick="location.href='product.html'">
+          <div class="product-card-img" style="background:linear-gradient(135deg,#F5F5E8,#E8E8D8);">
+            💍
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-name">简约银叶戒指 · 镀金轻奢</div>
+            <div class="product-card-sub">戒指 · 镀金</div>
+            <div class="product-card-price">
+              <span class="price-unit">¥</span><span class="price-main">128</span>
+            </div>
+            <div class="product-card-meta"><span class="stars">★★★★☆</span><span>4.6 · 724已售</span></div>
+            <div class="product-card-actions">
+              <button class="btn btn-dark btn-sm btn-full" onclick="event.stopPropagation();location.href='cart.html'">加入购物车</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" onclick="location.href='product.html'">
+          <div class="product-card-img" style="background:linear-gradient(135deg,#F5E8F0,#F0D8E8);">
+            🌊
+            <div class="try-badge"><span>📷</span> 立即试戴</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-name">海浪形耳坠 · 度假清新风</div>
+            <div class="product-card-sub">耳饰 · 925纯银</div>
+            <div class="product-card-price">
+              <span class="price-unit">¥</span><span class="price-main">138</span>
+            </div>
+            <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9 · 1,240已售</span></div>
+            <div class="product-card-actions">
+              <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+              <button class="btn btn-dark btn-sm" style="flex:1;" onclick="event.stopPropagation();location.href='cart.html'">加入购物车</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" onclick="location.href='product.html'">
+          <div class="product-card-img" style="background:linear-gradient(135deg,#F5EDE3,#FBD8B8);">
+            🌈
+          </div>
+          <div class="product-card-body">
+            <div class="product-card-name">彩虹天然石手链 · 活力个性</div>
+            <div class="product-card-sub">手链 · 天然宝石</div>
+            <div class="product-card-price">
+              <span class="price-unit">¥</span><span class="price-main">198</span>
+            </div>
+            <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8 · 632已售</span></div>
+            <div class="product-card-actions">
+              <button class="btn btn-dark btn-sm btn-full" onclick="event.stopPropagation();location.href='cart.html'">加入购物车</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="footer-main">
+    <div>
+      <div class="footer-brand">💎 珑饰</div>
+      <div class="footer-tagline">发现最适合你的那一件<br>AI 智能推荐 · AR 虚拟试戴<br>让每位女性都能轻松找到属于自己的美</div>
+      <div class="footer-socials">
+        <div class="footer-social-btn">微</div>
+        <div class="footer-social-btn">抖</div>
+        <div class="footer-social-btn">红</div>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>购物指南</h4>
+      <a href="guide.html">AI 智能选款</a>
+      <a href="face.html">脸型检测</a>
+      <a href="ar.html">AR 虚拟试戴</a>
+      <a href="products.html">全部商品</a>
+    </div>
+    <div class="footer-col">
+      <h4>客户服务</h4>
+      <a href="#">我的订单</a>
+      <a href="#">申请售后</a>
+      <a href="#">退换货政策</a>
+      <a href="#">联系客服</a>
+    </div>
+    <div class="footer-col">
+      <h4>关于珑饰</h4>
+      <a href="#">品牌故事</a>
+      <a href="#">工艺介绍</a>
+      <a href="#">选材标准</a>
+      <a href="#">用户协议</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 珑饰 LongShi · 保留所有权利</span>
+    <span>隐私政策 · 用户协议 · Cookies 设置</span>
+  </div>
+</footer>
+
+</body>
+</html>

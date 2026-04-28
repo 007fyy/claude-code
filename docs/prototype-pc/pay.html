@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订单支付 — 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Steps ── */
+.checkout-steps { display:flex;align-items:center;justify-content:center;gap:0;padding:24px 0 36px; }
+.cs-step { display:flex;flex-direction:column;align-items:center;gap:6px; }
+.cs-step-circle { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;border:2px solid var(--bd);background:var(--card);color:var(--t3); }
+.cs-step.done .cs-step-circle { background:var(--green);border-color:var(--green);color:white; }
+.cs-step.active .cs-step-circle { background:var(--dark);border-color:var(--dark);color:white; }
+.cs-step-label { font-size:12px;color:var(--t3);font-weight:600;white-space:nowrap; }
+.cs-step.done .cs-step-label,.cs-step.active .cs-step-label { color:var(--dark); }
+.cs-line { width:100px;height:2px;background:var(--bd);margin-bottom:20px; }
+.cs-line.done { background:var(--green); }
+
+/* ── Pay Layout ── */
+.pay-wrap {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 28px;
+  padding-bottom: 64px;
+  align-items: start;
+}
+
+/* ── Main Panel ── */
+.pay-main {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+
+.pay-amount-bar {
+  background: linear-gradient(135deg, var(--dark) 0%, #3A2012 100%);
+  padding: 36px;
+  text-align: center;
+}
+.pay-amount-label { font-size: 14px; color: rgba(255,255,255,.6); margin-bottom: 10px; }
+.pay-amount-num {
+  font-size: 52px;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.pay-amount-num span { font-size: 28px; }
+.pay-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.12);
+  border-radius: 20px;
+  padding: 7px 18px;
+  font-size: 13px;
+  color: rgba(255,255,255,.8);
+}
+.pay-countdown strong { color: #F4B400; font-size: 16px; font-variant-numeric: tabular-nums; }
+
+/* ── Payment Methods ── */
+.pay-methods { padding: 28px; }
+.pay-methods-title { font-size: 15px; font-weight: 800; color: var(--dark); margin-bottom: 20px; }
+.pay-tabs { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+.pay-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border: 2px solid var(--bd);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .18s;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--t2);
+  background: white;
+  min-width: 140px;
+}
+.pay-tab:hover { border-color: var(--gold); }
+.pay-tab.active { border-color: var(--dark); color: var(--dark); background: #FAFAFA; }
+.pay-tab .tab-icon { font-size: 22px; }
+.pay-tab .tab-badge {
+  font-size: 10px;
+  background: var(--red);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+/* ── QR Panel ── */
+.pay-qr-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+}
+.pay-qr-box {
+  width: 200px; height: 200px;
+  border: 3px solid var(--bd);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  position: relative;
+  background: white;
+  box-shadow: var(--sh-md);
+  cursor: pointer;
+  transition: all .2s;
+}
+.pay-qr-box:hover { border-color: var(--gold); }
+.pay-qr-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.92);
+  border-radius: 14px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--t2);
+  text-align: center;
+}
+.pay-qr-title { font-size: 15px; font-weight: 700; color: var(--dark); }
+.pay-qr-sub { font-size: 13px; color: var(--t2); }
+.pay-qr-refresh { font-size: 12px; color: var(--gold-dk); cursor: pointer; }
+.pay-qr-tip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--t2);
+}
+
+/* Bank card panel */
+.pay-bank-panel { display: none; }
+.pay-bank-form { display: flex; flex-direction: column; gap: 16px; padding: 0 0 10px; }
+.pay-bank-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.bank-card-preview {
+  height: 160px;
+  background: linear-gradient(135deg, #1A1714, #4A3020);
+  border-radius: 16px;
+  padding: 24px;
+  color: white;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.bank-card-preview::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 150px; height: 150px;
+  border-radius: 50%;
+  background: rgba(196,144,106,.15);
+}
+.bank-card-logo { font-size: 24px; margin-bottom: 20px; }
+.bank-card-num { font-size: 18px; font-weight: 700; letter-spacing: 3px; margin-bottom: 16px; }
+.bank-card-row { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,.6); }
+
+/* ── Instalment ── */
+.pay-install-panel { display: none; }
+.install-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.install-opt {
+  padding: 16px;
+  border: 2px solid var(--bd);
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .18s;
+}
+.install-opt:hover { border-color: var(--gold); }
+.install-opt.active { border-color: var(--dark); background: #FAFAFA; }
+.install-opt-period { font-size: 20px; font-weight: 900; color: var(--dark); margin-bottom: 4px; }
+.install-opt-monthly { font-size: 13px; color: var(--t2); }
+.install-opt-tag { font-size: 11px; font-weight: 700; background: var(--green-lt); color: var(--green); padding: 2px 8px; border-radius: 10px; margin-top: 6px; display: inline-block; }
+
+/* ── Right Panel ── */
+.pay-info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: calc(var(--nav-h) + 20px);
+}
+
+.pay-info-card {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+.pay-info-header { padding: 16px 20px; border-bottom: 1px solid var(--bd); font-size: 14px; font-weight: 800; color: var(--dark); }
+.pay-info-body { padding: 16px 20px; }
+
+.pay-order-items { display: flex; flex-direction: column; gap: 12px; }
+.pay-order-item { display: flex; align-items: center; gap: 10px; }
+.pay-order-item-img { width: 52px; height: 52px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+.pay-order-item-name { font-size: 13px; font-weight: 600; color: var(--dark); }
+.pay-order-item-price { font-size: 14px; font-weight: 800; color: var(--dark); margin-left: auto; flex-shrink: 0; }
+
+.pay-summary-rows { display: flex; flex-direction: column; gap: 10px; }
+.pay-summary-row { display: flex; justify-content: space-between; font-size: 13px; }
+.pay-summary-row .l { color: var(--t2); }
+.pay-summary-row .v { font-weight: 600; color: var(--dark); }
+.pay-total-row { display: flex; justify-content: space-between; align-items: baseline; padding-top: 12px; border-top: 1px solid var(--bd); margin-top: 4px; }
+.pay-total-lbl { font-size: 14px; font-weight: 700; color: var(--dark); }
+.pay-total-val { font-size: 24px; font-weight: 900; color: var(--dark); }
+.pay-total-val span { font-size: 14px; }
+
+/* Secure badge */
+.pay-secure {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--green-lt);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* ── Success Overlay ── */
+.pay-success-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+}
+.pay-success-overlay.show { opacity: 1; pointer-events: all; }
+.pay-success-card {
+  background: white;
+  border-radius: 24px;
+  padding: 48px 56px;
+  text-align: center;
+  box-shadow: var(--sh-lg);
+  max-width: 400px;
+  width: 90%;
+}
+.pay-success-icon { font-size: 72px; margin-bottom: 16px; animation: bounceIn .5s; }
+@keyframes bounceIn { 0%{transform:scale(.5);opacity:0;} 70%{transform:scale(1.1);} 100%{transform:scale(1);opacity:1;} }
+.pay-success-title { font-size: 24px; font-weight: 900; color: var(--dark); margin-bottom: 8px; }
+.pay-success-sub { font-size: 14px; color: var(--t2); margin-bottom: 28px; line-height: 1.6; }
+.pay-success-actions { display: flex; gap: 12px; }
+
+/* Toast */
+.toast { position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:white;padding:14px 28px;border-radius:40px;font-size:14px;font-weight:600;opacity:0;transition:all .3s var(--ease);pointer-events:none;z-index:9999;white-space:nowrap; }
+.toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="products.html">商品</a>
+    </div>
+    <div class="nav-right">
+      <a href="login.html" class="nav-icon-btn">👤</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-main">
+  <div class="container">
+    <!-- Steps -->
+    <div class="checkout-steps">
+      <div class="cs-step done"><div class="cs-step-circle">✓</div><div class="cs-step-label">购物车</div></div>
+      <div class="cs-line done"></div>
+      <div class="cs-step done"><div class="cs-step-circle">✓</div><div class="cs-step-label">确认订单</div></div>
+      <div class="cs-line done"></div>
+      <div class="cs-step active"><div class="cs-step-circle">3</div><div class="cs-step-label">付款</div></div>
+      <div class="cs-line"></div>
+      <div class="cs-step"><div class="cs-step-circle">4</div><div class="cs-step-label">完成</div></div>
+    </div>
+
+    <div class="pay-wrap">
+      <!-- Main -->
+      <div class="pay-main">
+        <!-- Amount -->
+        <div class="pay-amount-bar">
+          <div class="pay-amount-label">订单编号 LS20260428001234</div>
+          <div class="pay-amount-num"><span>¥</span>5,860</div>
+          <div class="pay-countdown">
+            ⏱️ 请在 <strong id="countdown">29:47</strong> 内完成支付
+          </div>
+        </div>
+
+        <!-- Methods -->
+        <div class="pay-methods">
+          <div class="pay-methods-title">选择支付方式</div>
+          <div class="pay-tabs">
+            <div class="pay-tab active" onclick="switchPay('alipay',this)">
+              <span class="tab-icon">💙</span> 支付宝
+              <span class="tab-badge">推荐</span>
+            </div>
+            <div class="pay-tab" onclick="switchPay('wechat',this)">
+              <span class="tab-icon">💚</span> 微信支付
+            </div>
+            <div class="pay-tab" onclick="switchPay('bank',this)">
+              <span class="tab-icon">💳</span> 银行卡
+            </div>
+            <div class="pay-tab" onclick="switchPay('install',this)">
+              <span class="tab-icon">📅</span> 免息分期
+            </div>
+          </div>
+
+          <!-- QR (alipay / wechat) -->
+          <div id="panel-alipay" class="pay-qr-panel">
+            <div class="pay-qr-box" onclick="simulatePay()">
+              💙
+              <div class="pay-qr-overlay" id="qrOverlay">
+                <span style="font-size:32px;">⏰</span>
+                <span>二维码已过期</span>
+                <span class="pay-qr-refresh" onclick="event.stopPropagation();refreshQr()">点击刷新</span>
+              </div>
+            </div>
+            <div class="pay-qr-title">支付宝扫码支付</div>
+            <div class="pay-qr-sub">用支付宝 App 扫描上方二维码完成支付</div>
+            <div class="pay-qr-tip">
+              <span>📱</span>
+              <span>也可在支付宝 App 内搜索"珑饰"完成支付</span>
+            </div>
+            <button class="btn btn-gold btn-sm" onclick="simulatePay()" style="margin-top:8px;">🔵 模拟支付成功</button>
+          </div>
+
+          <div id="panel-wechat" class="pay-qr-panel" style="display:none;">
+            <div class="pay-qr-box" onclick="simulatePay()">💚</div>
+            <div class="pay-qr-title">微信扫码支付</div>
+            <div class="pay-qr-sub">用微信 App 扫描上方二维码完成支付</div>
+            <button class="btn btn-gold btn-sm" onclick="simulatePay()" style="margin-top:8px;">💚 模拟支付成功</button>
+          </div>
+
+          <!-- Bank -->
+          <div id="panel-bank" class="pay-bank-panel">
+            <div class="bank-card-preview">
+              <div class="bank-card-logo">💳</div>
+              <div class="bank-card-num" id="cardNumPreview">**** **** **** ****</div>
+              <div class="bank-card-row">
+                <span id="cardNamePreview">姓名</span>
+                <span id="cardExpPreview">MM/YY</span>
+              </div>
+            </div>
+            <div class="pay-bank-form">
+              <div class="form-group">
+                <label class="form-label">银行卡号</label>
+                <input class="form-input" type="text" placeholder="请输入银行卡号" maxlength="19" oninput="formatCard(this)">
+              </div>
+              <div class="pay-bank-row">
+                <div class="form-group">
+                  <label class="form-label">持卡人姓名</label>
+                  <input class="form-input" type="text" placeholder="与银行预留一致" oninput="document.getElementById('cardNamePreview').textContent=this.value||'姓名'">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">有效期</label>
+                  <input class="form-input" type="text" placeholder="MM/YY" maxlength="5" oninput="document.getElementById('cardExpPreview').textContent=this.value||'MM/YY'">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVV 安全码</label>
+                <input class="form-input" type="password" placeholder="卡背面 3 位数字" maxlength="3">
+              </div>
+              <button class="btn btn-gold btn-full" onclick="simulatePay()">💳 立即支付 ¥5,860</button>
+            </div>
+          </div>
+
+          <!-- Install -->
+          <div id="panel-install" class="pay-install-panel">
+            <div style="font-size:13px;color:var(--t2);margin-bottom:16px;">支持招商、工商、建设等主流银行，0 手续费免息分期</div>
+            <div class="install-opts">
+              <div class="install-opt" onclick="selectInstall(this)">
+                <div class="install-opt-period">3 期</div>
+                <div class="install-opt-monthly">¥1,953/月</div>
+                <div class="install-opt-tag">免息</div>
+              </div>
+              <div class="install-opt active" onclick="selectInstall(this)">
+                <div class="install-opt-period">6 期</div>
+                <div class="install-opt-monthly">¥977/月</div>
+                <div class="install-opt-tag">免息</div>
+              </div>
+              <div class="install-opt" onclick="selectInstall(this)">
+                <div class="install-opt-period">12 期</div>
+                <div class="install-opt-monthly">¥488/月</div>
+                <div class="install-opt-tag">免息</div>
+              </div>
+              <div class="install-opt" onclick="selectInstall(this)">
+                <div class="install-opt-period">18 期</div>
+                <div class="install-opt-monthly">¥326/月</div>
+                <div class="install-opt-tag">免息</div>
+              </div>
+              <div class="install-opt" onclick="selectInstall(this)">
+                <div class="install-opt-period">24 期</div>
+                <div class="install-opt-monthly">¥244/月</div>
+                <div class="install-opt-tag">免息</div>
+              </div>
+            </div>
+            <button class="btn btn-gold btn-full mt-24" onclick="simulatePay()">📅 确认分期支付</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="pay-info-panel">
+        <div class="pay-info-card">
+          <div class="pay-info-header">🛍️ 商品明细</div>
+          <div class="pay-info-body">
+            <div class="pay-order-items">
+              <div class="pay-order-item">
+                <div class="pay-order-item-img" style="background:linear-gradient(135deg,#F5EDE3,#F0E8D8);">💎</div>
+                <div>
+                  <div class="pay-order-item-name">云端星河 · 钻石耳坠</div>
+                  <div style="font-size:12px;color:var(--t3);">18K 白金 × 1</div>
+                </div>
+                <div class="pay-order-item-price">¥3,980</div>
+              </div>
+              <div class="pay-order-item">
+                <div class="pay-order-item-img" style="background:linear-gradient(135deg,#F5E6F5,#EDD6ED);">🌸</div>
+                <div>
+                  <div class="pay-order-item-name">樱花漫舞 · 粉钻耳钉</div>
+                  <div style="font-size:12px;color:var(--t3);">18K 玫瑰金 × 1</div>
+                </div>
+                <div class="pay-order-item-price">¥1,880</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pay-info-card">
+          <div class="pay-info-header">💰 支付明细</div>
+          <div class="pay-info-body">
+            <div class="pay-summary-rows">
+              <div class="pay-summary-row"><span class="l">商品金额</span><span class="v">¥5,860</span></div>
+              <div class="pay-summary-row"><span class="l">运费</span><span class="v" style="color:var(--green);">免费</span></div>
+              <div class="pay-summary-row"><span class="l">优惠</span><span class="v">- ¥0</span></div>
+            </div>
+            <div class="pay-total-row">
+              <span class="pay-total-lbl">应付金额</span>
+              <span class="pay-total-val"><span>¥</span>5,860</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pay-secure">
+          <span style="font-size:20px;">🔒</span>
+          <span>所有支付信息均经过 256 位 SSL 加密保护</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Success Overlay -->
+<div class="pay-success-overlay" id="successOverlay">
+  <div class="pay-success-card">
+    <div class="pay-success-icon">🎉</div>
+    <div class="pay-success-title">支付成功！</div>
+    <div class="pay-success-sub">您的订单已支付完成<br>珑饰将于 24 小时内为您发货<br>顺丰次日送达，请注意查收</div>
+    <div class="pay-success-actions">
+      <button class="btn btn-out btn-sm btn-full" onclick="location.href='orders.html'">查看订单</button>
+      <button class="btn btn-gold btn-sm btn-full" onclick="location.href='index.html'">继续购物</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Countdown
+let totalSecs = 29 * 60 + 47;
+const countdownEl = document.getElementById('countdown');
+const timer = setInterval(() => {
+  if (totalSecs <= 0) { clearInterval(timer); countdownEl.textContent = '00:00'; return; }
+  totalSecs--;
+  const m = String(Math.floor(totalSecs / 60)).padStart(2, '0');
+  const s = String(totalSecs % 60).padStart(2, '0');
+  countdownEl.textContent = `${m}:${s}`;
+}, 1000);
+
+function switchPay(type, tab) {
+  document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  ['panel-alipay','panel-wechat','panel-bank','panel-install'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.display = 'none';
+    if (el.classList.contains('pay-qr-panel')) el.style.display = '';
+  });
+  if (type === 'alipay') { document.getElementById('panel-alipay').style.display = 'flex'; document.getElementById('panel-wechat').style.display = 'none'; document.getElementById('panel-bank').style.display = 'none'; document.getElementById('panel-install').style.display = 'none'; }
+  else if (type === 'wechat') { document.getElementById('panel-alipay').style.display = 'none'; document.getElementById('panel-wechat').style.display = 'flex'; document.getElementById('panel-bank').style.display = 'none'; document.getElementById('panel-install').style.display = 'none'; }
+  else if (type === 'bank') { document.getElementById('panel-alipay').style.display = 'none'; document.getElementById('panel-wechat').style.display = 'none'; document.getElementById('panel-bank').style.display = 'block'; document.getElementById('panel-install').style.display = 'none'; }
+  else { document.getElementById('panel-alipay').style.display = 'none'; document.getElementById('panel-wechat').style.display = 'none'; document.getElementById('panel-bank').style.display = 'none'; document.getElementById('panel-install').style.display = 'block'; }
+}
+
+function simulatePay() {
+  showToast('支付处理中...');
+  setTimeout(() => {
+    clearInterval(timer);
+    document.getElementById('successOverlay').classList.add('show');
+  }, 1200);
+}
+
+function refreshQr() { showToast('二维码已刷新'); document.getElementById('qrOverlay').style.display = 'none'; }
+
+function selectInstall(opt) {
+  document.querySelectorAll('.install-opt').forEach(o => o.classList.remove('active'));
+  opt.classList.add('active');
+}
+
+function formatCard(input) {
+  let v = input.value.replace(/\D/g, '').substring(0, 16);
+  input.value = v.replace(/(.{4})/g, '$1 ').trim();
+  const display = v ? v.replace(/(.{4})/g, '$1 ').trim() : '**** **** **** ****';
+  document.getElementById('cardNumPreview').textContent = display;
+}
+
+let tt;
+function showToast(msg) {
+  const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// Auto-show QR
+document.getElementById('panel-wechat').style.display = 'none';
+document.getElementById('panel-bank').style.display = 'none';
+document.getElementById('panel-install').style.display = 'none';
+</script>
+</body>
+</html>

@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>购物车 — 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Cart Layout ── */
+.cart-wrap {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  padding: 24px 0 64px;
+  align-items: start;
+}
+
+/* ── Cart Items ── */
+.cart-main {}
+
+.cart-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--card);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  border-bottom: 1px solid var(--bd);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2);
+}
+.cart-check-all { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.cart-check-all input[type=checkbox] {
+  width: 18px; height: 18px;
+  accent-color: var(--dark);
+  cursor: pointer;
+}
+.cart-header-cols {
+  display: grid;
+  grid-template-columns: 1fr 100px 120px 100px 80px;
+  flex: 1;
+  gap: 0;
+  text-align: center;
+}
+.cart-header-cols .col-name { text-align: left; }
+
+/* Cart Items List */
+.cart-items {
+  background: var(--card);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+  overflow: hidden;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid var(--bd-2);
+  transition: background .15s;
+}
+.cart-item:last-child { border-bottom: none; }
+.cart-item:hover { background: #FAFAF9; }
+
+.cart-item-check input[type=checkbox] {
+  width: 18px; height: 18px;
+  accent-color: var(--dark);
+  cursor: pointer;
+}
+
+.cart-item-img {
+  width: 88px; height: 88px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.cart-item-img:hover { transform: scale(1.04); }
+
+.cart-item-info { flex: 1; min-width: 0; }
+.cart-item-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: color .15s;
+}
+.cart-item-name:hover { color: var(--gold-dk); }
+.cart-item-sku {
+  font-size: 12px;
+  color: var(--t2);
+  background: var(--bg);
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 5px;
+  margin-bottom: 6px;
+}
+.cart-item-tags { display: flex; gap: 6px; }
+.cart-item-tag {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.cart-item-price-col {
+  width: 100px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.cart-item-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--dark);
+}
+.cart-item-price-old { font-size: 12px; color: var(--t3); text-decoration: line-through; }
+
+.cart-item-qty-col {
+  width: 120px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cart-qty-ctrl {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--bd);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cart-qty-btn {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  color: var(--t2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background .15s;
+}
+.cart-qty-btn:hover { background: var(--bg); color: var(--dark); }
+.cart-qty-num {
+  width: 38px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-left: 1px solid var(--bd);
+  border-right: 1px solid var(--bd);
+  padding: 4px 0;
+  outline: none;
+}
+
+.cart-item-subtotal-col {
+  width: 100px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.cart-item-subtotal {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--dark);
+}
+
+.cart-item-ops {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.cart-op-btn {
+  font-size: 12px;
+  color: var(--t2);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 3px 0;
+  transition: color .15s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cart-op-btn:hover { color: var(--gold); }
+.cart-op-btn.del:hover { color: var(--red); }
+
+/* Batch ops bar */
+.cart-batch-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--card);
+  border-radius: var(--r-lg);
+  margin-top: 12px;
+  font-size: 13px;
+}
+.batch-select-info { color: var(--t2); flex: 1; }
+.batch-select-info strong { color: var(--dark); }
+
+/* Empty cart */
+.cart-empty {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  background: var(--card);
+  border-radius: var(--r-lg);
+  text-align: center;
+}
+.cart-empty-icon { font-size: 72px; margin-bottom: 20px; }
+.cart-empty-title { font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+.cart-empty-sub { font-size: 14px; color: var(--t2); margin-bottom: 28px; }
+
+/* ── Order Summary ── */
+.cart-summary {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--sh);
+  position: sticky;
+  top: calc(var(--nav-h) + 20px);
+}
+.cart-summary-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--bd);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--dark);
+}
+.cart-summary-body { padding: 20px; }
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.summary-row .label { color: var(--t2); }
+.summary-row .val { font-weight: 600; color: var(--dark); }
+.summary-row .val.save { color: var(--green); }
+.summary-row .val.free { color: var(--green); font-weight: 700; }
+
+.summary-divider { height: 1px; background: var(--bd); margin: 16px 0; }
+
+.summary-total-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.summary-total-label { font-size: 15px; font-weight: 700; color: var(--dark); }
+.summary-total-val { font-size: 28px; font-weight: 900; color: var(--dark); }
+.summary-total-val span { font-size: 16px; }
+
+.cart-checkout-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.cart-checkout-btn:hover {
+  background: linear-gradient(135deg, var(--gold-dk), #7A5530);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(196,144,106,.4);
+}
+
+.summary-coupon {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+.summary-coupon input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1.5px solid var(--bd);
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color .15s;
+}
+.summary-coupon input:focus { border-color: var(--gold); }
+.summary-coupon button {
+  padding: 9px 16px;
+  background: var(--dark);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.summary-perks {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.summary-perk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--t2);
+}
+.summary-perk .ic { font-size: 14px; }
+
+/* ── Recommendations Strip ── */
+.cart-reco {
+  margin-top: 32px;
+}
+.cart-reco-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* ── Promo Banner ── */
+.cart-promo {
+  background: linear-gradient(135deg, var(--dark), #4A3020);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  cursor: pointer;
+}
+.cart-promo-icon { font-size: 36px; flex-shrink: 0; }
+.cart-promo-text { flex: 1; }
+.cart-promo-title { font-size: 15px; font-weight: 800; color: white; margin-bottom: 4px; }
+.cart-promo-sub { font-size: 12px; color: rgba(255,255,255,.65); }
+.cart-promo-arrow { color: rgba(255,255,255,.5); font-size: 20px; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 40px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--dark);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 40px;
+  font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; transition: all .3s var(--ease);
+  pointer-events: none; z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="guide.html">AI 导购</a>
+      <a href="face.html">脸型检测</a>
+      <a href="products.html">商品</a>
+      <a href="#">品牌故事</a>
+      <a href="#">会员中心</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search">
+        <span class="ic">🔍</span>
+        <input type="text" placeholder="搜索饰品...">
+      </div>
+      <a href="guide.html" class="nav-ai-btn">✨ AI 导购</a>
+      <a href="cart.html" class="nav-icon-btn" title="购物车" style="color:var(--dark);">
+        🛒
+        <span class="badge">2</span>
+      </a>
+      <a href="login.html" class="nav-icon-btn" title="我的">👤</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<main class="page-main">
+  <div class="container">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="index.html">首页</a>
+      <span class="sep">›</span>
+      <span class="cur">购物车</span>
+    </div>
+
+    <!-- Promo Banner -->
+    <div class="cart-promo" onclick="showToast('满减活动进行中，继续购物享更多优惠！')">
+      <div class="cart-promo-icon">🎁</div>
+      <div class="cart-promo-text">
+        <div class="cart-promo-title">限时优惠：满 4000 减 200 · 满 8000 减 500</div>
+        <div class="cart-promo-sub">距结束还有 03:12:45 · 加购凑单省更多</div>
+      </div>
+      <div class="cart-promo-arrow">›</div>
+    </div>
+
+    <div class="cart-wrap">
+      <!-- ── Left: Items ── -->
+      <div class="cart-main">
+        <!-- Header -->
+        <div class="cart-header">
+          <label class="cart-check-all">
+            <input type="checkbox" id="checkAll" checked onchange="toggleAll(this)">
+            <span>全选</span>
+          </label>
+          <div class="cart-header-cols">
+            <span class="col-name">商品信息</span>
+            <span>单价</span>
+            <span>数量</span>
+            <span>小计</span>
+            <span>操作</span>
+          </div>
+        </div>
+
+        <!-- Items -->
+        <div class="cart-items" id="cartItems">
+          <!-- Item 1 -->
+          <div class="cart-item" id="item1">
+            <div class="cart-item-check">
+              <input type="checkbox" checked onchange="updateSummary()">
+            </div>
+            <div class="cart-item-img" style="background:linear-gradient(135deg,#F5EDE3,#F0E8D8);" onclick="location.href='product.html'">
+              💎
+            </div>
+            <div class="cart-item-info">
+              <div class="cart-item-name" onclick="location.href='product.html'">云端星河 · 18K 白金钻石耳坠</div>
+              <div class="cart-item-sku">18K 白金 / 0.3ct / G色</div>
+              <div class="cart-item-tags">
+                <span class="cart-item-tag tag-gold">AI 推荐</span>
+                <span class="cart-item-tag tag-green">正品</span>
+              </div>
+            </div>
+            <div class="cart-item-price-col">
+              <div class="cart-item-price">¥3,980</div>
+              <div class="cart-item-price-old">¥5,600</div>
+            </div>
+            <div class="cart-item-qty-col">
+              <div class="cart-qty-ctrl">
+                <button class="cart-qty-btn" onclick="changeQty('q1',-1)">−</button>
+                <input class="cart-qty-num" id="q1" type="number" value="1" min="1" max="5" oninput="updateSummary()">
+                <button class="cart-qty-btn" onclick="changeQty('q1',1)">+</button>
+              </div>
+            </div>
+            <div class="cart-item-subtotal-col">
+              <div class="cart-item-subtotal" id="sub1">¥3,980</div>
+            </div>
+            <div class="cart-item-ops">
+              <button class="cart-op-btn" onclick="moveToWish('item1')">♡ 收藏</button>
+              <button class="cart-op-btn del" onclick="removeItem('item1')">🗑 删除</button>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="cart-item" id="item2">
+            <div class="cart-item-check">
+              <input type="checkbox" checked onchange="updateSummary()">
+            </div>
+            <div class="cart-item-img" style="background:linear-gradient(135deg,#F5E6F5,#EDD6ED);" onclick="location.href='product.html'">
+              🌸
+            </div>
+            <div class="cart-item-info">
+              <div class="cart-item-name" onclick="location.href='product.html'">樱花漫舞 · 18K 玫瑰金粉钻耳钉</div>
+              <div class="cart-item-sku">18K 玫瑰金 / 0.2ct / 粉钻</div>
+              <div class="cart-item-tags">
+                <span class="cart-item-tag tag-gold">爆款</span>
+              </div>
+            </div>
+            <div class="cart-item-price-col">
+              <div class="cart-item-price">¥1,880</div>
+              <div class="cart-item-price-old">¥2,200</div>
+            </div>
+            <div class="cart-item-qty-col">
+              <div class="cart-qty-ctrl">
+                <button class="cart-qty-btn" onclick="changeQty('q2',-1)">−</button>
+                <input class="cart-qty-num" id="q2" type="number" value="1" min="1" max="5" oninput="updateSummary()">
+                <button class="cart-qty-btn" onclick="changeQty('q2',1)">+</button>
+              </div>
+            </div>
+            <div class="cart-item-subtotal-col">
+              <div class="cart-item-subtotal" id="sub2">¥1,880</div>
+            </div>
+            <div class="cart-item-ops">
+              <button class="cart-op-btn" onclick="moveToWish('item2')">♡ 收藏</button>
+              <button class="cart-op-btn del" onclick="removeItem('item2')">🗑 删除</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Batch Ops -->
+        <div class="cart-batch-bar">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+            <input type="checkbox" id="checkAll2" checked style="width:16px;height:16px;accent-color:var(--dark);" onchange="toggleAll(this)">
+            全选
+          </label>
+          <button class="cart-op-btn del" onclick="showToast('已删除所选商品')">删除所选</button>
+          <button class="cart-op-btn" onclick="showToast('已移至收藏夹')">移至收藏</button>
+          <div class="batch-select-info">已选 <strong id="selectedCnt">2</strong> 件商品</div>
+          <a href="products.html" style="font-size:13px;color:var(--gold-dk);font-weight:600;text-decoration:none;display:flex;align-items:center;gap:4px;">
+            + 继续购物
+          </a>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="cart-reco mt-32">
+          <div class="section-head">
+            <div class="section-title"><span>🔮</span>猜你还喜欢</div>
+            <a href="products.html" class="section-more">查看全部 ›</a>
+          </div>
+          <div class="cart-reco-grid">
+            <div class="product-card" onclick="addRecoToCart(this,'海洋之心蓝宝石项链','¥2,680')">
+              <div class="product-card-img" style="background:linear-gradient(135deg,#E8F4F8,#D6EDF5);font-size:40px;">🌊
+                <div class="try-badge">📷 试戴</div>
+              </div>
+              <div class="product-card-body">
+                <div class="product-card-name">海洋之心 · 蓝宝石项链</div>
+                <div class="product-card-price"><span class="price-main">¥2,680</span><span class="price-old">¥3,200</span></div>
+                <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8</span><span class="match-pill">88%</span></div>
+                <div class="product-card-actions">
+                  <button class="btn btn-dark btn-xs btn-full">加入购物车</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-card" onclick="location.href='product.html'">
+              <div class="product-card-img" style="background:linear-gradient(135deg,#F5EDE3,#FFF8F2);font-size:40px;">⭐
+                <div class="try-badge">📷 试戴</div>
+              </div>
+              <div class="product-card-body">
+                <div class="product-card-name">黄金星辰 · 项链套链</div>
+                <div class="product-card-price"><span class="price-main">¥1,980</span><span class="price-tag">8折</span></div>
+                <div class="product-card-meta"><span class="stars">★★★★☆</span><span>4.7</span><span class="match-pill">81%</span></div>
+                <div class="product-card-actions">
+                  <button class="btn btn-dark btn-xs btn-full">加入购物车</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-card" onclick="location.href='product.html'">
+              <div class="product-card-img" style="background:linear-gradient(135deg,#E6F5E6,#D6EDD6);font-size:40px;">🍀
+                <div class="try-badge">📷 试戴</div>
+              </div>
+              <div class="product-card-body">
+                <div class="product-card-name">幸运四叶 · 翡翠手链</div>
+                <div class="product-card-price"><span class="price-main">¥3,560</span></div>
+                <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9</span><span class="match-pill">79%</span></div>
+                <div class="product-card-actions">
+                  <button class="btn btn-dark btn-xs btn-full">加入购物车</button>
+                </div>
+              </div>
+            </div>
+            <div class="product-card" onclick="location.href='product.html'">
+              <div class="product-card-img" style="background:linear-gradient(135deg,#EEF2FF,#E0E7FF);font-size:40px;">🔮
+                <div class="try-badge">📷 试戴</div>
+              </div>
+              <div class="product-card-body">
+                <div class="product-card-name">紫水晶 · 垂坠耳环</div>
+                <div class="product-card-price"><span class="price-main">¥980</span><span class="price-old">¥1,280</span></div>
+                <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8</span><span class="match-pill">76%</span></div>
+                <div class="product-card-actions">
+                  <button class="btn btn-dark btn-xs btn-full">加入购物车</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Right: Summary ── -->
+      <div class="cart-summary">
+        <div class="cart-summary-header">订单摘要</div>
+        <div class="cart-summary-body">
+          <div class="summary-row">
+            <span class="label">商品总价</span>
+            <span class="val" id="origTotal">¥5,860</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">优惠减免</span>
+            <span class="val save" id="discount">- ¥1,940</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">运费</span>
+            <span class="val free">免费</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">优惠券</span>
+            <span class="val" style="color:var(--t3);">未使用</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-total-row">
+            <span class="summary-total-label">实付合计</span>
+            <span class="summary-total-val" id="finalTotal"><span>¥</span>5,860</span>
+          </div>
+          <button class="cart-checkout-btn" onclick="checkout()">
+            <span>🔒</span> 去结算 (2件)
+          </button>
+
+          <!-- Coupon -->
+          <div class="summary-coupon">
+            <input type="text" placeholder="输入优惠码..." id="couponInput">
+            <button onclick="applyCoupon()">使用</button>
+          </div>
+
+          <!-- Perks -->
+          <div class="summary-perks">
+            <div class="summary-perk"><span class="ic">🔒</span> 支付宝 / 微信支付 / 银行卡</div>
+            <div class="summary-perk"><span class="ic">🚚</span> 顺丰包邮，预计 1-2 日送达</div>
+            <div class="summary-perk"><span class="ic">↩️</span> 30 天无忧退换货保障</div>
+            <div class="summary-perk"><span class="ic">💳</span> 支持分 3/6/12/24 期免息</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="footer-main">
+    <div>
+      <div class="footer-brand">💎 珑饰</div>
+      <div class="footer-tagline">AI 驱动的智能珠宝电商平台<br>AR 虚拟试戴 · 脸型精准匹配 · 正品保障</div>
+      <div class="footer-socials">
+        <div class="footer-social-btn">微</div>
+        <div class="footer-social-btn">博</div>
+        <div class="footer-social-btn">抖</div>
+        <div class="footer-social-btn">📱</div>
+      </div>
+    </div>
+    <div class="footer-col"><h4>购物指南</h4><a href="#">如何使用 AI 导购</a><a href="#">AR 试戴教程</a><a href="#">脸型测试</a><a href="#">尺寸指南</a></div>
+    <div class="footer-col"><h4>客户服务</h4><a href="#">在线客服</a><a href="#">退换货政策</a><a href="#">物流查询</a><a href="#">证书验证</a></div>
+    <div class="footer-col"><h4>关于珑饰</h4><a href="#">品牌故事</a><a href="#">工艺标准</a><a href="#">加盟合作</a><a href="#">联系我们</a></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 珑饰 LongShi · 保留所有权利</span>
+    <span>ICP备XXXXXXXX号 · 营业执照</span>
+  </div>
+</footer>
+
+<script>
+const itemPrices = { item1: 3980, item2: 1880 };
+
+function changeQty(id, delta) {
+  const input = document.getElementById(id);
+  const newVal = Math.min(5, Math.max(1, parseInt(input.value) + delta));
+  input.value = newVal;
+  updateSummary();
+}
+
+function updateSummary() {
+  const items = [
+    { id: 'item1', qtyId: 'q1', subId: 'sub1', price: 3980 },
+    { id: 'item2', qtyId: 'q2', subId: 'sub2', price: 1880 },
+  ];
+  let total = 0;
+  let cnt = 0;
+  items.forEach(item => {
+    const el = document.getElementById(item.id);
+    if (!el) return;
+    const cb = el.querySelector('input[type=checkbox]');
+    const qty = parseInt(document.getElementById(item.qtyId).value) || 1;
+    const sub = item.price * qty;
+    document.getElementById(item.subId).textContent = '¥' + sub.toLocaleString();
+    if (cb && cb.checked) { total += sub; cnt++; }
+  });
+  document.getElementById('origTotal').textContent = '¥' + total.toLocaleString();
+  document.getElementById('finalTotal').innerHTML = '<span>¥</span>' + total.toLocaleString();
+  document.getElementById('selectedCnt').textContent = cnt;
+  document.querySelector('.cart-checkout-btn').textContent = `🔒 去结算 (${cnt}件)`;
+}
+
+function toggleAll(cb) {
+  const other = cb.id === 'checkAll' ? document.getElementById('checkAll2') : document.getElementById('checkAll');
+  other.checked = cb.checked;
+  document.querySelectorAll('.cart-item input[type=checkbox]').forEach(c => c.checked = cb.checked);
+  updateSummary();
+}
+
+function removeItem(id) {
+  const el = document.getElementById(id);
+  if (el) { el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; el.style.transition = 'all .3s'; setTimeout(() => { el.remove(); updateSummary(); }, 300); }
+  showToast('商品已移除');
+}
+
+function moveToWish(id) {
+  showToast('♥ 已移入收藏夹');
+  removeItem(id);
+}
+
+function applyCoupon() {
+  const val = document.getElementById('couponInput').value.trim();
+  if (!val) { showToast('请输入优惠码'); return; }
+  if (val.toUpperCase() === 'LS200') {
+    showToast('✅ 优惠码生效：减 ¥200');
+    document.getElementById('discount').textContent = '- ¥200（券）';
+  } else {
+    showToast('❌ 优惠码无效或已过期');
+  }
+}
+
+function addRecoToCart(card, name, price) {
+  showToast(`✅ ${name} 已加入购物车`);
+}
+
+function checkout() {
+  const cnt = parseInt(document.getElementById('selectedCnt').textContent);
+  if (cnt === 0) { showToast('请先选择商品'); return; }
+  showToast('正在跳转结算页...');
+  setTimeout(() => showToast('（演示：结算页待实现）'), 1500);
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>

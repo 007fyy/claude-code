@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云端星河钻石耳环 — 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Product Detail Layout ── */
+.pd-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  padding: 32px 0 56px;
+  align-items: start;
+}
+
+/* ── Gallery ── */
+.pd-gallery { position: sticky; top: calc(var(--nav-h) + 24px); }
+
+.pd-main-img {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #F5EDE3 0%, #FFF8F2 50%, #F0E8D8 100%);
+  border-radius: var(--r-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 120px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--sh-md);
+}
+.pd-main-img .img-tag {
+  position: absolute;
+  top: 16px; left: 16px;
+  background: var(--dark);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 6px;
+  letter-spacing: .5px;
+}
+.pd-main-img .ar-cta-float {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26,23,20,.85);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 24px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.pd-main-img .ar-cta-float:hover {
+  background: rgba(196,144,106,.9);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.pd-thumbs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+.pd-thumb {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #F5EDE3, #F0E8D8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all .18s;
+  overflow: hidden;
+}
+.pd-thumb:hover { border-color: var(--gold); }
+.pd-thumb.active { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-lt); }
+.pd-thumb:nth-child(2) { background: linear-gradient(135deg, #E8F4F8, #D6EDF5); }
+.pd-thumb:nth-child(3) { background: linear-gradient(135deg, #F5E6F5, #EDD6ED); }
+.pd-thumb:nth-child(4) { background: linear-gradient(135deg, #E6F5E6, #D6EDD6); }
+.pd-thumb:nth-child(5) { background: linear-gradient(135deg, #F5F0E6, #EDE8D6); }
+
+/* ── Product Info Panel ── */
+.pd-info { display: flex; flex-direction: column; gap: 0; }
+
+.pd-badges { display: flex; gap: 8px; margin-bottom: 14px; }
+
+.pd-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--dark);
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+.pd-subtitle {
+  font-size: 14px;
+  color: var(--t2);
+  margin-bottom: 16px;
+}
+
+.pd-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--bd);
+}
+.pd-stars { color: #F4B400; font-size: 15px; letter-spacing: 1px; }
+.pd-rating-num { font-size: 14px; font-weight: 700; color: var(--dark); }
+.pd-rating-cnt { font-size: 13px; color: var(--t2); }
+.pd-sold { font-size: 13px; color: var(--t2); margin-left: auto; }
+
+/* ── Price ── */
+.pd-price-box {
+  background: linear-gradient(135deg, #FAF5F0, #FFF8F2);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #F0E8D8;
+}
+.pd-price-main {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.pd-price-now {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--dark);
+}
+.pd-price-now span { font-size: 20px; }
+.pd-price-old { font-size: 16px; color: var(--t3); text-decoration: line-through; }
+.pd-price-save {
+  font-size: 12px;
+  font-weight: 700;
+  background: #FFF3E0;
+  color: var(--orange);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.pd-price-perks {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.pd-perk {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--t2);
+}
+.pd-perk .ic { color: var(--green); }
+
+/* ── AI Match ── */
+.pd-match-box {
+  background: var(--gold-lt);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid #EDD8BF;
+}
+.pd-match-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.pd-match-label { font-size: 13px; font-weight: 700; color: var(--gold-dk); }
+.pd-match-score { font-size: 22px; font-weight: 900; color: var(--gold-dk); }
+.pd-match-bar-bg {
+  height: 8px;
+  background: rgba(196,144,106,.2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.pd-match-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-dk));
+  border-radius: 4px;
+  width: 92%;
+  transition: width 1s var(--ease);
+}
+.pd-match-reason { font-size: 12px; color: var(--gold-dk); opacity: .8; }
+
+/* ── SKU ── */
+.pd-sku-section { margin-bottom: 20px; }
+.pd-sku-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+.pd-sku-label .selected-val { color: var(--gold-dk); font-weight: 600; }
+.pd-sku-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.pd-sku-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1.5px solid var(--bd);
+  background: white;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t2);
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pd-sku-btn:hover { border-color: var(--gold); color: var(--gold-dk); }
+.pd-sku-btn.active { border-color: var(--dark); background: var(--dark); color: white; }
+.pd-sku-btn.disabled { opacity: .4; cursor: not-allowed; text-decoration: line-through; }
+
+.pd-color-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Qty ── */
+.pd-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.pd-qty-label { font-size: 13px; font-weight: 700; color: var(--dark); }
+.pd-qty-ctrl {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--bd);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pd-qty-btn {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: var(--t2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background .15s;
+}
+.pd-qty-btn:hover { background: var(--bg); color: var(--dark); }
+.pd-qty-num {
+  width: 44px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-left: 1px solid var(--bd);
+  border-right: 1px solid var(--bd);
+  padding: 6px 0;
+  outline: none;
+}
+.pd-stock-hint { font-size: 12px; color: var(--t2); }
+.pd-stock-hint strong { color: var(--red); }
+
+/* ── Action Buttons ── */
+.pd-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.pd-actions .btn-buy {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+  color: white;
+  font-size: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.pd-actions .btn-buy:hover {
+  background: linear-gradient(135deg, var(--gold-dk), #7A5530);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(196,144,106,.4);
+}
+.pd-actions .btn-cart {
+  background: var(--dark);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all .2s;
+}
+.pd-actions .btn-cart:hover { background: var(--dark-2); transform: translateY(-1px); }
+.pd-actions .btn-wish {
+  background: white;
+  color: var(--t2);
+  border: 1.5px solid var(--bd);
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all .2s;
+}
+.pd-actions .btn-wish:hover { border-color: var(--red); color: var(--red); }
+.pd-actions .btn-wish.active { border-color: var(--red); background: #FFF0EE; color: var(--red); }
+
+/* ── Service Guarantee ── */
+.pd-guarantee {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--bd);
+  border-bottom: 1px solid var(--bd);
+  margin-bottom: 20px;
+}
+.pd-guar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--t2);
+  text-align: center;
+}
+.pd-guar-item .ic { font-size: 20px; }
+.pd-guar-item strong { font-size: 12px; font-weight: 700; color: var(--dark); }
+
+/* ── Tabs ── */
+.pd-tabs-wrap { margin-top: 48px; }
+.pd-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--bd);
+  margin-bottom: 32px;
+}
+.pd-tab {
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--t2);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all .18s;
+}
+.pd-tab:hover { color: var(--dark); }
+.pd-tab.active { color: var(--dark); border-bottom-color: var(--gold); }
+
+/* ── Detail Tab ── */
+.pd-detail-section { display: none; }
+.pd-detail-section.active { display: block; }
+
+.pd-attrs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.pd-attr {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg);
+  border-radius: 10px;
+}
+.pd-attr .ic { font-size: 22px; flex-shrink: 0; }
+.pd-attr-key { font-size: 12px; color: var(--t2); margin-bottom: 2px; }
+.pd-attr-val { font-size: 14px; font-weight: 700; color: var(--dark); }
+
+.pd-desc-imgs {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.pd-desc-img-block {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: linear-gradient(135deg, #F5EDE3 0%, #FFF8F2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 40px;
+  font-size: 64px;
+  position: relative;
+}
+.pd-desc-img-block .caption {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: var(--t2);
+  white-space: nowrap;
+}
+
+/* ── Reviews ── */
+.review-summary {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 40px;
+  margin-bottom: 32px;
+  padding: 28px;
+  background: var(--bg);
+  border-radius: var(--r-lg);
+}
+.review-score-big {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.review-score-num {
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--dark);
+  line-height: 1;
+}
+.review-score-stars { font-size: 22px; color: #F4B400; }
+.review-score-cnt { font-size: 13px; color: var(--t2); }
+.review-bars { display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+.review-bar-row { display: flex; align-items: center; gap: 12px; }
+.review-bar-label { font-size: 12px; color: var(--t2); width: 24px; text-align: right; }
+.review-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: var(--bd);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.review-bar-fill {
+  height: 100%;
+  background: #F4B400;
+  border-radius: 4px;
+}
+.review-bar-cnt { font-size: 12px; color: var(--t2); width: 28px; }
+
+.review-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.review-item {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--bd);
+}
+.review-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.review-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-lt), var(--gold));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold-dk);
+  flex-shrink: 0;
+}
+.review-user-name { font-size: 14px; font-weight: 700; color: var(--dark); }
+.review-user-sub { font-size: 12px; color: var(--t3); }
+.review-stars { font-size: 13px; color: #F4B400; margin-bottom: 8px; }
+.review-text { font-size: 14px; color: var(--t1); line-height: 1.7; margin-bottom: 12px; }
+.review-imgs { display: flex; gap: 8px; }
+.review-img {
+  width: 72px; height: 72px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #F5EDE3, #F0E8D8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  border: 1px solid var(--bd);
+}
+.review-helpful {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+.review-helpful-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--t2);
+  cursor: pointer;
+  transition: color .15s;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.review-helpful-btn:hover { color: var(--gold); }
+.review-sku-tag { font-size: 11px; color: var(--t3); }
+
+/* ── Related Products ── */
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--dark);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transition: all .3s var(--ease);
+  pointer-events: none;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="guide.html">AI 导购</a>
+      <a href="face.html">脸型检测</a>
+      <a href="products.html" class="active">商品</a>
+      <a href="#">品牌故事</a>
+      <a href="#">会员中心</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-search">
+        <span class="ic">🔍</span>
+        <input type="text" placeholder="搜索饰品...">
+      </div>
+      <a href="guide.html" class="nav-ai-btn">✨ AI 导购</a>
+      <a href="cart.html" class="nav-icon-btn" title="购物车">
+        🛒
+        <span class="badge">2</span>
+      </a>
+      <a href="login.html" class="nav-icon-btn" title="我的">👤</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<main class="page-main">
+  <div class="container">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="index.html">首页</a>
+      <span class="sep">›</span>
+      <a href="products.html">商品</a>
+      <span class="sep">›</span>
+      <a href="products.html">耳环</a>
+      <span class="sep">›</span>
+      <span class="cur">云端星河钻石耳环</span>
+    </div>
+
+    <!-- Product Detail Grid -->
+    <div class="pd-wrap">
+      <!-- ── Left: Gallery ── -->
+      <div class="pd-gallery">
+        <div class="pd-main-img">
+          <span style="filter: drop-shadow(0 8px 24px rgba(196,144,106,.3));">💎</span>
+          <span class="img-tag">AR 可试戴</span>
+          <a href="ar.html" class="ar-cta-float">
+            <span>📷</span> 虚拟试戴
+          </a>
+        </div>
+        <div class="pd-thumbs">
+          <div class="pd-thumb active">💎</div>
+          <div class="pd-thumb">✨</div>
+          <div class="pd-thumb">💫</div>
+          <div class="pd-thumb">🌟</div>
+          <div class="pd-thumb">📸</div>
+        </div>
+      </div>
+
+      <!-- ── Right: Info ── -->
+      <div class="pd-info">
+        <!-- Badges -->
+        <div class="pd-badges">
+          <span class="tag tag-gold">爆款</span>
+          <span class="tag tag-green">现货</span>
+          <span class="tag" style="background:#E8F4FD;color:#1A6FA8;">AI 推荐</span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="pd-title">云端星河 · 18K 白金钻石耳坠</h1>
+        <div class="pd-subtitle">0.3 克拉 VS1 净度 · 18K 白金镶嵌 · 附国际宝石证书</div>
+
+        <!-- Rating -->
+        <div class="pd-rating-row">
+          <span class="pd-stars">★★★★★</span>
+          <span class="pd-rating-num">4.9</span>
+          <span class="pd-rating-cnt">386 条评价</span>
+          <span class="pd-sold">月销 1,240 件</span>
+        </div>
+
+        <!-- Price -->
+        <div class="pd-price-box">
+          <div class="pd-price-main">
+            <div class="pd-price-now"><span>¥</span>3,980</div>
+            <div class="pd-price-old">¥5,600</div>
+            <div class="pd-price-save">省 ¥1,620</div>
+          </div>
+          <div class="pd-price-perks">
+            <div class="pd-perk"><span class="ic">✅</span> 满 4000 减 200</div>
+            <div class="pd-perk"><span class="ic">✅</span> 免息分 12 期</div>
+            <div class="pd-perk"><span class="ic">✅</span> 30 天无忧退换</div>
+          </div>
+        </div>
+
+        <!-- AI Match -->
+        <div class="pd-match-box">
+          <div class="pd-match-header">
+            <div class="pd-match-label">✨ AI 脸型匹配度</div>
+            <div class="pd-match-score">92%</div>
+          </div>
+          <div class="pd-match-bar-bg">
+            <div class="pd-match-bar-fill"></div>
+          </div>
+          <div class="pd-match-reason">根据您的椭圆脸型，此款耳环垂坠设计拉长脸部线条，与您的气质高度契合</div>
+        </div>
+
+        <!-- SKU: 材质 -->
+        <div class="pd-sku-section">
+          <div class="pd-sku-label">
+            材质 <span class="selected-val">18K 白金</span>
+          </div>
+          <div class="pd-sku-options">
+            <button class="pd-sku-btn active">18K 白金</button>
+            <button class="pd-sku-btn">18K 黄金</button>
+            <button class="pd-sku-btn">18K 玫瑰金</button>
+            <button class="pd-sku-btn disabled">铂金 PT950</button>
+          </div>
+        </div>
+
+        <!-- SKU: 克拉 -->
+        <div class="pd-sku-section" style="margin-top:16px;">
+          <div class="pd-sku-label">
+            克拉重量 <span class="selected-val">0.3 ct</span>
+          </div>
+          <div class="pd-sku-options">
+            <button class="pd-sku-btn">0.2 ct · ¥2,680</button>
+            <button class="pd-sku-btn active">0.3 ct · ¥3,980</button>
+            <button class="pd-sku-btn">0.5 ct · ¥6,280</button>
+          </div>
+        </div>
+
+        <!-- SKU: Color -->
+        <div class="pd-sku-section" style="margin-top:16px;">
+          <div class="pd-sku-label">
+            颜色 <span class="selected-val">G 色（近无色）</span>
+          </div>
+          <div class="pd-sku-options">
+            <button class="pd-sku-btn active">
+              <span class="pd-color-dot" style="background:#F5F5F0;border:1px solid #ddd;"></span>
+              G 色
+            </button>
+            <button class="pd-sku-btn">
+              <span class="pd-color-dot" style="background:#FFFFF0;border:1px solid #ddd;"></span>
+              H 色
+            </button>
+            <button class="pd-sku-btn">
+              <span class="pd-color-dot" style="background:#FFF8DC;border:1px solid #ddd;"></span>
+              I 色
+            </button>
+          </div>
+        </div>
+
+        <!-- Qty -->
+        <div class="pd-qty-row" style="margin-top:20px;">
+          <span class="pd-qty-label">数量</span>
+          <div class="pd-qty-ctrl">
+            <button class="pd-qty-btn" onclick="changeQty(-1)">−</button>
+            <input class="pd-qty-num" type="number" id="qty" value="1" min="1" max="5">
+            <button class="pd-qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+          <span class="pd-stock-hint">库存 <strong>仅剩 7 件</strong></span>
+        </div>
+
+        <!-- Actions -->
+        <div class="pd-actions">
+          <button class="btn-buy" onclick="buyNow()">⚡ 立即购买</button>
+          <button class="btn-cart" onclick="addToCart()">🛒 加入购物车</button>
+          <button class="btn-wish" id="wishBtn" onclick="toggleWish()">♡ 收藏</button>
+        </div>
+
+        <!-- Guarantee -->
+        <div class="pd-guarantee">
+          <div class="pd-guar-item"><span class="ic">🔒</span><strong>正品保障</strong>平台担保</div>
+          <div class="pd-guar-item"><span class="ic">🚚</span><strong>顺丰包邮</strong>次日达</div>
+          <div class="pd-guar-item"><span class="ic">💳</span><strong>免息分期</strong>最多 24 期</div>
+        </div>
+
+        <!-- Service note -->
+        <div style="font-size:12px;color:var(--t3);line-height:1.7;">
+          珑饰提供专属包装礼盒 · 附国际宝石鉴定证书 · 7×12 客服在线
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Tabs ═══ -->
+    <div class="pd-tabs-wrap">
+      <div class="pd-tabs">
+        <div class="pd-tab active" onclick="switchTab(0)">商品详情</div>
+        <div class="pd-tab" onclick="switchTab(1)">用户评价 <span style="color:var(--gold);font-size:12px;">386</span></div>
+        <div class="pd-tab" onclick="switchTab(2)">相关推荐</div>
+      </div>
+
+      <!-- Tab 0: 详情 -->
+      <div class="pd-detail-section active" id="tab0">
+        <div class="pd-attrs">
+          <div class="pd-attr"><span class="ic">💎</span><div><div class="pd-attr-key">主石</div><div class="pd-attr-val">天然钻石 · 0.3 ct</div></div></div>
+          <div class="pd-attr"><span class="ic">🏅</span><div><div class="pd-attr-key">净度</div><div class="pd-attr-val">VS1（非常少量内含物）</div></div></div>
+          <div class="pd-attr"><span class="ic">✂️</span><div><div class="pd-attr-key">切工</div><div class="pd-attr-val">圆形明亮式 · Excellent</div></div></div>
+          <div class="pd-attr"><span class="ic">🪙</span><div><div class="pd-attr-key">镶嵌金属</div><div class="pd-attr-val">18K 白金（Au750）</div></div></div>
+          <div class="pd-attr"><span class="ic">📏</span><div><div class="pd-attr-key">耳坠长度</div><div class="pd-attr-val">约 38mm</div></div></div>
+          <div class="pd-attr"><span class="ic">⚖️</span><div><div class="pd-attr-key">总重</div><div class="pd-attr-val">约 3.2g / 对</div></div></div>
+          <div class="pd-attr"><span class="ic">📜</span><div><div class="pd-attr-key">证书</div><div class="pd-attr-val">GIA / 国内权威宝石鉴定</div></div></div>
+          <div class="pd-attr"><span class="ic">👁️</span><div><div class="pd-attr-key">适配脸型</div><div class="pd-attr-val">椭圆形、心形、方形脸</div></div></div>
+        </div>
+
+        <div class="pd-desc-imgs">
+          <div class="pd-desc-img-block">
+            <span>💎✨💫</span>
+            <span class="caption">精选钻石，每颗均附 GIA 权威认证</span>
+          </div>
+          <div class="pd-desc-img-block" style="background:linear-gradient(135deg,#1A1714,#4A3020);color:white;">
+            <span>🌙⭐🌟</span>
+            <span class="caption" style="color:rgba(255,255,255,.7);">夜光效果 — 灵感源自星河</span>
+          </div>
+          <div class="pd-desc-img-block">
+            <span>📦🎁</span>
+            <span class="caption">珑饰专属礼盒包装，送礼首选</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 1: 评价 -->
+      <div class="pd-detail-section" id="tab1">
+        <!-- Summary -->
+        <div class="review-summary">
+          <div class="review-score-big">
+            <div class="review-score-num">4.9</div>
+            <div class="review-score-stars">★★★★★</div>
+            <div class="review-score-cnt">386 条评价</div>
+          </div>
+          <div class="review-bars">
+            <div class="review-bar-row">
+              <span class="review-bar-label">5★</span>
+              <div class="review-bar-bg"><div class="review-bar-fill" style="width:88%"></div></div>
+              <span class="review-bar-cnt">340</span>
+            </div>
+            <div class="review-bar-row">
+              <span class="review-bar-label">4★</span>
+              <div class="review-bar-bg"><div class="review-bar-fill" style="width:8%;background:#A8D5A2;"></div></div>
+              <span class="review-bar-cnt">31</span>
+            </div>
+            <div class="review-bar-row">
+              <span class="review-bar-label">3★</span>
+              <div class="review-bar-bg"><div class="review-bar-fill" style="width:2%;background:#F4B400;"></div></div>
+              <span class="review-bar-cnt">9</span>
+            </div>
+            <div class="review-bar-row">
+              <span class="review-bar-label">2★</span>
+              <div class="review-bar-bg"><div class="review-bar-fill" style="width:1%;background:#E74C3C;"></div></div>
+              <span class="review-bar-cnt">4</span>
+            </div>
+            <div class="review-bar-row">
+              <span class="review-bar-label">1★</span>
+              <div class="review-bar-bg"><div class="review-bar-fill" style="width:0.5%;background:#C0392B;"></div></div>
+              <span class="review-bar-cnt">2</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="review-filters">
+          <div class="chip active">全部 (386)</div>
+          <div class="chip">有图 (128)</div>
+          <div class="chip">好评 (371)</div>
+          <div class="chip">18K 白金</div>
+          <div class="chip">0.3 ct</div>
+        </div>
+
+        <!-- Review Items -->
+        <div class="review-item">
+          <div class="review-user">
+            <div class="review-avatar">李</div>
+            <div>
+              <div class="review-user-name">李**</div>
+              <div class="review-user-sub">已购买 · 18K 白金 / 0.3ct / G色 · 2026-04-10</div>
+            </div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">真的超级美！收到实物比图片还惊艳，钻石的火彩非常好，日常戴着感觉很轻，一点都不重坠。用了 AR 试戴功能确认了适合自己，果断入手，没有后悔！包装也很精美，很有仪式感。</div>
+          <div class="review-imgs">
+            <div class="review-img">💎</div>
+            <div class="review-img">✨</div>
+            <div class="review-img">📦</div>
+          </div>
+          <div class="review-helpful" style="margin-top:12px;">
+            <span class="review-sku-tag">购买规格：18K 白金 · 0.3ct · G 色</span>
+            <button class="review-helpful-btn" style="margin-left:auto;">👍 有帮助 (24)</button>
+          </div>
+        </div>
+
+        <div class="review-item">
+          <div class="review-user">
+            <div class="review-avatar">王</div>
+            <div>
+              <div class="review-user-name">王**</div>
+              <div class="review-user-sub">已购买 · 18K 玫瑰金 / 0.2ct · 2026-03-28</div>
+            </div>
+          </div>
+          <div class="review-stars">★★★★★</div>
+          <div class="review-text">当作生日礼物送给老婆的，她非常喜欢！AI 推荐功能真的很准，根据她的脸型推荐了这款，上脸效果绝了。证书也很正规，信赖这个平台。</div>
+          <div class="review-imgs">
+            <div class="review-img">🎁</div>
+            <div class="review-img">💕</div>
+          </div>
+          <div class="review-helpful" style="margin-top:12px;">
+            <span class="review-sku-tag">购买规格：18K 玫瑰金 · 0.2ct</span>
+            <button class="review-helpful-btn" style="margin-left:auto;">👍 有帮助 (17)</button>
+          </div>
+        </div>
+
+        <div class="review-item">
+          <div class="review-user">
+            <div class="review-avatar">张</div>
+            <div>
+              <div class="review-user-name">张**</div>
+              <div class="review-user-sub">已购买 · 18K 黄金 / 0.3ct · 2026-03-15</div>
+            </div>
+          </div>
+          <div class="review-stars">★★★★☆</div>
+          <div class="review-text">总体很满意，做工精细。发货速度很快，次日就到了。唯一小遗憾是实物颜色和屏幕上看起来稍有差异，不过佩戴效果依然很好看。</div>
+          <div class="review-helpful" style="margin-top:12px;">
+            <span class="review-sku-tag">购买规格：18K 黄金 · 0.3ct</span>
+            <button class="review-helpful-btn" style="margin-left:auto;">👍 有帮助 (8)</button>
+          </div>
+        </div>
+
+        <div style="text-align:center;padding:32px 0;">
+          <button class="btn btn-out btn-sm">加载更多评价</button>
+        </div>
+      </div>
+
+      <!-- Tab 2: 推荐 -->
+      <div class="pd-detail-section" id="tab2">
+        <div class="section-head">
+          <div class="section-title"><span>🔮</span>为您推荐</div>
+        </div>
+        <div class="related-grid">
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#E8F4F8,#D6EDF5);font-size:48px;">🌊</div>
+            <div class="product-card-body">
+              <div class="product-card-name">海洋之心 · 蓝宝石项链</div>
+              <div class="product-card-price"><span class="price-main">¥2,680</span><span class="price-old">¥3,200</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8 · 562</span><span class="match-pill">88%</span></div>
+            </div>
+          </div>
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#F5E6F5,#EDD6ED);font-size:48px;">🌸</div>
+            <div class="product-card-body">
+              <div class="product-card-name">樱花漫舞 · 粉钻戒指</div>
+              <div class="product-card-price"><span class="price-main">¥5,280</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9 · 231</span><span class="match-pill">85%</span></div>
+            </div>
+          </div>
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#F5EDE3,#FFF8F2);font-size:48px;">⭐</div>
+            <div class="product-card-body">
+              <div class="product-card-name">黄金星辰 · 项链套链</div>
+              <div class="product-card-price"><span class="price-main">¥1,980</span><span class="price-tag">8折</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★☆</span><span>4.7 · 810</span><span class="match-pill">81%</span></div>
+            </div>
+          </div>
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#E6F5E6,#D6EDD6);font-size:48px;">🍀</div>
+            <div class="product-card-body">
+              <div class="product-card-name">幸运四叶 · 翡翠手链</div>
+              <div class="product-card-price"><span class="price-main">¥3,560</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9 · 478</span><span class="match-pill">79%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="footer-main">
+    <div>
+      <div class="footer-brand">💎 珑饰</div>
+      <div class="footer-tagline">AI 驱动的智能珠宝电商平台<br>AR 虚拟试戴 · 脸型精准匹配 · 正品保障</div>
+      <div class="footer-socials">
+        <div class="footer-social-btn">微</div>
+        <div class="footer-social-btn">博</div>
+        <div class="footer-social-btn">抖</div>
+        <div class="footer-social-btn">📱</div>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>购物指南</h4>
+      <a href="#">如何使用 AI 导购</a>
+      <a href="#">AR 试戴教程</a>
+      <a href="#">脸型测试</a>
+      <a href="#">尺寸指南</a>
+    </div>
+    <div class="footer-col">
+      <h4>客户服务</h4>
+      <a href="#">在线客服</a>
+      <a href="#">退换货政策</a>
+      <a href="#">物流查询</a>
+      <a href="#">证书验证</a>
+    </div>
+    <div class="footer-col">
+      <h4>关于珑饰</h4>
+      <a href="#">品牌故事</a>
+      <a href="#">工艺标准</a>
+      <a href="#">加盟合作</a>
+      <a href="#">联系我们</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 珑饰 LongShi · 保留所有权利</span>
+    <span>ICP备XXXXXXXX号 · 营业执照</span>
+  </div>
+</footer>
+
+<script>
+// ── SKU Selection ──
+document.querySelectorAll('.pd-sku-options').forEach(group => {
+  group.querySelectorAll('.pd-sku-btn:not(.disabled)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      group.querySelectorAll('.pd-sku-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const label = group.closest('.pd-sku-section').querySelector('.pd-sku-label .selected-val');
+      if (label) label.textContent = btn.textContent.trim();
+    });
+  });
+});
+
+// ── Qty ──
+function changeQty(delta) {
+  const input = document.getElementById('qty');
+  const val = parseInt(input.value) + delta;
+  if (val >= 1 && val <= 5) input.value = val;
+}
+
+// ── Wish ──
+let wished = false;
+function toggleWish() {
+  wished = !wished;
+  const btn = document.getElementById('wishBtn');
+  if (wished) {
+    btn.innerHTML = '❤️ 已收藏';
+    btn.classList.add('active');
+    showToast('❤️ 已加入收藏夹');
+  } else {
+    btn.innerHTML = '♡ 收藏';
+    btn.classList.remove('active');
+    showToast('已取消收藏');
+  }
+}
+
+// ── Cart / Buy ──
+function addToCart() {
+  showToast('✅ 已加入购物车！');
+  setTimeout(() => location.href = 'cart.html', 1200);
+}
+function buyNow() { location.href = 'cart.html'; }
+
+// ── Toast ──
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── Tabs ──
+function switchTab(idx) {
+  document.querySelectorAll('.pd-tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('.pd-detail-section').forEach((s, i) => {
+    s.classList.toggle('active', i === idx);
+  });
+}
+
+// ── Thumbnails ──
+document.querySelectorAll('.pd-thumb').forEach((thumb, i) => {
+  thumb.addEventListener('click', () => {
+    document.querySelectorAll('.pd-thumb').forEach(t => t.classList.remove('active'));
+    thumb.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>珑饰 · 用户端原型（一）启动→购物车</title>
+<style>
+:root{
+  --gold:#C4906A;--gold-lt:#F5EDE3;--gold-dk:#9E7050;
+  --dark:#1A1714;--bg:#FAF9F7;--card:#fff;
+  --bd:#EBEBEB;--t1:#1A1714;--t2:#8B8B8B;--t3:#C8C8C8;
+  --green:#27AE60;--green-lt:#EAFAF1;
+  --red:#E74C3C;--red-lt:#FDEDEC;
+  --blue:#3498DB;--orange:#F39C12;
+  --r:12px;--rlg:20px;
+  --sh:0 2px 12px rgba(0,0,0,.08);--sh-md:0 4px 20px rgba(0,0,0,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:#D8D3CD;
+  font-family:-apple-system,'PingFang SC','Noto Sans SC',sans-serif;
+  display:flex;gap:18px;padding:22px;min-height:100vh;align-items:flex-start;
+}
+
+/* ─── SIDE NAV ─── */
+.snav{width:160px;flex-shrink:0;position:sticky;top:22px;display:flex;flex-direction:column;gap:10px;}
+.sbox{background:#fff;border-radius:14px;padding:14px 12px;box-shadow:var(--sh-md);}
+.s-brand{font-size:15px;font-weight:800;color:var(--dark);letter-spacing:.5px;}
+.s-ver{font-size:10px;color:var(--t2);margin-bottom:10px;}
+.s-sec{font-size:9px;font-weight:800;color:var(--gold);letter-spacing:1px;text-transform:uppercase;padding:8px 0 4px;}
+.si{
+  display:flex;align-items:center;gap:7px;
+  font-size:12px;color:var(--t2);
+  padding:6px 8px;border-radius:8px;
+  cursor:pointer;transition:all .15s;
+}
+.si:hover{background:var(--gold-lt);color:var(--gold-dk);}
+.si.on{background:var(--gold-lt);color:var(--gold);font-weight:700;}
+.si-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.s-hint{background:#fff;border-radius:14px;padding:12px;box-shadow:var(--sh);font-size:11px;color:var(--t2);line-height:1.7;}
+.s-hint b{color:var(--dark);}
+
+/* ─── PHONE ─── */
+.phone-wrap{flex-shrink:0;}
+.phone-outer{
+  width:393px;height:852px;
+  background:#1C1C1E;border-radius:50px;padding:13px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.1) inset,0 30px 80px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.3);
+  position:relative;
+}
+.phone-outer::before{/* dynamic island */
+  content:'';position:absolute;top:18px;left:50%;transform:translateX(-50%);
+  width:120px;height:34px;background:#1C1C1E;border-radius:20px;z-index:200;
+}
+.phone-screen{
+  width:100%;height:100%;background:var(--bg);
+  border-radius:38px;overflow:hidden;position:relative;
+}
+
+/* ─── PAGES ─── */
+.page{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;overflow:hidden;}
+.page.on{display:flex;}
+.sa{flex:1;overflow-y:auto;overflow-x:hidden;}
+.sa::-webkit-scrollbar{display:none;}
+
+/* ─── STATUS BAR ─── */
+.sb{height:52px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;flex-shrink:0;font-size:13px;font-weight:700;}
+.sb.dk{color:var(--dark);}
+.sb.lt{color:#fff;}
+.sb-ic{display:flex;align-items:center;gap:5px;font-size:12px;}
+
+/* ─── NAV BAR ─── */
+.nb{height:48px;display:flex;align-items:center;padding:0 14px;background:var(--card);flex-shrink:0;border-bottom:.5px solid var(--bd);gap:8px;}
+.nb-t{flex:1;text-align:center;font-size:16px;font-weight:700;color:var(--dark);}
+.nb-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:20px;cursor:pointer;color:var(--dark);border:none;background:transparent;}
+.nb-btn:active{background:var(--gold-lt);}
+.nb-act{font-size:13px;color:var(--gold);font-weight:600;cursor:pointer;}
+
+/* ─── TAB BAR ─── */
+.tb{height:80px;background:var(--card);border-top:.5px solid var(--bd);display:flex;align-items:flex-start;padding-top:8px;flex-shrink:0;}
+.ti{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:2px 0;position:relative;}
+.ti-ic{font-size:23px;line-height:1;}
+.ti-lb{font-size:10px;font-weight:500;color:var(--t2);}
+.ti.on .ti-lb{color:var(--gold);font-weight:700;}
+.ti-badge{position:absolute;top:-1px;right:17px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+
+/* ─── PRODUCT CARD ─── */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:0 13px 13px;}
+.pcard{background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);cursor:pointer;transition:transform .15s;}
+.pcard:active{transform:scale(.97);}
+.pcard-img{width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;}
+.pcard-try{position:absolute;bottom:7px;right:7px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:3px 8px;border-radius:20px;}
+.pcard-bd{padding:9px;}
+.pcard-nm{font-size:12px;color:var(--t1);line-height:1.4;margin-bottom:5px;height:33px;overflow:hidden;}
+.pcard-price{font-size:17px;font-weight:800;color:var(--dark);}
+.pcard-price small{font-size:11px;font-weight:500;}
+.pcard-meta{display:flex;align-items:center;gap:4px;margin-top:3px;}
+.stars{color:#F4B400;font-size:11px;}
+.sold{font-size:11px;color:var(--t2);}
+.mtag{background:var(--gold-lt);color:var(--gold-dk);font-size:10px;font-weight:700;padding:2px 5px;border-radius:4px;}
+
+/* ─── BUTTONS ─── */
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;}
+.btn:active{transform:scale(.97);}
+.btn-dark{background:var(--dark);color:#fff;padding:13px;}
+.btn-gold{background:var(--gold);color:#fff;padding:13px;}
+.btn-lt{background:var(--gold-lt);color:var(--gold-dk);padding:13px;}
+.btn-out{background:transparent;color:var(--dark);border:1.5px solid var(--bd);padding:11px;}
+.btn-sm{padding:8px 14px;font-size:13px;border-radius:8px;}
+.btn-xs{padding:5px 12px;font-size:12px;border-radius:8px;}
+.btn-w{width:100%;}
+
+/* ─── CHIPS ─── */
+.chips{display:flex;gap:8px;padding:8px 13px;overflow-x:auto;}
+.chips::-webkit-scrollbar{display:none;}
+.chip{white-space:nowrap;padding:7px 15px;border-radius:20px;font-size:12px;font-weight:500;background:var(--card);color:var(--t2);border:1.5px solid var(--bd);cursor:pointer;flex-shrink:0;}
+.chip.on{background:var(--dark);color:#fff;border-color:var(--dark);}
+
+/* ─── SECTION HEADER ─── */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 13px 8px;}
+.sec-t{font-size:16px;font-weight:800;color:var(--dark);}
+.sec-more{font-size:12px;color:var(--t2);}
+
+/* ─── DIVIDER ─── */
+.div8{height:8px;background:#F2F2F0;flex-shrink:0;}
+
+/* ─── BANNER ─── */
+.banner{margin:9px 13px;border-radius:var(--rlg);height:160px;background:linear-gradient(118deg,#1A1714 0%,#4A3020 55%,#7B5130 100%);overflow:hidden;position:relative;cursor:pointer;flex-shrink:0;}
+.banner-cnt{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#fff;}
+.banner-tag{background:var(--gold);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;}
+.banner-ttl{font-size:21px;font-weight:800;line-height:1.3;}
+.banner-sub{font-size:12px;opacity:.75;margin-top:3px;}
+.banner-deco{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:70px;opacity:.2;}
+.bdots{display:flex;gap:5px;justify-content:center;padding:5px 0;}
+.bdot{width:6px;height:6px;border-radius:50%;background:var(--bd);}
+.bdot.on{background:var(--gold);width:14px;border-radius:3px;}
+
+/* ─── ENTRY CARDS ─── */
+.entries{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 13px;}
+.ecard{border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:3px;cursor:pointer;transition:transform .15s;}
+.ecard:active{transform:scale(.97);}
+.ecard.ai{background:linear-gradient(135deg,#1A1714,#3D2E20);}
+.ecard.ar{background:linear-gradient(135deg,#C4906A,#9E7050);}
+.ecard-ic{font-size:30px;margin-bottom:4px;}
+.ecard-t{font-size:15px;font-weight:800;color:#fff;}
+.ecard-s{font-size:11px;color:rgba(255,255,255,.75);}
+
+/* ─── GUIDE STEP ─── */
+.prog-bar{height:3px;background:var(--bd);margin:0 13px;border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .4s ease;}
+.gopts{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:0 13px 13px;}
+.gopt{background:var(--card);border:2px solid var(--bd);border-radius:var(--r);padding:17px 13px;text-align:center;cursor:pointer;transition:all .2s;}
+.gopt:active{transform:scale(.96);}
+.gopt.on{border-color:var(--gold);background:var(--gold-lt);}
+.gopt-ic{font-size:28px;margin-bottom:7px;}
+.gopt-lb{font-size:13px;font-weight:700;color:var(--dark);}
+.gopt-ds{font-size:11px;color:var(--t2);margin-top:2px;}
+.bubble{margin:13px 13px 8px;display:flex;gap:10px;align-items:flex-start;}
+.bav{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#9E7050);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.bbox{background:var(--card);border-radius:4px var(--r) var(--r) var(--r);padding:12px 14px;box-shadow:var(--sh);flex:1;}
+.btext{font-size:14px;color:var(--dark);line-height:1.6;}
+.prev-ans{display:flex;flex-wrap:wrap;gap:6px;padding:0 13px 10px;}
+.prev-tag{background:var(--dark);color:#fff;font-size:11px;padding:3px 10px;border-radius:20px;}
+.skip-link{text-align:center;padding:10px;font-size:12px;color:var(--t2);cursor:pointer;}
+.skip-link:active{color:var(--gold);}
+
+/* ─── LOADING DOTS ─── */
+.ldots{display:flex;gap:8px;justify-content:center;}
+.ldot{width:10px;height:10px;border-radius:50%;background:var(--gold);animation:ld 1.4s ease-in-out infinite;}
+.ldot:nth-child(2){animation-delay:.2s;}
+.ldot:nth-child(3){animation-delay:.4s;}
+@keyframes ld{0%,80%,100%{transform:scale(.5);opacity:.4;}40%{transform:scale(1);opacity:1;}}
+
+/* ─── FACE DETECT ─── */
+.face-circle{width:200px;height:200px;border-radius:50%;border:3px solid var(--gold);margin:16px auto;background:var(--gold-lt);display:flex;align-items:center;justify-content:center;font-size:78px;position:relative;overflow:hidden;}
+.face-scan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:scan 2s ease-in-out infinite;}
+@keyframes scan{0%{top:10%;}100%{top:90%;}}
+.feat-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid var(--bd);}
+.feat-item:last-child{border-bottom:none;}
+.f-ok{color:var(--green);font-size:16px;}
+.f-no{color:var(--red);font-size:16px;}
+
+/* ─── FILTER ─── */
+.fbar{display:flex;padding:8px 13px;gap:6px;background:var(--card);border-bottom:.5px solid var(--bd);overflow-x:auto;flex-shrink:0;}
+.fbar::-webkit-scrollbar{display:none;}
+.fchip{white-space:nowrap;padding:5px 12px;border-radius:6px;font-size:12px;color:var(--t2);background:var(--bg);cursor:pointer;flex-shrink:0;}
+.fchip.on{color:var(--gold);font-weight:700;background:var(--gold-lt);}
+.sbar{display:flex;background:var(--card);border-bottom:.5px solid var(--bd);flex-shrink:0;}
+.sbar-item{flex:1;text-align:center;padding:10px 0;font-size:12px;color:var(--t2);cursor:pointer;}
+.sbar-item.on{color:var(--gold);font-weight:700;border-bottom:2px solid var(--gold);}
+
+/* ─── PRODUCT DETAIL ─── */
+.prd-gallery{display:flex;height:280px;overflow-x:auto;flex-shrink:0;}
+.prd-gallery::-webkit-scrollbar{display:none;}
+.prd-gi{min-width:280px;height:100%;display:flex;align-items:center;justify-content:center;font-size:100px;}
+.prd-gi-sm{min-width:90px;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;opacity:.7;}
+.gallery-dots{display:flex;gap:5px;justify-content:center;padding:7px 0;flex-shrink:0;}
+.match-bar{background:var(--gold-lt);margin:0 13px;border-radius:10px;padding:12px 13px;border-left:3px solid var(--gold);display:flex;align-items:center;gap:10px;}
+.match-bar-t{font-size:13px;color:var(--dark);line-height:1.5;flex:1;}
+.match-pct{font-size:22px;font-weight:800;color:var(--gold-dk);}
+.sku-row{display:flex;flex-wrap:wrap;gap:8px;}
+.sku{padding:6px 16px;border-radius:20px;border:1.5px solid var(--bd);font-size:12px;cursor:pointer;background:var(--card);}
+.sku.on{border-color:var(--dark);background:var(--dark);color:#fff;}
+.sku.out{opacity:.4;text-decoration:line-through;}
+.review-card{background:var(--card);border-radius:var(--r);padding:13px;box-shadow:var(--sh);margin:0 13px;}
+.rc-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.rc-av{width:32px;height:32px;border-radius:50%;background:var(--gold-lt);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.rc-name{font-size:13px;font-weight:700;color:var(--dark);}
+.rc-stars{color:#F4B400;font-size:12px;}
+.rc-text{font-size:13px;color:var(--t2);line-height:1.6;}
+
+/* ─── AR ─── */
+.ar-cam{flex:1;background:#0E0E0E;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.ar-bg{width:100%;height:100%;background:radial-gradient(ellipse at 50% 40%,#2A2A2A 0%,#0E0E0E 70%);display:flex;align-items:center;justify-content:center;position:relative;}
+.ar-face{font-size:120px;opacity:.55;user-select:none;}
+.ar-el{position:absolute;left:105px;top:215px;font-size:36px;transform:rotate(-8deg);filter:drop-shadow(0 3px 7px rgba(196,144,106,.7));animation:sw 3s ease-in-out infinite;}
+.ar-er{position:absolute;right:105px;top:215px;font-size:36px;transform:rotate(8deg) scaleX(-1);filter:drop-shadow(0 3px 7px rgba(196,144,106,.7));animation:sw 3s ease-in-out infinite reverse;}
+@keyframes sw{0%,100%{transform:rotate(-8deg);}50%{transform:rotate(-15deg);}}
+.ar-guide{position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);width:200px;height:260px;border:1.5px dashed rgba(196,144,106,.5);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;pointer-events:none;}
+.ar-top{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:linear-gradient(to bottom,rgba(0,0,0,.5),transparent);z-index:10;}
+.ar-abtn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;cursor:pointer;border:none;}
+.ar-bot{position:absolute;bottom:0;left:0;right:0;padding:12px 13px 14px;background:linear-gradient(transparent,rgba(0,0,0,.8));z-index:10;}
+.ar-pc{background:rgba(255,255,255,.12);backdrop-filter:blur(12px);border-radius:var(--r);padding:11px;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:9px;border:1px solid rgba(255,255,255,.15);}
+.ar-pimg{width:46px;height:46px;border-radius:8px;background:rgba(196,144,106,.3);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.ar-pnm{font-size:13px;font-weight:700;}
+.ar-pprice{font-size:12px;opacity:.8;}
+.ar-btns{display:flex;gap:7px;margin-left:auto;}
+.ar-pbtn{padding:6px 13px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;}
+.ar-pbtn.w{background:#fff;color:var(--dark);}
+.ar-pbtn.g{background:var(--gold);color:#fff;}
+.ar-thumbs{display:flex;gap:8px;overflow-x:auto;}
+.ar-thumbs::-webkit-scrollbar{display:none;}
+.ar-th{width:52px;height:52px;border-radius:10px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid transparent;flex-shrink:0;cursor:pointer;}
+.ar-th.on{border-color:#fff;}
+
+/* ─── CART ─── */
+.ci{background:var(--card);padding:13px;display:flex;gap:11px;align-items:flex-start;border-bottom:.5px solid var(--bd);}
+.ci-chk{width:22px;height:22px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:22px;color:#fff;font-size:12px;}
+.ci-img{width:80px;height:80px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0;}
+.ci-info{flex:1;}
+.ci-nm{font-size:14px;color:var(--dark);margin-bottom:4px;font-weight:500;}
+.ci-spec{font-size:12px;color:var(--t2);margin-bottom:9px;}
+.ci-bot{display:flex;align-items:center;justify-content:space-between;}
+.ci-price{font-size:17px;font-weight:800;color:var(--dark);}
+.qty{display:flex;align-items:center;border:1.5px solid var(--bd);border-radius:8px;overflow:hidden;width:fit-content;}
+.qty-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:var(--dark);background:var(--card);border:none;}
+.qty-n{width:32px;text-align:center;font-size:14px;font-weight:700;border-left:1px solid var(--bd);border-right:1px solid var(--bd);padding:4px 0;color:var(--dark);}
+.bbar{background:var(--card);padding:12px 14px;border-top:.5px solid var(--bd);flex-shrink:0;display:flex;gap:10px;align-items:center;}
+.bbar-sum{flex:1;}
+.bbar-lbl{font-size:12px;color:var(--t2);}
+.bbar-price{font-size:20px;font-weight:800;color:var(--dark);}
+
+/* ─── SEARCH BAR ─── */
+.searchbar{margin:8px 13px;background:#F2F2F0;border-radius:10px;display:flex;align-items:center;padding:10px 13px;gap:8px;flex-shrink:0;}
+.searchbar-ph{font-size:14px;color:var(--t2);}
+
+/* ─── LIST ITEM ─── */
+.li{display:flex;align-items:center;padding:13px 14px;background:var(--card);border-bottom:.5px solid var(--bd);gap:11px;cursor:pointer;}
+.li:active{background:#F8F8F8;}
+.li-ic{font-size:20px;flex-shrink:0;}
+.li-t{flex:1;font-size:14px;color:var(--t1);}
+.li-v{font-size:13px;color:var(--t2);}
+.li-arr{color:var(--t3);font-size:18px;}
+
+/* ─── HELPERS ─── */
+.row{display:flex;align-items:center;gap:8px;}
+.col{display:flex;flex-direction:column;gap:4px;}
+.f1{flex:1;}
+.tc{text-align:center;}
+.f12{font-size:12px;}.f13{font-size:13px;}.f14{font-size:14px;}
+.fw7{font-weight:700;}.fw8{font-weight:800;}
+.t1c{color:var(--t1);}.t2c{color:var(--t2);}.goldc{color:var(--gold);}
+.mt4{margin-top:4px;}.mt8{margin-top:8px;}.mt12{margin-top:12px;}.mt16{margin-top:16px;}
+.mb4{margin-bottom:4px;}.mb8{margin-bottom:8px;}.mb12{margin-bottom:12px;}
+.p14{padding:14px;}.px14{padding-left:14px;padding-right:14px;}
+
+/* ─── TRANSITIONS ─── */
+@keyframes slideIn{from{transform:translateX(40px);opacity:.6;}to{transform:translateX(0);opacity:1;}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.anim-slide{animation:slideIn .28s ease;}
+.anim-fade{animation:fadeIn .3s ease;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ SIDE NAV ═══════════════════ -->
+<nav class="snav">
+  <div class="sbox">
+    <div class="s-brand">💎 珑饰</div>
+    <div class="s-ver">原型 v1.0 · 用户端（一）</div>
+
+    <div class="s-sec">用户端 — 发现流</div>
+    <div class="si on" data-pg="p-splash"    onclick="go('p-splash')">   <span class="si-dot"></span>01 启动页</div>
+    <div class="si"    data-pg="p-login"     onclick="go('p-login')">    <span class="si-dot"></span>02 登录注册</div>
+    <div class="si"    data-pg="p-home"      onclick="go('p-home')">     <span class="si-dot"></span>03 首页</div>
+
+    <div class="s-sec">AI 导购流</div>
+    <div class="si"    data-pg="p-guide"     onclick="go('p-guide');resetGuide()"><span class="si-dot"></span>04 AI 导购</div>
+    <div class="si"    data-pg="p-face"      onclick="go('p-face')">     <span class="si-dot"></span>05 脸型检测</div>
+    <div class="si"    data-pg="p-face-r"    onclick="go('p-face-r')">   <span class="si-dot"></span>06 检测结果</div>
+
+    <div class="s-sec">商品 & 决策</div>
+    <div class="si"    data-pg="p-plist"     onclick="go('p-plist')">    <span class="si-dot"></span>07 商品列表</div>
+    <div class="si"    data-pg="p-pdetail"   onclick="go('p-pdetail')">  <span class="si-dot"></span>08 商品详情</div>
+    <div class="si"    data-pg="p-ar"        onclick="go('p-ar')">       <span class="si-dot"></span>09 AR 试戴</div>
+    <div class="si"    data-pg="p-cart"      onclick="go('p-cart')">     <span class="si-dot"></span>10 购物车</div>
+  </div>
+
+  <div class="s-hint">
+    <b>点击侧栏</b>跳转页面<br>
+    页内按钮 → 真实导航<br>
+    <b>AI导购</b>点选项自动推进<br>
+    <b>AR试戴</b>底部可切换款式
+  </div>
+</nav>
+
+<!-- ═══════════════════ PHONE ═══════════════════ -->
+<div class="phone-wrap">
+<div class="phone-outer">
+<div class="phone-screen">
+
+
+<!-- ══════════════════════════════════════════════
+     01  启动页
+══════════════════════════════════════════════ -->
+<div class="page on" id="p-splash" onclick="go('p-login')" style="cursor:pointer;">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#1A1714 0%,#3D2E20 60%,#7B5130 100%);">
+    <div style="font-size:60px;margin-bottom:14px;filter:drop-shadow(0 4px 16px rgba(196,144,106,.5));">💎</div>
+    <div style="font-size:38px;font-weight:800;letter-spacing:3px;color:#fff;margin-bottom:6px;">珑饰</div>
+    <div style="font-size:12px;letter-spacing:5px;color:rgba(255,255,255,.45);text-transform:uppercase;margin-bottom:12px;">LONGSHI</div>
+    <div style="font-size:13px;color:rgba(255,255,255,.5);">发现最适合你的那一件</div>
+
+    <div style="position:absolute;bottom:70px;text-align:center;">
+      <div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:14px;">轻触任意处进入</div>
+      <div class="ldots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+    </div>
+
+    <!-- decorative rings -->
+    <div style="position:absolute;top:80px;right:40px;width:120px;height:120px;border-radius:50%;border:1px solid rgba(196,144,106,.15);"></div>
+    <div style="position:absolute;top:60px;right:20px;width:160px;height:160px;border-radius:50%;border:1px solid rgba(196,144,106,.08);"></div>
+    <div style="position:absolute;bottom:180px;left:30px;width:90px;height:90px;border-radius:50%;border:1px solid rgba(196,144,106,.12);"></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     02  登录 / 注册
+══════════════════════════════════════════════ -->
+<div class="page" id="p-login">
+  <div style="flex:1;display:flex;flex-direction:column;background:linear-gradient(180deg,#1A1714 0%,var(--bg) 42%);">
+    <!-- top area -->
+    <div style="padding:60px 28px 30px;text-align:center;">
+      <div style="font-size:30px;font-weight:800;letter-spacing:2px;color:#fff;">珑饰</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:6px;letter-spacing:2px;">LONGSHI</div>
+    </div>
+
+    <!-- form card -->
+    <div style="background:var(--card);border-radius:24px 24px 0 0;flex:1;padding:28px 22px;">
+      <div style="font-size:20px;font-weight:800;color:var(--dark);margin-bottom:4px;">欢迎回来 👋</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:24px;">登录后享受专属推荐体验</div>
+
+      <!-- phone input -->
+      <div style="border:1.5px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;padding:12px 14px;gap:10px;border-bottom:.5px solid var(--bd);">
+          <span style="font-size:14px;color:var(--t2);white-space:nowrap;">🇨🇳 +86</span>
+          <div style="width:1px;height:18px;background:var(--bd);"></div>
+          <span style="font-size:14px;color:var(--t3);">请输入手机号</span>
+        </div>
+        <div style="display:flex;align-items:center;padding:12px 14px;gap:10px;">
+          <span style="font-size:14px;color:var(--t3);flex:1;">验证码</span>
+          <span style="font-size:13px;color:var(--gold);font-weight:700;white-space:nowrap;">获取验证码</span>
+        </div>
+      </div>
+
+      <button class="btn btn-dark btn-w" onclick="go('p-home')" style="margin-bottom:16px;">登录 / 注册</button>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="flex:1;height:1px;background:var(--bd);"></div>
+        <span style="font-size:12px;color:var(--t2);">或者</span>
+        <div style="flex:1;height:1px;background:var(--bd);"></div>
+      </div>
+
+      <button class="btn btn-out btn-w" style="gap:8px;margin-bottom:20px;">
+        <span style="font-size:20px;">💬</span> 微信一键登录
+      </button>
+
+      <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.7;">
+        继续即代表同意
+        <span style="color:var(--gold);">《用户协议》</span>与
+        <span style="color:var(--gold);">《隐私政策》</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     03  首页
+══════════════════════════════════════════════ -->
+<div class="page" id="p-home">
+  <!-- status bar -->
+  <div class="sb dk">
+    <span>9:41</span>
+    <div class="sb-ic"><span>●●●●</span><span>WiFi</span><span>🔋</span></div>
+  </div>
+  <!-- header -->
+  <div style="display:flex;align-items:center;padding:0 13px 10px;gap:10px;flex-shrink:0;background:var(--bg);">
+    <div style="flex:1;background:#F2F2F0;border-radius:10px;display:flex;align-items:center;padding:9px 12px;gap:8px;">
+      <span style="font-size:16px;">🔍</span>
+      <span style="font-size:13px;color:var(--t2);">搜索耳饰、项链、手链...</span>
+    </div>
+    <div style="font-size:24px;cursor:pointer;">🔔</div>
+  </div>
+
+  <div class="sa">
+    <!-- banner -->
+    <div class="banner" onclick="go('p-pdetail')">
+      <div class="banner-cnt">
+        <span class="banner-tag">新品上市</span>
+        <div class="banner-ttl">秋冬宫廷系列<br>典雅降临</div>
+        <div class="banner-sub">多款新品限时首发 · 低至7折</div>
+      </div>
+      <div class="banner-deco">💎</div>
+    </div>
+    <div class="bdots">
+      <div class="bdot on"></div><div class="bdot"></div><div class="bdot"></div>
+    </div>
+
+    <!-- entry cards -->
+    <div class="entries" style="margin-bottom:10px;">
+      <div class="ecard ai" onclick="go('p-guide');resetGuide()">
+        <div class="ecard-ic">✨</div>
+        <div class="ecard-t">AI 帮我选款</div>
+        <div class="ecard-s">3步找到最适合你</div>
+      </div>
+      <div class="ecard ar" onclick="go('p-ar')">
+        <div class="ecard-ic">📷</div>
+        <div class="ecard-t">虚拟试戴</div>
+        <div class="ecard-s">先试后买 所见即得</div>
+      </div>
+    </div>
+
+    <!-- category chips -->
+    <div class="chips">
+      <div class="chip on">全部</div>
+      <div class="chip" onclick="go('p-plist')">耳饰</div>
+      <div class="chip" onclick="go('p-plist')">项链</div>
+      <div class="chip" onclick="go('p-plist')">手链</div>
+      <div class="chip" onclick="go('p-plist')">戒指</div>
+      <div class="chip" onclick="go('p-plist')">套装</div>
+    </div>
+
+    <!-- recommend section -->
+    <div class="sec-hd">
+      <span class="sec-t">✦ 为你推荐</span>
+      <span class="sec-more" style="background:var(--gold-lt);color:var(--gold-dk);font-size:11px;padding:3px 8px;border-radius:10px;font-weight:700;">椭圆脸 · 暖肤</span>
+    </div>
+
+    <div class="pgrid">
+      <!-- p1 -->
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#F5EDE3,#EDE0CE);">
+          🌙<div class="pcard-try" onclick="event.stopPropagation();go('p-ar')">📷 试戴</div>
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">月牙弧形耳环 复古宫廷风</div>
+          <div class="pcard-price"><small>¥</small>168</div>
+          <div class="pcard-meta">
+            <span class="stars">★★★★★</span>
+            <span class="sold">4.9 · 已售2.1k</span>
+          </div>
+          <div class="pcard-meta"><span class="mtag">匹配 98%</span></div>
+        </div>
+      </div>
+      <!-- p2 -->
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#EAF0F5,#D8E8F0);">
+          📿<div class="pcard-try" onclick="event.stopPropagation();go('p-ar')">📷 试戴</div>
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">天然珍珠项链 简约极简风</div>
+          <div class="pcard-price"><small>¥</small>238</div>
+          <div class="pcard-meta">
+            <span class="stars">★★★★★</span>
+            <span class="sold">4.8 · 已售876</span>
+          </div>
+          <div class="pcard-meta"><span class="mtag">匹配 95%</span></div>
+        </div>
+      </div>
+      <!-- p3 -->
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#F0ECF5,#E4DCF0);">
+          💫<div class="pcard-try" onclick="event.stopPropagation();go('p-ar')">📷 试戴</div>
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">星月水晶耳坠 甜美少女风</div>
+          <div class="pcard-price"><small>¥</small>89</div>
+          <div class="pcard-meta">
+            <span class="stars">★★★★★</span>
+            <span class="sold">4.9 · 已售3.4k</span>
+          </div>
+        </div>
+      </div>
+      <!-- p4 -->
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#F5F0E8,#EDE8DC);">
+          🔮<div class="pcard-try" onclick="event.stopPropagation();go('p-ar')">📷 试戴</div>
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">复古宫廷耳钉 925纯银</div>
+          <div class="pcard-price"><small>¥</small>158</div>
+          <div class="pcard-meta">
+            <span class="stars">★★★★☆</span>
+            <span class="sold">4.7 · 已售512</span>
+          </div>
+          <div class="pcard-meta"><span class="mtag">匹配 91%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- hot section -->
+    <div class="sec-hd">
+      <span class="sec-t">🔥 热销榜单</span>
+      <span class="sec-more">查看全部 ›</span>
+    </div>
+    <div class="pgrid" style="padding-bottom:8px;">
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#F5EDE3,#EDE0CE);">🌸</div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">彩虹天然石手链</div>
+          <div class="pcard-price"><small>¥</small>198</div>
+          <div class="pcard-meta"><span class="stars">★★★★★</span><span class="sold">4.8</span></div>
+        </div>
+      </div>
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#EAF5EA,#D8F0D8);">💍</div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">简约银叶戒指 镀金</div>
+          <div class="pcard-price"><small>¥</small>128</div>
+          <div class="pcard-meta"><span class="stars">★★★★☆</span><span class="sold">4.6</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- tab bar -->
+  <div class="tb">
+    <div class="ti on"><div class="ti-ic">🏠</div><div class="ti-lb">首页</div></div>
+    <div class="ti" onclick="go('p-guide');resetGuide()"><div class="ti-ic">✨</div><div class="ti-lb">导购</div></div>
+    <div class="ti" onclick="go('p-ar')"><div class="ti-ic">📷</div><div class="ti-lb">试戴</div></div>
+    <div class="ti" onclick="go('p-cart')"><div class="ti-ic">🛍️</div><div class="ti-lb">购物车</div><div class="ti-badge">2</div></div>
+    <div class="ti"><div class="ti-ic">👤</div><div class="ti-lb">我的</div></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     04  AI 导购（4步 + 加载 + 结果）
+══════════════════════════════════════════════ -->
+<div class="page" id="p-guide">
+  <div class="sb dk"><span>9:41</span><div class="sb-ic"><span>●●●●</span><span>WiFi</span><span>🔋</span></div></div>
+  <div class="nb">
+    <div class="nb-btn" onclick="go('p-home')">←</div>
+    <div class="nb-t">为我选款</div>
+    <div class="nb-act" id="guide-step-label">步骤 1/4</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="guide-prog" style="width:25%;"></div></div>
+
+  <div class="sa" id="guide-scroll">
+    <!-- ── Step 0: 场合 ── -->
+    <div id="gs-0">
+      <div class="bubble">
+        <div class="bav">✨</div>
+        <div class="bbox"><div class="btext">你好！我是你的专属选品顾问～<br>先告诉我，你打算在什么<b>场合</b>佩戴这件饰品呢？</div></div>
+      </div>
+      <div class="gopts">
+        <div class="gopt" onclick="gNext(0,'日常通勤','👗')">
+          <div class="gopt-ic">👗</div>
+          <div class="gopt-lb">日常通勤</div>
+          <div class="gopt-ds">上班/日常出行</div>
+        </div>
+        <div class="gopt" onclick="gNext(0,'约会出行','💑')">
+          <div class="gopt-ic">💑</div>
+          <div class="gopt-lb">约会出行</div>
+          <div class="gopt-ds">甜蜜约会场合</div>
+        </div>
+        <div class="gopt" onclick="gNext(0,'职场正式','💼')">
+          <div class="gopt-ic">💼</div>
+          <div class="gopt-lb">职场正式</div>
+          <div class="gopt-ds">商务/重要会议</div>
+        </div>
+        <div class="gopt" onclick="gNext(0,'派对聚会','🎉')">
+          <div class="gopt-ic">🎉</div>
+          <div class="gopt-lb">派对聚会</div>
+          <div class="gopt-ds">晚宴/节日活动</div>
+        </div>
+      </div>
+      <div class="skip-link" onclick="gSkipAll()">跳过，直接看推荐 →</div>
+    </div>
+
+    <!-- ── Step 1: 风格 ── -->
+    <div id="gs-1" style="display:none;">
+      <div class="prev-ans" id="prev-1"></div>
+      <div class="bubble">
+        <div class="bav">✨</div>
+        <div class="bbox"><div class="btext">好的！你喜欢什么样的整体<b>风格</b>呢？</div></div>
+      </div>
+      <div class="gopts">
+        <div class="gopt" onclick="gNext(1,'简约精致','✦')">
+          <div class="gopt-ic">✦</div>
+          <div class="gopt-lb">简约精致</div>
+          <div class="gopt-ds">低调/极简/高级感</div>
+        </div>
+        <div class="gopt" onclick="gNext(1,'优雅复古','🌹')">
+          <div class="gopt-ic">🌹</div>
+          <div class="gopt-lb">优雅复古</div>
+          <div class="gopt-ds">宫廷/古典/文艺</div>
+        </div>
+        <div class="gopt" onclick="gNext(1,'甜美少女','🌸')">
+          <div class="gopt-ic">🌸</div>
+          <div class="gopt-lb">甜美少女</div>
+          <div class="gopt-ds">可爱/粉嫩/甜系</div>
+        </div>
+        <div class="gopt" onclick="gNext(1,'个性潮酷','⚡')">
+          <div class="gopt-ic">⚡</div>
+          <div class="gopt-lb">个性潮酷</div>
+          <div class="gopt-ds">街头/先锋/炸裂</div>
+        </div>
+      </div>
+      <div class="skip-link" onclick="gSkipAll()">跳过，直接看推荐 →</div>
+    </div>
+
+    <!-- ── Step 2: 材质 ── -->
+    <div id="gs-2" style="display:none;">
+      <div class="prev-ans" id="prev-2"></div>
+      <div class="bubble">
+        <div class="bav">✨</div>
+        <div class="bbox"><div class="btext">了解啦！你对饰品的<b>材质</b>有什么偏好吗？</div></div>
+      </div>
+      <div class="gopts">
+        <div class="gopt" onclick="gNext(2,'925纯银','🪙')">
+          <div class="gopt-ic">🪙</div>
+          <div class="gopt-lb">925纯银</div>
+          <div class="gopt-ds">不易过敏/经典</div>
+        </div>
+        <div class="gopt" onclick="gNext(2,'黄金/镀金','✨')">
+          <div class="gopt-ic">✨</div>
+          <div class="gopt-lb">黄金/镀金</div>
+          <div class="gopt-ds">显白/贵气/经典</div>
+        </div>
+        <div class="gopt" onclick="gNext(2,'天然宝石','💎')">
+          <div class="gopt-ic">💎</div>
+          <div class="gopt-lb">天然宝石</div>
+          <div class="gopt-ds">独特/自然/稀有</div>
+        </div>
+        <div class="gopt" onclick="gNext(2,'没有要求','🙆')">
+          <div class="gopt-ic">🙆</div>
+          <div class="gopt-lb">没有要求</div>
+          <div class="gopt-ds">好看就行！</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Step 3: 预算 ── -->
+    <div id="gs-3" style="display:none;">
+      <div class="prev-ans" id="prev-3"></div>
+      <div class="bubble">
+        <div class="bav">✨</div>
+        <div class="bbox"><div class="btext">最后一问～你的大概<b>预算</b>范围是？</div></div>
+      </div>
+      <div class="gopts">
+        <div class="gopt" onclick="gNext(3,'¥50 以内','💰')">
+          <div class="gopt-ic">💰</div>
+          <div class="gopt-lb">¥50 以内</div>
+          <div class="gopt-ds">性价比首选</div>
+        </div>
+        <div class="gopt" onclick="gNext(3,'¥50 – 200','💳')">
+          <div class="gopt-ic">💳</div>
+          <div class="gopt-lb">¥50 – 200</div>
+          <div class="gopt-ds">日常主力区间</div>
+        </div>
+        <div class="gopt" onclick="gNext(3,'¥200 – 500','💵')">
+          <div class="gopt-ic">💵</div>
+          <div class="gopt-lb">¥200 – 500</div>
+          <div class="gopt-ds">品质之选</div>
+        </div>
+        <div class="gopt" onclick="gNext(3,'¥500+','💎')">
+          <div class="gopt-ic">💎</div>
+          <div class="gopt-lb">¥500+</div>
+          <div class="gopt-ds">奢享无上限</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Loading ── -->
+    <div id="gs-loading" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;">
+      <div style="font-size:50px;margin-bottom:20px;animation:ld 1.5s ease-in-out infinite;">✨</div>
+      <div style="font-size:16px;font-weight:700;color:var(--dark);margin-bottom:8px;">AI 正在为你匹配...</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:24px;">综合脸型特征 × 场合偏好 × 材质</div>
+      <div class="ldots"><div class="ldot"></div><div class="ldot"></div><div class="ldot"></div></div>
+      <div style="margin-top:24px;font-size:12px;color:var(--t3);">检索 2,840 件商品中</div>
+    </div>
+
+    <!-- ── Result ── -->
+    <div id="gs-result" style="display:none;">
+      <!-- summary card -->
+      <div style="background:linear-gradient(135deg,#1A1714,#4A3020);margin:13px;border-radius:var(--rlg);padding:16px;color:#fff;">
+        <div style="font-size:11px;opacity:.6;margin-bottom:6px;">✦ 专属推荐结果</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:4px;">为你找到 <span style="color:var(--gold);">12 款</span>高匹配饰品</div>
+        <div style="font-size:12px;opacity:.7;margin-bottom:14px;">场合: 约会出行 · 风格: 优雅复古 · 925纯银</div>
+        <div onclick="go('p-face')" style="background:rgba(196,144,106,.25);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;cursor:pointer;border:1px solid rgba(196,144,106,.3);">
+          <span style="font-size:20px;">📷</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;">上传照片，进一步精准推荐</div>
+            <div style="font-size:11px;opacity:.7;">加入脸型分析，精准度 +40%</div>
+          </div>
+          <span style="margin-left:auto;opacity:.6;">›</span>
+        </div>
+      </div>
+
+      <div class="sec-hd">
+        <span class="sec-t">为你专属推荐</span>
+        <span class="sec-more">重新选择</span>
+      </div>
+
+      <div class="pgrid">
+        <div class="pcard" onclick="go('p-pdetail')">
+          <div class="pcard-img" style="background:linear-gradient(135deg,#F5EDE3,#EDE0CE);">
+            🌙<div class="pcard-try" onclick="event.stopPropagation();go('p-ar')">📷 试戴</div>
+          </div>
+          <div class="pcard-bd">
+            <div class="pcard-nm">月牙弧形耳环 复古925银</div>
+            <div class="pcard-price"><small>¥</small>168</div>
+            <div class="pcard-meta"><span class="stars">★★★★★</span><span class="sold">4.9</span></div>
+            <div class="pcard-meta"><span class="mtag">匹配 98%</span></div>
+          </div>
+        </div>
+        <div class="pcard" onclick="go('p-pdetail')">
+          <div class="pcard-img" style="background:linear-gradient(135deg,#EAF0F5,#D8E8F0);">
+            📿<div class="pcard-try" onclick="event.stopPropagation();go('p-ar')">📷 试戴</div>
+          </div>
+          <div class="pcard-bd">
+            <div class="pcard-nm">天然珍珠项链 简约链条</div>
+            <div class="pcard-price"><small>¥</small>238</div>
+            <div class="pcard-meta"><span class="stars">★★★★★</span><span class="sold">4.8</span></div>
+            <div class="pcard-meta"><span class="mtag">匹配 95%</span></div>
+          </div>
+        </div>
+        <div class="pcard" onclick="go('p-pdetail')">
+          <div class="pcard-img" style="background:linear-gradient(135deg,#F0ECF5,#E4DCF0);">
+            💫
+          </div>
+          <div class="pcard-bd">
+            <div class="pcard-nm">星月水晶耳坠 甜美风格</div>
+            <div class="pcard-price"><small>¥</small>89</div>
+            <div class="pcard-meta"><span class="stars">★★★★★</span><span class="sold">4.9</span></div>
+            <div class="pcard-meta"><span class="mtag">匹配 92%</span></div>
+          </div>
+        </div>
+        <div class="pcard" onclick="go('p-pdetail')">
+          <div class="pcard-img" style="background:linear-gradient(135deg,#F5F0E8,#EDE8DC);">
+            🔮
+          </div>
+          <div class="pcard-bd">
+            <div class="pcard-nm">宫廷珍珠耳钉 镀金复古</div>
+            <div class="pcard-price"><small>¥</small>158</div>
+            <div class="pcard-meta"><span class="stars">★★★★☆</span><span class="sold">4.7</span></div>
+            <div class="pcard-meta"><span class="mtag">匹配 89%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /sa -->
+
+  <!-- tab bar -->
+  <div class="tb">
+    <div class="ti" onclick="go('p-home')"><div class="ti-ic">🏠</div><div class="ti-lb">首页</div></div>
+    <div class="ti on"><div class="ti-ic">✨</div><div class="ti-lb">导购</div></div>
+    <div class="ti" onclick="go('p-ar')"><div class="ti-ic">📷</div><div class="ti-lb">试戴</div></div>
+    <div class="ti" onclick="go('p-cart')"><div class="ti-ic">🛍️</div><div class="ti-lb">购物车</div><div class="ti-badge">2</div></div>
+    <div class="ti"><div class="ti-ic">👤</div><div class="ti-lb">我的</div></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     05  脸型检测
+══════════════════════════════════════════════ -->
+<div class="page" id="p-face">
+  <div class="sb dk"><span>9:41</span><div class="sb-ic"><span>●●●●</span><span>🔋</span></div></div>
+  <div class="nb">
+    <div class="nb-btn" onclick="go('p-guide')">←</div>
+    <div class="nb-t">脸型检测</div>
+    <div style="width:36px;"></div>
+  </div>
+
+  <div class="sa" style="background:var(--bg);">
+    <div style="text-align:center;padding:20px 20px 0;">
+      <div style="font-size:17px;font-weight:800;color:var(--dark);margin-bottom:6px;">让 AI 更了解你 ✨</div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.7;">检测一次，永久优化你的专属推荐<br>照片仅在本地处理，不会上传存储</div>
+    </div>
+
+    <!-- face circle with scan animation -->
+    <div class="face-circle">
+      👤
+      <div class="face-scan"></div>
+    </div>
+
+    <!-- tips -->
+    <div style="background:var(--card);border-radius:var(--r);margin:0 16px;padding:16px;box-shadow:var(--sh);">
+      <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:12px;">拍摄小贴士</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--t1);">
+          <span style="width:24px;height:24px;border-radius:50%;background:var(--gold-lt);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">①</span>
+          正面朝向摄像头，保持面部居中
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--t1);">
+          <span style="width:24px;height:24px;border-radius:50%;background:var(--gold-lt);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">②</span>
+          光线充足，避免背光和强烈阴影
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--t1);">
+          <span style="width:24px;height:24px;border-radius:50%;background:var(--gold-lt);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">③</span>
+          将头发梳到脑后，效果更精准
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+      <button class="btn btn-dark btn-w" onclick="goFaceLoading()" style="font-size:14px;">
+        📷 立即拍照分析
+      </button>
+      <button class="btn btn-out btn-w" onclick="goFaceLoading()" style="font-size:14px;">
+        🖼️ 从相册选择
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     06  脸型检测结果
+══════════════════════════════════════════════ -->
+<div class="page" id="p-face-r">
+  <div class="sb dk"><span>9:41</span><div class="sb-ic"><span>●●●●</span><span>🔋</span></div></div>
+  <div class="nb">
+    <div class="nb-btn" onclick="go('p-face')">←</div>
+    <div class="nb-t">分析完成</div>
+    <div style="width:36px;"></div>
+  </div>
+
+  <div class="sa">
+    <!-- result header -->
+    <div style="background:linear-gradient(135deg,#1A1714,#4A3020);padding:24px 20px 20px;text-align:center;color:#fff;">
+      <div style="font-size:11px;opacity:.6;margin-bottom:10px;">✓ 面部特征识别完成</div>
+      <div style="width:90px;height:90px;border-radius:50%;border:3px solid var(--gold);margin:0 auto 14px;background:rgba(196,144,106,.2);display:flex;align-items:center;justify-content:center;font-size:50px;">😊</div>
+      <div style="font-size:22px;font-weight:800;margin-bottom:4px;">椭圆脸</div>
+      <div style="font-size:13px;opacity:.7;">肤色：暖色调（黄皮）</div>
+    </div>
+
+    <!-- score bar -->
+    <div style="background:var(--card);padding:16px 14px;display:flex;gap:0;border-bottom:.5px solid var(--bd);">
+      <div style="flex:1;text-align:center;border-right:.5px solid var(--bd);">
+        <div style="font-size:20px;font-weight:800;color:var(--gold);">98%</div>
+        <div style="font-size:11px;color:var(--t2);">检测置信度</div>
+      </div>
+      <div style="flex:1;text-align:center;border-right:.5px solid var(--bd);">
+        <div style="font-size:20px;font-weight:800;color:var(--dark);">椭圆脸</div>
+        <div style="font-size:11px;color:var(--t2);">脸型分类</div>
+      </div>
+      <div style="flex:1;text-align:center;">
+        <div style="font-size:20px;font-weight:800;color:var(--orange);">暖调</div>
+        <div style="font-size:11px;color:var(--t2);">肤色色调</div>
+      </div>
+    </div>
+
+    <!-- suitable features -->
+    <div style="background:var(--card);margin:10px 13px;border-radius:var(--r);padding:14px;box-shadow:var(--sh);">
+      <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:10px;">✦ 适合你的款式特征</div>
+      <div class="feat-item"><span class="f-ok">✓</span><span style="font-size:13px;color:var(--dark);">弧形/流线型耳环，温柔显脸小</span></div>
+      <div class="feat-item"><span class="f-ok">✓</span><span style="font-size:13px;color:var(--dark);">中长款项链（40-45cm），拉伸颈线</span></div>
+      <div class="feat-item"><span class="f-ok">✓</span><span style="font-size:13px;color:var(--dark);">金色/玫瑰金系，提亮暖肤气色</span></div>
+      <div class="feat-item"><span class="f-ok">✓</span><span style="font-size:13px;color:var(--dark);">珍珠、天然石等自然感材质</span></div>
+    </div>
+
+    <!-- not suitable -->
+    <div style="background:var(--card);margin:0 13px 10px;border-radius:var(--r);padding:14px;box-shadow:var(--sh);">
+      <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:10px;">✗ 不太推荐的款式</div>
+      <div class="feat-item"><span class="f-no">✗</span><span style="font-size:13px;color:var(--t2);">过于宽大的几何形方形耳环</span></div>
+      <div class="feat-item" style="border-bottom:none;"><span class="f-no">✗</span><span style="font-size:13px;color:var(--t2);">冷银色系（与暖肤色对比强烈）</span></div>
+    </div>
+
+    <!-- insight -->
+    <div style="background:var(--gold-lt);margin:0 13px 16px;border-radius:10px;padding:12px 13px;border-left:3px solid var(--gold);font-size:12px;color:var(--gold-dk);line-height:1.7;">
+      ✦ 根据你的脸型，系统已自动过滤 <b>247 款</b>不适合的商品，剩余 <b>1,580 款</b>精准匹配款式等你探索
+    </div>
+
+    <div style="padding:0 13px 20px;display:flex;flex-direction:column;gap:10px;">
+      <button class="btn btn-dark btn-w" onclick="go('p-guide')">
+        查看为我专属推荐的款式 →
+      </button>
+      <button class="btn btn-out btn-w" style="font-size:13px;" onclick="go('p-face')">
+        重新检测
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     07  商品列表
+══════════════════════════════════════════════ -->
+<div class="page" id="p-plist">
+  <div class="sb dk"><span>9:41</span><div class="sb-ic"><span>●●●●</span><span>🔋</span></div></div>
+  <div class="nb">
+    <div class="nb-btn" onclick="go('p-home')">←</div>
+    <div style="flex:1;background:#F2F2F0;border-radius:8px;display:flex;align-items:center;padding:8px 11px;gap:7px;margin-right:4px;">
+      <span style="font-size:14px;">🔍</span>
+      <span style="font-size:13px;color:var(--t2);">搜索 "耳环"</span>
+    </div>
+    <span style="font-size:13px;color:var(--gold);font-weight:700;cursor:pointer;white-space:nowrap;">筛选 ☰</span>
+  </div>
+
+  <!-- filter chips -->
+  <div class="fbar">
+    <div class="fchip on">全部耳饰</div>
+    <div class="fchip">价格 ▾</div>
+    <div class="fchip">风格 ▾</div>
+    <div class="fchip">材质 ▾</div>
+    <div class="fchip">¥50-200 ✕</div>
+  </div>
+
+  <!-- sort bar -->
+  <div class="sbar">
+    <div class="sbar-item on">综合排序</div>
+    <div class="sbar-item">▲ 价格</div>
+    <div class="sbar-item">销量</div>
+    <div class="sbar-item">新品</div>
+  </div>
+
+  <div class="sa">
+    <div style="padding:10px 13px 4px;font-size:12px;color:var(--t2);">共 128 件商品</div>
+
+    <div class="pgrid">
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#F5EDE3,#EDE0CE);">
+          🌙<div class="pcard-try" onclick="event.stopPropagation();go('p-ar')">📷 试戴</div>
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">月牙弧形耳环 复古宫廷风</div>
+          <div class="pcard-price"><small>¥</small>168</div>
+          <div class="pcard-meta"><span class="stars">★★★★★</span><span class="sold">2.1k售</span></div>
+          <div class="pcard-meta"><span class="mtag">匹配 98%</span></div>
+        </div>
+      </div>
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#F0ECF5,#E4DCF0);">
+          💫<div class="pcard-try" onclick="event.stopPropagation();go('p-ar')">📷 试戴</div>
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">星月水晶耳坠 甜美少女风</div>
+          <div class="pcard-price"><small>¥</small>89</div>
+          <div class="pcard-meta"><span class="stars">★★★★★</span><span class="sold">3.4k售</span></div>
+        </div>
+      </div>
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#F5F0E8,#EDE8DC);">
+          🔮
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">复古宫廷耳钉 925纯银</div>
+          <div class="pcard-price"><small>¥</small>158</div>
+          <div class="pcard-meta"><span class="stars">★★★★☆</span><span class="sold">512售</span></div>
+        </div>
+      </div>
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#EAF5EA,#D8F0D8);">
+          🌸<div class="pcard-try" onclick="event.stopPropagation();go('p-ar')">📷 试戴</div>
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">樱花珍珠耳坠 浪漫春意</div>
+          <div class="pcard-price"><small>¥</small>128</div>
+          <div class="pcard-meta"><span class="stars">★★★★★</span><span class="sold">986售</span></div>
+          <div class="pcard-meta"><span class="mtag">匹配 90%</span></div>
+        </div>
+      </div>
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#EAF0F5,#D8E8F0);">
+          ⭐
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">极简五角星耳钉 冷淡风</div>
+          <div class="pcard-price"><small>¥</small>69</div>
+          <div class="pcard-meta"><span class="stars">★★★★☆</span><span class="sold">1.2k售</span></div>
+        </div>
+      </div>
+      <div class="pcard" onclick="go('p-pdetail')">
+        <div class="pcard-img" style="background:linear-gradient(135deg,#F5EDE3,#FBDFC8);">
+          🌊
+        </div>
+        <div class="pcard-bd">
+          <div class="pcard-nm">海浪形耳坠 度假清新风</div>
+          <div class="pcard-price"><small>¥</small>138</div>
+          <div class="pcard-meta"><span class="stars">★★★★★</span><span class="sold">756售</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tb">
+    <div class="ti" onclick="go('p-home')"><div class="ti-ic">🏠</div><div class="ti-lb">首页</div></div>
+    <div class="ti" onclick="go('p-guide');resetGuide()"><div class="ti-ic">✨</div><div class="ti-lb">导购</div></div>
+    <div class="ti" onclick="go('p-ar')"><div class="ti-ic">📷</div><div class="ti-lb">试戴</div></div>
+    <div class="ti" onclick="go('p-cart')"><div class="ti-ic">🛍️</div><div class="ti-lb">购物车</div><div class="ti-badge">2</div></div>
+    <div class="ti"><div class="ti-ic">👤</div><div class="ti-lb">我的</div></div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     08  商品详情
+══════════════════════════════════════════════ -->
+<div class="page" id="p-pdetail">
+  <div class="sb dk" style="position:absolute;top:0;left:0;right:0;z-index:10;background:transparent;"><span>9:41</span><div class="sb-ic"><span>🔋</span></div></div>
+
+  <div class="sa">
+    <!-- gallery -->
+    <div class="prd-gallery" style="position:relative;">
+      <div class="prd-gi" style="background:linear-gradient(135deg,#F5EDE3,#EDE0CE);">🌙</div>
+      <div class="prd-gi-sm" style="background:linear-gradient(150deg,#EDE0CE,#D8CEB8);">🌙</div>
+      <div class="prd-gi-sm" style="background:linear-gradient(150deg,#E8E0F0,#D4CCE8);">🌙</div>
+      <div class="prd-gi-sm" style="background:linear-gradient(150deg,#F5F5E8,#E8E8D8);">🌙</div>
+
+      <!-- absolute buttons -->
+      <div style="position:absolute;top:56px;left:10px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;backdrop-filter:blur(6px);" onclick="go('p-plist')">←</div>
+      <div style="position:absolute;top:56px;right:10px;display:flex;gap:8px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;">⬆️</div>
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;">♡</div>
+      </div>
+    </div>
+    <div class="gallery-dots">
+      <div class="bdot on"></div><div class="bdot"></div><div class="bdot"></div><div class="bdot"></div>
+    </div>
+
+    <!-- AR try-on CTA (HERO) -->
+    <div style="margin:0 13px 12px;background:linear-gradient(90deg,#1A1714,#4A3020);border-radius:var(--r);padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;" onclick="go('p-ar')">
+      <span style="font-size:28px;">📷</span>
+      <div style="flex:1;">
+        <div style="font-size:14px;font-weight:800;color:#fff;">立即虚拟试戴</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.65);margin-top:2px;">戴上看看，所见即所得 →</div>
+      </div>
+      <div style="background:var(--gold);color:#fff;font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;">试戴</div>
+    </div>
+
+    <!-- basic info -->
+    <div style="padding:0 13px 10px;">
+      <div style="font-size:12px;color:var(--t2);margin-bottom:4px;">复古宫廷系列 · 耳饰</div>
+      <div style="font-size:17px;font-weight:800;color:var(--dark);margin-bottom:6px;">月牙弧形耳环</div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px;">
+        <span style="font-size:26px;font-weight:800;color:var(--dark);">¥168</span>
+        <span style="font-size:14px;color:var(--t3);text-decoration:line-through;">¥280</span>
+        <span style="background:#FFF3E0;color:var(--orange);font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;">6折</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="stars" style="font-size:14px;">★★★★★</span>
+        <span style="font-size:13px;color:var(--dark);font-weight:700;">4.9</span>
+        <span style="font-size:12px;color:var(--t2);">· 218条评价</span>
+        <span style="font-size:12px;color:var(--t2);">· 已售 2,100+</span>
+      </div>
+    </div>
+
+    <div style="height:.5px;background:var(--bd);margin:0 13px;"></div>
+
+    <!-- face match bar -->
+    <div style="padding:10px 0;">
+      <div class="match-bar">
+        <span style="font-size:20px;">😊</span>
+        <div class="match-bar-t">你是<b>椭圆脸</b>，弧形耳环可以有效<br>修饰脸型轮廓，显脸小</div>
+        <div class="match-pct">98%</div>
+      </div>
+    </div>
+
+    <!-- SKU -->
+    <div style="background:var(--card);padding:14px 13px;border-top:.5px solid var(--bd);border-bottom:.5px solid var(--bd);">
+      <div style="margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px;">颜色</div>
+        <div class="sku-row">
+          <div class="sku on">银色</div>
+          <div class="sku">金色</div>
+          <div class="sku">玫瑰金</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px;">材质</div>
+        <div class="sku-row">
+          <div class="sku on">925银</div>
+          <div class="sku">镀银</div>
+          <div class="sku out">合金（缺货）</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--green);">✓ 有货（剩余 38 件）</div>
+    </div>
+
+    <div class="div8"></div>
+
+    <!-- reviews -->
+    <div class="sec-hd"><span class="sec-t">买家评价</span><span class="sec-more" style="color:var(--gold);">218条 ›</span></div>
+    <div class="review-card" style="margin-bottom:10px;">
+      <div class="rc-header">
+        <div class="rc-av">😊</div>
+        <div>
+          <div class="rc-name">张**雯</div>
+          <div class="rc-stars">★★★★★ <span style="font-size:11px;color:var(--t2);font-weight:400;">· 银色 / 925银</span></div>
+        </div>
+        <span style="margin-left:auto;font-size:11px;color:var(--t2);">3天前</span>
+      </div>
+      <div class="rc-text">耳环真的很好看！弧形设计很特别，佩戴后感觉脸变小了很多。试戴功能太方便了，买之前就知道戴上是什么效果 ✨</div>
+    </div>
+    <div class="review-card" style="margin:0 13px 16px;">
+      <div class="rc-header">
+        <div class="rc-av">🌸</div>
+        <div>
+          <div class="rc-name">李**静</div>
+          <div class="rc-stars">★★★★☆ <span style="font-size:11px;color:var(--t2);font-weight:400;">· 金色 / 镀银</span></div>
+        </div>
+        <span style="margin-left:auto;font-size:11px;color:var(--t2);">1周前</span>
+      </div>
+      <div class="rc-text">质感很好，做工精细，和描述完全一致。发货快，包装也很精致，送礼自用都不错！</div>
+    </div>
+
+    <div class="div8" style="margin-bottom:8px;"></div>
+  </div>
+
+  <!-- bottom bar -->
+  <div class="bbar">
+    <div style="display:flex;flex-direction:column;gap:2px;">
+      <span style="font-size:11px;color:var(--t2);">实付</span>
+      <span style="font-size:22px;font-weight:800;color:var(--dark);">¥168</span>
+    </div>
+    <button class="btn btn-out btn-sm" style="flex:1;" onclick="go('p-cart')">加入购物车</button>
+    <button class="btn btn-dark btn-sm" style="flex:1;">立即购买</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     09  AR 试戴
+══════════════════════════════════════════════ -->
+<div class="page" id="p-ar" style="background:#0E0E0E;">
+  <div class="sb lt" style="background:transparent;position:absolute;top:0;left:0;right:0;z-index:20;">
+    <span>9:41</span><div class="sb-ic"><span style="color:#fff;">🔋</span></div>
+  </div>
+
+  <!-- camera area -->
+  <div class="ar-cam">
+    <div class="ar-bg">
+      <div class="ar-face">😊</div>
+      <div class="ar-el">🌙</div>
+      <div class="ar-er">🌙</div>
+      <div class="ar-guide"></div>
+    </div>
+
+    <!-- top controls -->
+    <div class="ar-top">
+      <button class="ar-abtn" onclick="go('p-pdetail')">←</button>
+      <div style="background:rgba(196,144,106,.25);backdrop-filter:blur(8px);border-radius:20px;padding:5px 12px;color:#fff;font-size:12px;border:1px solid rgba(196,144,106,.4);">
+        ✨ AR 试戴中
+      </div>
+      <button class="ar-abtn">📸</button>
+    </div>
+
+    <!-- bottom controls -->
+    <div class="ar-bot">
+      <!-- current product card -->
+      <div class="ar-pc">
+        <div class="ar-pimg">🌙</div>
+        <div>
+          <div class="ar-pnm">月牙弧形耳环</div>
+          <div class="ar-pprice">银色 · 925银 · ¥168</div>
+        </div>
+        <div class="ar-btns">
+          <button class="ar-pbtn w" onclick="go('p-pdetail')">详情</button>
+          <button class="ar-pbtn g" onclick="go('p-cart')">加购</button>
+        </div>
+      </div>
+
+      <!-- switch products -->
+      <div style="color:rgba(255,255,255,.6);font-size:11px;margin-bottom:7px;">换一款试试</div>
+      <div class="ar-thumbs">
+        <div class="ar-th on">🌙</div>
+        <div class="ar-th">💫</div>
+        <div class="ar-th">🔮</div>
+        <div class="ar-th">🌸</div>
+        <div class="ar-th">⭐</div>
+        <div class="ar-th">🌊</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     10  购物车
+══════════════════════════════════════════════ -->
+<div class="page" id="p-cart">
+  <div class="sb dk"><span>9:41</span><div class="sb-ic"><span>●●●●</span><span>🔋</span></div></div>
+  <div class="nb">
+    <div style="width:36px;"></div>
+    <div class="nb-t">购物车</div>
+    <div class="nb-act">编辑</div>
+  </div>
+
+  <div class="sa">
+    <!-- select all row -->
+    <div style="display:flex;align-items:center;padding:12px 14px;background:var(--card);border-bottom:.5px solid var(--bd);gap:10px;">
+      <div style="width:22px;height:22px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;">✓</div>
+      <span style="font-size:14px;font-weight:700;color:var(--dark);">全选</span>
+      <span style="font-size:12px;color:var(--t2);margin-left:4px;">（2件）</span>
+    </div>
+
+    <!-- item 1 -->
+    <div class="ci">
+      <div class="ci-chk">✓</div>
+      <div class="ci-img" style="background:linear-gradient(135deg,#F5EDE3,#EDE0CE);">🌙</div>
+      <div class="ci-info">
+        <div class="ci-nm">月牙弧形耳环</div>
+        <div class="ci-spec">颜色：银色 · 材质：925银 · 标准</div>
+        <div class="ci-bot">
+          <div class="ci-price">¥168</div>
+          <div class="qty">
+            <button class="qty-btn">－</button>
+            <div class="qty-n">1</div>
+            <button class="qty-btn">＋</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- item 2 -->
+    <div class="ci">
+      <div class="ci-chk">✓</div>
+      <div class="ci-img" style="background:linear-gradient(135deg,#EAF0F5,#D8E8F0);">📿</div>
+      <div class="ci-info">
+        <div class="ci-nm">天然珍珠项链</div>
+        <div class="ci-spec">颜色：金色 · 材质：镀金 · 40cm</div>
+        <div class="ci-bot">
+          <div class="ci-price">¥238</div>
+          <div class="qty">
+            <button class="qty-btn">－</button>
+            <div class="qty-n">1</div>
+            <button class="qty-btn">＋</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- recommend -->
+    <div class="div8"></div>
+    <div class="sec-hd">
+      <span class="sec-t" style="font-size:14px;">猜你喜欢，凑单更合适</span>
+    </div>
+    <div style="display:flex;gap:10px;padding:0 13px 14px;overflow-x:auto;">
+      <div style="flex-shrink:0;width:110px;background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);">
+        <div style="height:90px;background:linear-gradient(135deg,#F0ECF5,#E4DCF0);display:flex;align-items:center;justify-content:center;font-size:36px;">💫</div>
+        <div style="padding:8px;">
+          <div style="font-size:11px;color:var(--dark);margin-bottom:4px;height:30px;overflow:hidden;">星月水晶耳坠</div>
+          <div style="font-size:14px;font-weight:800;color:var(--dark);">¥89</div>
+          <div style="margin-top:6px;background:var(--dark);color:#fff;font-size:11px;font-weight:700;padding:4px;border-radius:6px;text-align:center;cursor:pointer;">+ 加购</div>
+        </div>
+      </div>
+      <div style="flex-shrink:0;width:110px;background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);">
+        <div style="height:90px;background:linear-gradient(135deg,#F5F0E8,#EDE8DC);display:flex;align-items:center;justify-content:center;font-size:36px;">🔮</div>
+        <div style="padding:8px;">
+          <div style="font-size:11px;color:var(--dark);margin-bottom:4px;height:30px;overflow:hidden;">复古宫廷耳钉</div>
+          <div style="font-size:14px;font-weight:800;color:var(--dark);">¥158</div>
+          <div style="margin-top:6px;background:var(--dark);color:#fff;font-size:11px;font-weight:700;padding:4px;border-radius:6px;text-align:center;cursor:pointer;">+ 加购</div>
+        </div>
+      </div>
+      <div style="flex-shrink:0;width:110px;background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);">
+        <div style="height:90px;background:linear-gradient(135deg,#EAF5EA,#D8F0D8);display:flex;align-items:center;justify-content:center;font-size:36px;">🌸</div>
+        <div style="padding:8px;">
+          <div style="font-size:11px;color:var(--dark);margin-bottom:4px;height:30px;overflow:hidden;">樱花珍珠耳坠</div>
+          <div style="font-size:14px;font-weight:800;color:var(--dark);">¥128</div>
+          <div style="margin-top:6px;background:var(--dark);color:#fff;font-size:11px;font-weight:700;padding:4px;border-radius:6px;text-align:center;cursor:pointer;">+ 加购</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- bottom bar -->
+  <div class="bbar">
+    <div class="bbar-sum">
+      <div class="bbar-lbl">已选 2 件</div>
+      <div class="bbar-price">¥406<span style="font-size:13px;font-weight:400;color:var(--t2);">.00</span></div>
+    </div>
+    <button class="btn btn-dark" style="padding:13px 28px;border-radius:var(--r);">
+      去结算（2）
+    </button>
+  </div>
+
+  <div class="tb">
+    <div class="ti" onclick="go('p-home')"><div class="ti-ic">🏠</div><div class="ti-lb">首页</div></div>
+    <div class="ti" onclick="go('p-guide');resetGuide()"><div class="ti-ic">✨</div><div class="ti-lb">导购</div></div>
+    <div class="ti" onclick="go('p-ar')"><div class="ti-ic">📷</div><div class="ti-lb">试戴</div></div>
+    <div class="ti on"><div class="ti-ic">🛍️</div><div class="ti-lb">购物车</div></div>
+    <div class="ti"><div class="ti-ic">👤</div><div class="ti-lb">我的</div></div>
+  </div>
+</div>
+
+
+</div><!-- /phone-screen -->
+</div><!-- /phone-outer -->
+</div><!-- /phone-wrap -->
+
+<script>
+// ── navigation ──────────────────────────────
+let cur = 'p-splash';
+
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('on');
+  // reset scroll
+  el.querySelectorAll('.sa').forEach(s => s.scrollTop = 0);
+  cur = id;
+  // update sidebar
+  document.querySelectorAll('.si').forEach(s => {
+    s.classList.toggle('on', s.dataset.pg === id);
+  });
+}
+
+// ── AI guide logic ───────────────────────────
+let gStep = 0;
+const gAns = [];
+
+function resetGuide() {
+  gStep = 0;
+  gAns.length = 0;
+  // show step 0, hide others
+  ['gs-0','gs-1','gs-2','gs-3','gs-loading','gs-result'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = i === 0 ? 'block' : 'none';
+  });
+  const prog = document.getElementById('guide-prog');
+  if (prog) prog.style.width = '25%';
+  const lbl = document.getElementById('guide-step-label');
+  if (lbl) lbl.textContent = '步骤 1/4';
+  const scroll = document.getElementById('guide-scroll');
+  if (scroll) scroll.scrollTop = 0;
+}
+
+function gNext(step, label, icon) {
+  gAns[step] = label;
+  gStep = step + 1;
+
+  // highlight selected option
+  const stepEl = document.getElementById('gs-' + step);
+  if (stepEl) {
+    const opts = stepEl.querySelectorAll('.gopt');
+    opts.forEach(o => o.classList.remove('on'));
+    event.currentTarget.classList.add('on');
+  }
+
+  setTimeout(() => {
+    // hide current step
+    if (stepEl) stepEl.style.display = 'none';
+
+    const prog = document.getElementById('guide-prog');
+    const lbl  = document.getElementById('guide-step-label');
+
+    if (gStep >= 4) {
+      // show loading
+      const loading = document.getElementById('gs-loading');
+      if (loading) loading.style.display = 'flex';
+      if (prog) prog.style.width = '100%';
+      if (lbl) lbl.textContent = '生成中...';
+
+      setTimeout(() => {
+        if (loading) loading.style.display = 'none';
+        const result = document.getElementById('gs-result');
+        if (result) result.style.display = 'block';
+        if (lbl) lbl.textContent = '推荐结果';
+        const scroll = document.getElementById('guide-scroll');
+        if (scroll) scroll.scrollTop = 0;
+      }, 2200);
+    } else {
+      // show next step
+      const next = document.getElementById('gs-' + gStep);
+      if (next) next.style.display = 'block';
+      if (prog) prog.style.width = ((gStep + 1) / 4 * 100) + '%';
+      if (lbl) lbl.textContent = `步骤 ${gStep + 1}/4`;
+
+      // populate previous answers
+      const prevEl = document.getElementById('prev-' + gStep);
+      if (prevEl) {
+        prevEl.innerHTML = gAns.slice(0, gStep)
+          .map(a => `<span class="prev-tag">${a}</span>`).join('');
+      }
+    }
+    // scroll to top of step content
+    const scroll = document.getElementById('guide-scroll');
+    if (scroll) scroll.scrollTop = 0;
+  }, 320);
+}
+
+function gSkipAll() {
+  // jump straight to results
+  ['gs-0','gs-1','gs-2','gs-3','gs-loading'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  const result = document.getElementById('gs-result');
+  if (result) result.style.display = 'block';
+  const prog = document.getElementById('guide-prog');
+  if (prog) prog.style.width = '100%';
+  const lbl = document.getElementById('guide-step-label');
+  if (lbl) lbl.textContent = '推荐结果';
+}
+
+// ── face detect loading transition ──────────
+function goFaceLoading() {
+  // show quick "scanning" state then go to result
+  const fc = document.querySelector('#p-face .face-circle');
+  if (fc) {
+    fc.style.border = '3px solid var(--green)';
+    fc.innerHTML = '<div style="font-size:50px;color:var(--green);">✓</div>';
+  }
+  setTimeout(() => {
+    go('p-face-r');
+    // reset face circle
+    if (fc) {
+      fc.style.border = '3px solid var(--gold)';
+      fc.innerHTML = '👤<div class="face-scan"></div>';
+    }
+  }, 1200);
+}
+
+// ── AR thumbnail switching ───────────────────
+const arEmojis = ['🌙','💫','🔮','🌸','⭐','🌊'];
+const arNames  = ['月牙弧形耳环','星月水晶耳坠','宫廷水晶耳钉','樱花珍珠耳坠','极简星形耳钉','海浪形耳坠'];
+const arPrices = ['¥168','¥89','¥158','¥128','¥69','¥138'];
+
+document.querySelectorAll('.ar-th').forEach((th, i) => {
+  th.addEventListener('click', function () {
+    document.querySelectorAll('.ar-th').forEach(t => t.classList.remove('on'));
+    this.classList.add('on');
+    const el = document.querySelector('.ar-el');
+    const er = document.querySelector('.ar-er');
+    if (el) el.textContent = arEmojis[i];
+    if (er) er.textContent = arEmojis[i];
+    const nm = document.querySelector('.ar-pnm');
+    if (nm) nm.textContent = arNames[i];
+    const pr = document.querySelector('.ar-pprice');
+    if (pr) pr.textContent = '银色 · 925银 · ' + arPrices[i];
+    const pimg = document.querySelector('.ar-pimg');
+    if (pimg) pimg.textContent = arEmojis[i];
+  });
+});
+</script>
+</body>
+</html>

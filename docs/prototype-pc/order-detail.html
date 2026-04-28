@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订单详情 — 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.order-detail-wrap { display:grid;grid-template-columns:1fr 320px;gap:28px;padding:28px 0 64px;align-items:start; }
+
+/* ── Status Stepper ── */
+.order-stepper {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  padding: 28px 32px;
+  margin-bottom: 20px;
+}
+.stepper-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:24px; }
+.stepper-title { font-size:16px;font-weight:800;color:var(--dark); }
+.stepper-status { font-size:14px;font-weight:700;color:var(--blue); }
+.stepper {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  position: relative;
+}
+.stepper::before {
+  content: '';
+  position: absolute;
+  top: 22px; left: 10%; right: 10%;
+  height: 2px;
+  background: var(--bd);
+  z-index: 0;
+}
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+.step-dot {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  background: var(--bg);
+  border: 2px solid var(--bd);
+  transition: all .3s;
+}
+.step-item.done .step-dot { background: var(--green); border-color: var(--green); color: white; }
+.step-item.active .step-dot { background: var(--blue); border-color: var(--blue); color: white; box-shadow: 0 0 0 6px rgba(41,128,185,.15); }
+.step-label { font-size: 12px; font-weight: 600; color: var(--t3); text-align: center; }
+.step-item.done .step-label, .step-item.active .step-label { color: var(--dark); }
+.step-time { font-size: 11px; color: var(--t3); text-align: center; }
+.step-item.done .step-time { color: var(--green); }
+.step-item.active .step-time { color: var(--blue); }
+.stepper-progress {
+  position: absolute;
+  top: 22px; left: 10%;
+  height: 2px;
+  background: var(--green);
+  z-index: 0;
+  width: 50%;
+  transition: width 1s var(--ease);
+}
+
+/* ── Section Card ── */
+.od-card {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.od-card-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--bd);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.od-card-header a { font-size: 13px; font-weight: 600; color: var(--gold-dk); }
+
+/* ── Logistics Timeline ── */
+.logistics-timeline { padding: 20px 24px; }
+.logistics-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: var(--bg);
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.logistics-header .icon { font-size: 28px; }
+.logistics-header-info {}
+.logistics-company { font-size: 14px; font-weight: 700; color: var(--dark); }
+.logistics-sn { font-size: 12px; color: var(--t2); }
+.logistics-copy { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--gold-dk); cursor: pointer; }
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 20px;
+  position: relative;
+}
+.timeline-item:last-child { padding-bottom: 0; }
+.timeline-dot-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+.timeline-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--bd);
+  border: 2px solid var(--bd);
+  flex-shrink: 0;
+}
+.timeline-item.active .timeline-dot { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 0 4px rgba(41,128,185,.2); }
+.timeline-line {
+  width: 2px;
+  flex: 1;
+  background: var(--bd);
+  margin: 4px 0;
+  min-height: 20px;
+}
+.timeline-content {}
+.timeline-title { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+.timeline-item.active .timeline-title { color: var(--blue); }
+.timeline-desc { font-size: 12px; color: var(--t2); line-height: 1.6; }
+.timeline-time { font-size: 11px; color: var(--t3); margin-top: 3px; }
+
+/* ── Address ── */
+.od-address { padding: 20px 24px; display: flex; gap: 16px; }
+.od-address-icon { font-size: 28px; }
+.od-address-name { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.od-address-phone { font-size: 13px; color: var(--t2); margin-bottom: 4px; }
+.od-address-full { font-size: 13px; color: var(--t1); line-height: 1.5; }
+
+/* ── Products in order ── */
+.od-products { padding: 0; }
+.od-product-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--bd-2);
+  cursor: pointer;
+  transition: background .15s;
+}
+.od-product-item:last-child { border-bottom: none; }
+.od-product-item:hover { background: #FAFAF9; }
+.od-product-img {
+  width: 76px; height: 76px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  flex-shrink: 0;
+}
+.od-product-name { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.od-product-sku { font-size: 12px; color: var(--t2); margin-bottom: 6px; }
+.od-product-tags { display: flex; gap: 6px; }
+.od-product-qty { font-size: 13px; color: var(--t2); flex-shrink: 0; }
+.od-product-price { font-size: 17px; font-weight: 800; color: var(--dark); flex-shrink: 0; width: 90px; text-align: right; }
+
+/* ── Price Breakdown ── */
+.od-price-rows { padding: 16px 24px; display: flex; flex-direction: column; gap: 12px; }
+.od-price-row { display: flex; justify-content: space-between; font-size: 13px; }
+.od-price-row .lbl { color: var(--t2); }
+.od-price-row .val { font-weight: 600; color: var(--dark); }
+.od-price-row.total .lbl { font-size: 15px; font-weight: 700; color: var(--dark); }
+.od-price-row.total .val { font-size: 22px; font-weight: 900; color: var(--dark); }
+
+/* ── Order Meta ── */
+.od-meta { padding: 16px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.od-meta-item {}
+.od-meta-label { font-size: 12px; color: var(--t3); margin-bottom: 3px; }
+.od-meta-value { font-size: 13px; font-weight: 600; color: var(--dark); }
+
+/* ── Right Panel ── */
+.od-right { position: sticky; top: calc(var(--nav-h) + 20px); display: flex; flex-direction: column; gap: 16px; }
+
+.od-actions-card {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  overflow: hidden;
+}
+.od-actions-header { padding: 14px 20px; border-bottom: 1px solid var(--bd); font-size: 14px; font-weight: 800; color: var(--dark); }
+.od-actions-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+.od-action-btn {
+  width: 100%;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--bd);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--t1);
+  cursor: pointer;
+  background: white;
+  transition: all .18s;
+}
+.od-action-btn:hover { border-color: var(--dark); background: var(--bg); }
+.od-action-btn.primary { background: var(--gold); border-color: var(--gold); color: white; }
+.od-action-btn.primary:hover { background: var(--gold-dk); }
+.od-action-btn .btn-icon { font-size: 18px; }
+
+/* Customer Service card -->*/
+.od-cs-card {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh);
+  padding: 16px 20px;
+  text-align: center;
+}
+.od-cs-title { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+.od-cs-sub { font-size: 12px; color: var(--t2); margin-bottom: 14px; }
+
+/* Toast */
+.toast { position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark);color:white;padding:14px 28px;border-radius:40px;font-size:14px;font-weight:600;opacity:0;transition:all .3s var(--ease);pointer-events:none;z-index:9999;white-space:nowrap; }
+.toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="guide.html">AI 导购</a>
+      <a href="products.html">商品</a>
+      <a href="profile.html">会员中心</a>
+    </div>
+    <div class="nav-right">
+      <a href="cart.html" class="nav-icon-btn">🛒<span class="badge">2</span></a>
+      <a href="login.html" class="nav-icon-btn">👤</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-main">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">首页</a><span class="sep">›</span>
+      <a href="profile.html">个人中心</a><span class="sep">›</span>
+      <a href="orders.html">我的订单</a><span class="sep">›</span>
+      <span class="cur">订单详情</span>
+    </div>
+
+    <div class="order-detail-wrap">
+      <div>
+        <!-- Stepper -->
+        <div class="order-stepper">
+          <div class="stepper-header">
+            <div class="stepper-title">订单号：LS20260428001234</div>
+            <div class="stepper-status">🚚 运输中</div>
+          </div>
+          <div class="stepper">
+            <div class="stepper-progress"></div>
+            <div class="step-item done">
+              <div class="step-dot">✓</div>
+              <div class="step-label">提交订单</div>
+              <div class="step-time">04-28 14:32</div>
+            </div>
+            <div class="step-item done">
+              <div class="step-dot">✓</div>
+              <div class="step-label">付款成功</div>
+              <div class="step-time">04-28 14:35</div>
+            </div>
+            <div class="step-item active">
+              <div class="step-dot">🚚</div>
+              <div class="step-label">运输中</div>
+              <div class="step-time">04-28 16:20</div>
+            </div>
+            <div class="step-item">
+              <div class="step-dot">📦</div>
+              <div class="step-label">待收货</div>
+              <div class="step-time">预计 04-29</div>
+            </div>
+            <div class="step-item">
+              <div class="step-dot">⭐</div>
+              <div class="step-label">评价</div>
+              <div class="step-time">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logistics -->
+        <div class="od-card">
+          <div class="od-card-header">
+            🚚 物流信息
+            <a href="#" onclick="showToast('查看完整物流信息')">查看全部 ›</a>
+          </div>
+          <div class="logistics-timeline">
+            <div class="logistics-header">
+              <span class="icon">📦</span>
+              <div class="logistics-header-info">
+                <div class="logistics-company">顺丰速运</div>
+                <div class="logistics-sn">运单号：SF1234567890123</div>
+              </div>
+              <span class="logistics-copy" onclick="showToast('运单号已复制')">复制</span>
+            </div>
+            <div class="timeline">
+              <div class="timeline-item active">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-title">快件已从【深圳南山中转站】发出</div>
+                  <div class="timeline-desc">预计明日（4月29日）18:00前送达，请保持手机畅通</div>
+                  <div class="timeline-time">2026-04-28 16:20:35</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-title">快件已到达【深圳南山营业点】</div>
+                  <div class="timeline-desc">快件正在等待发出</div>
+                  <div class="timeline-time">2026-04-28 15:45:12</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-title">商家已发货</div>
+                  <div class="timeline-desc">珑饰珠宝仓库已完成打包并交付快递</div>
+                  <div class="timeline-time">2026-04-28 15:10:28</div>
+                </div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot-wrap"><div class="timeline-dot"></div></div>
+                <div class="timeline-content">
+                  <div class="timeline-title">订单已支付</div>
+                  <div class="timeline-desc">支付宝支付 ¥5,860.00，交易成功</div>
+                  <div class="timeline-time">2026-04-28 14:35:06</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="od-card">
+          <div class="od-card-header">📍 收货地址</div>
+          <div class="od-address">
+            <span class="od-address-icon">🏠</span>
+            <div>
+              <div class="od-address-name">李小明 <span style="font-size:12px;font-weight:600;color:var(--t2);">138****8888</span></div>
+              <div class="od-address-phone"></div>
+              <div class="od-address-full">广东省深圳市南山区科技园南区 × × 路 × × 大厦 1801</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products -->
+        <div class="od-card">
+          <div class="od-card-header">🛍️ 商品清单</div>
+          <div class="od-products">
+            <div class="od-product-item" onclick="location.href='product.html'">
+              <div class="od-product-img" style="background:linear-gradient(135deg,#F5EDE3,#F0E8D8);">💎</div>
+              <div style="flex:1;min-width:0;">
+                <div class="od-product-name">云端星河 · 18K 白金钻石耳坠</div>
+                <div class="od-product-sku">18K 白金 / 0.3ct / G色 / VS1净度</div>
+                <div class="od-product-tags">
+                  <span class="tag tag-gold">AI推荐</span>
+                  <span class="tag tag-green">正品</span>
+                </div>
+              </div>
+              <div class="od-product-qty">×1</div>
+              <div class="od-product-price">¥3,980</div>
+            </div>
+            <div class="od-product-item" onclick="location.href='product.html'">
+              <div class="od-product-img" style="background:linear-gradient(135deg,#F5E6F5,#EDD6ED);">🌸</div>
+              <div style="flex:1;min-width:0;">
+                <div class="od-product-name">樱花漫舞 · 18K 玫瑰金粉钻耳钉</div>
+                <div class="od-product-sku">18K 玫瑰金 / 0.2ct / 粉钻</div>
+                <div class="od-product-tags"><span class="tag tag-gold">爆款</span></div>
+              </div>
+              <div class="od-product-qty">×1</div>
+              <div class="od-product-price">¥1,880</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="od-card">
+          <div class="od-card-header">💰 费用明细</div>
+          <div class="od-price-rows">
+            <div class="od-price-row"><span class="lbl">商品金额</span><span class="val">¥7,800</span></div>
+            <div class="od-price-row"><span class="lbl">活动折扣</span><span class="val" style="color:var(--green);">- ¥1,940</span></div>
+            <div class="od-price-row"><span class="lbl">运费</span><span class="val" style="color:var(--green);">免费</span></div>
+            <div class="od-price-row"><span class="lbl">优惠券</span><span class="val">- ¥0</span></div>
+            <div class="divider" style="margin:4px 0;"></div>
+            <div class="od-price-row total"><span class="lbl">实付金额</span><span class="val">¥5,860</span></div>
+          </div>
+        </div>
+
+        <!-- Order Meta -->
+        <div class="od-card">
+          <div class="od-card-header">📋 订单信息</div>
+          <div class="od-meta">
+            <div class="od-meta-item"><div class="od-meta-label">订单编号</div><div class="od-meta-value">LS20260428001234</div></div>
+            <div class="od-meta-item"><div class="od-meta-label">支付方式</div><div class="od-meta-value">💙 支付宝</div></div>
+            <div class="od-meta-item"><div class="od-meta-label">下单时间</div><div class="od-meta-value">2026-04-28 14:32:18</div></div>
+            <div class="od-meta-item"><div class="od-meta-label">支付时间</div><div class="od-meta-value">2026-04-28 14:35:06</div></div>
+            <div class="od-meta-item"><div class="od-meta-label">发货时间</div><div class="od-meta-value">2026-04-28 15:10:28</div></div>
+            <div class="od-meta-item"><div class="od-meta-label">订单备注</div><div class="od-meta-value" style="color:var(--t3);">无</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel -->
+      <div class="od-right">
+        <div class="od-actions-card">
+          <div class="od-actions-header">订单操作</div>
+          <div class="od-actions-body">
+            <button class="od-action-btn primary" onclick="showToast('确认收货后可进行评价')">
+              <span class="btn-icon">📦</span> 确认收货
+            </button>
+            <button class="od-action-btn" onclick="showToast('物流追踪功能')">
+              <span class="btn-icon">🗺️</span> 查看物流地图
+            </button>
+            <button class="od-action-btn" onclick="location.href='review.html'">
+              <span class="btn-icon">✍️</span> 去评价
+            </button>
+            <button class="od-action-btn" onclick="location.href='ar.html'">
+              <span class="btn-icon">📷</span> AR 再次试戴
+            </button>
+            <button class="od-action-btn" onclick="location.href='aftersale.html'">
+              <span class="btn-icon">↩️</span> 申请售后
+            </button>
+            <button class="od-action-btn" onclick="showToast('发票申请功能')">
+              <span class="btn-icon">🧾</span> 申请发票
+            </button>
+          </div>
+        </div>
+
+        <div class="od-cs-card">
+          <div class="od-cs-title">💬 联系客服</div>
+          <div class="od-cs-sub">遇到问题？珑饰 7×12 在线客服随时为您服务</div>
+          <button class="btn btn-dark btn-sm btn-full" onclick="showToast('正在连接在线客服...')">
+            在线客服
+          </button>
+        </div>
+
+        <div style="background:var(--card);border-radius:var(--r-lg);box-shadow:var(--sh);padding:16px 20px;font-size:12px;color:var(--t2);line-height:1.8;">
+          <div style="font-weight:700;color:var(--dark);margin-bottom:8px;">🔒 珑饰交易保障</div>
+          <div>✅ 平台担保交易，资金安全</div>
+          <div>✅ 正品鉴定，假一赔十</div>
+          <div>✅ 30 天无忧退换货</div>
+          <div>✅ 全程物流保险</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<footer class="footer">
+  <div class="footer-main">
+    <div><div class="footer-brand">💎 珑饰</div><div class="footer-tagline">AI 驱动的智能珠宝电商平台</div></div>
+    <div class="footer-col"><h4>购物指南</h4><a href="#">AI 导购</a><a href="#">AR 试戴</a></div>
+    <div class="footer-col"><h4>客户服务</h4><a href="#">在线客服</a><a href="#">退换货</a></div>
+    <div class="footer-col"><h4>关于珑饰</h4><a href="#">品牌故事</a></div>
+  </div>
+  <div class="footer-bottom"><span>© 2026 珑饰 LongShi</span><span>ICP备XXXXXXXX号</span></div>
+</footer>
+
+<script>
+let tt;
+function showToast(msg) {
+  const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>

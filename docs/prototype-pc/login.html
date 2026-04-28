@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 / 注册 — 珑饰 LongShi</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Login Page ── */
+.login-page {
+  min-height: calc(100vh - var(--nav-h));
+  display: grid;
+  grid-template-columns: 1fr 480px;
+}
+
+/* ── Left Visual ── */
+.login-visual {
+  background: linear-gradient(135deg, var(--dark) 0%, #2D1810 40%, #4A3020 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative rings */
+.login-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(196,144,106,.12);
+}
+.ring-1 { width: 300px; height: 300px; top: -80px; left: -80px; }
+.ring-2 { width: 500px; height: 500px; top: -150px; left: -150px; }
+.ring-3 { width: 400px; height: 400px; bottom: -120px; right: -120px; }
+.ring-4 { width: 200px; height: 200px; bottom: -40px; right: -40px; border-color: rgba(196,144,106,.25); }
+
+.login-brand {
+  font-size: 36px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.login-brand-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,.5);
+  z-index: 1;
+  margin-bottom: 48px;
+  letter-spacing: .5px;
+}
+
+.login-features {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1;
+  width: 100%;
+  max-width: 340px;
+}
+.login-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  background: rgba(255,255,255,.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  transition: background .2s;
+}
+.login-feature:hover { background: rgba(255,255,255,.09); }
+.login-feature-icon {
+  width: 44px; height: 44px;
+  background: rgba(196,144,106,.2);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.login-feature-text {}
+.login-feature-title { font-size: 14px; font-weight: 700; color: white; margin-bottom: 3px; }
+.login-feature-desc { font-size: 12px; color: rgba(255,255,255,.5); line-height: 1.5; }
+
+.login-testimonial {
+  margin-top: 40px;
+  padding: 20px;
+  background: rgba(196,144,106,.1);
+  border: 1px solid rgba(196,144,106,.25);
+  border-radius: 12px;
+  z-index: 1;
+  width: 100%;
+  max-width: 340px;
+}
+.login-testimonial-text {
+  font-size: 13px;
+  color: rgba(255,255,255,.75);
+  line-height: 1.7;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+.login-testimonial-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.login-testimonial-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.login-testimonial-name { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.7); }
+.login-testimonial-since { font-size: 11px; color: rgba(255,255,255,.35); }
+
+/* ── Right Form ── */
+.login-form-wrap {
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.login-card {
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: var(--sh-lg);
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Tabs */
+.login-tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 32px;
+}
+.login-tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--t2);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all .18s;
+}
+.login-tab.active {
+  background: white;
+  color: var(--dark);
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+/* Form */
+.login-form { display: flex; flex-direction: column; gap: 18px; }
+
+.form-group { position: relative; }
+.form-group .form-icon {
+  position: absolute;
+  left: 14px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  pointer-events: none;
+}
+.form-group .form-input { padding-left: 40px; }
+
+.form-group .form-eye {
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--t3);
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+
+/* Phone + Code row */
+.form-phone-row { display: grid; grid-template-columns: 1fr 120px; gap: 10px; }
+.code-btn {
+  padding: 0 14px;
+  background: var(--dark);
+  color: white;
+  border: none;
+  border-radius: var(--r);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s;
+  white-space: nowrap;
+}
+.code-btn:hover { background: var(--dark-2); }
+.code-btn:disabled { background: var(--t3); cursor: not-allowed; }
+
+/* Password strength */
+.pw-strength { display: flex; gap: 4px; margin-top: 6px; }
+.pw-bar {
+  flex: 1; height: 4px;
+  background: var(--bd);
+  border-radius: 2px;
+  transition: background .3s;
+}
+.pw-bar.weak { background: var(--red); }
+.pw-bar.medium { background: var(--orange); }
+.pw-bar.strong { background: var(--green); }
+.pw-hint { font-size: 11px; color: var(--t3); margin-top: 4px; }
+
+/* Remember + Forget row */
+.login-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+.remember-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  color: var(--t2);
+}
+.remember-label input[type=checkbox] { accent-color: var(--dark); }
+.forget-link { color: var(--gold-dk); font-weight: 600; cursor: pointer; }
+.forget-link:hover { color: var(--gold); }
+
+/* Submit */
+.login-submit {
+  width: 100%;
+  background: linear-gradient(135deg, var(--dark), #4A3020);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.login-submit:hover {
+  background: linear-gradient(135deg, #2D231A, #6B4226);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26,23,20,.3);
+}
+
+/* Divider OR */
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--t3);
+  font-size: 12px;
+}
+.or-divider::before, .or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bd);
+}
+
+/* Social login */
+.social-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px;
+  border: 1.5px solid var(--bd);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t1);
+  cursor: pointer;
+  background: white;
+  transition: all .18s;
+}
+.social-btn:hover { border-color: var(--dark); background: var(--bg); }
+
+/* Switch mode */
+.login-switch {
+  text-align: center;
+  font-size: 13px;
+  color: var(--t2);
+  margin-top: 4px;
+}
+.login-switch a { color: var(--gold-dk); font-weight: 700; cursor: pointer; }
+.login-switch a:hover { color: var(--gold); }
+
+/* Agreement */
+.login-agree {
+  font-size: 12px;
+  color: var(--t3);
+  text-align: center;
+  line-height: 1.6;
+}
+.login-agree a { color: var(--gold-dk); }
+
+/* Register extras */
+.reg-only { display: none; }
+.reg-mode .reg-only { display: flex; }
+.reg-mode .login-only { display: none; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 40px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--dark); color: white;
+  padding: 14px 28px; border-radius: 40px;
+  font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; transition: all .3s var(--ease);
+  pointer-events: none; z-index: 9999; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <div class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="guide.html">AI 导购</a>
+      <a href="face.html">脸型检测</a>
+      <a href="products.html">商品</a>
+    </div>
+    <div class="nav-right">
+      <a href="cart.html" class="nav-icon-btn" title="购物车">🛒<span class="badge">2</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<main class="page-main">
+  <div class="login-page">
+
+    <!-- ── Left Visual ── -->
+    <div class="login-visual">
+      <div class="login-ring ring-1"></div>
+      <div class="login-ring ring-2"></div>
+      <div class="login-ring ring-3"></div>
+      <div class="login-ring ring-4"></div>
+
+      <div class="login-brand">💎 珑饰</div>
+      <div class="login-brand-sub">智能珠宝 · 虚拟试戴 · AI 精准推荐</div>
+
+      <div class="login-features">
+        <div class="login-feature">
+          <div class="login-feature-icon">✨</div>
+          <div class="login-feature-text">
+            <div class="login-feature-title">AI 智能导购</div>
+            <div class="login-feature-desc">4 步问答，精准匹配 96% 满意度的个性化推荐</div>
+          </div>
+        </div>
+        <div class="login-feature">
+          <div class="login-feature-icon">📷</div>
+          <div class="login-feature-text">
+            <div class="login-feature-title">AR 虚拟试戴</div>
+            <div class="login-feature-desc">实时摄像头叠加，买前先试，降低 40% 退货率</div>
+          </div>
+        </div>
+        <div class="login-feature">
+          <div class="login-feature-icon">👤</div>
+          <div class="login-feature-text">
+            <div class="login-feature-title">脸型精准匹配</div>
+            <div class="login-feature-desc">AI 分析您的脸型轮廓，推荐最适合的饰品款式</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="login-testimonial">
+        <div class="login-testimonial-text">
+          "用了 AI 导购推荐的耳环，朋友都说太适合我了！AR 试戴功能真的太好用，再也不怕买错了。"
+        </div>
+        <div class="login-testimonial-user">
+          <div class="login-testimonial-avatar">李</div>
+          <div>
+            <div class="login-testimonial-name">李小明</div>
+            <div class="login-testimonial-since">珑饰会员 · 2024 年加入</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Right Form ── -->
+    <div class="login-form-wrap">
+      <div class="login-card" id="loginCard">
+        <!-- Tabs -->
+        <div class="login-tabs">
+          <div class="login-tab active" id="tabLogin" onclick="switchMode('login')">登录账号</div>
+          <div class="login-tab" id="tabReg" onclick="switchMode('register')">新用户注册</div>
+        </div>
+
+        <!-- Form -->
+        <div class="login-form">
+
+          <!-- Phone -->
+          <div class="form-group">
+            <span class="form-icon">📱</span>
+            <input class="form-input" type="tel" placeholder="请输入手机号码" id="phone" maxlength="11">
+          </div>
+
+          <!-- Password (login) -->
+          <div class="form-group login-only" id="pwGroup">
+            <span class="form-icon">🔒</span>
+            <input class="form-input" type="password" placeholder="请输入密码" id="password" oninput="checkPwStrength()">
+            <button class="form-eye" onclick="togglePw('password', this)" type="button">👁️</button>
+          </div>
+
+          <!-- Verification code (register) -->
+          <div class="form-group reg-only form-phone-row">
+            <div class="form-group" style="margin:0;">
+              <span class="form-icon">🔑</span>
+              <input class="form-input" type="number" placeholder="短信验证码" style="padding-left:40px;" id="smsCode">
+            </div>
+            <button class="code-btn" onclick="sendCode(this)" id="codeBtn">获取验证码</button>
+          </div>
+
+          <!-- Register password -->
+          <div class="form-group reg-only" id="regPwGroup">
+            <span class="form-icon">🔒</span>
+            <input class="form-input" type="password" placeholder="设置密码（8位以上含字母+数字）" id="regPw" oninput="checkRegPw()">
+            <button class="form-eye" onclick="togglePw('regPw', this)" type="button">👁️</button>
+            <div class="pw-strength" id="pwStrength">
+              <div class="pw-bar" id="pb1"></div>
+              <div class="pw-bar" id="pb2"></div>
+              <div class="pw-bar" id="pb3"></div>
+            </div>
+            <div class="pw-hint" id="pwHint">密码强度：未输入</div>
+          </div>
+
+          <!-- Confirm password (register) -->
+          <div class="form-group reg-only" id="confirmPwGroup">
+            <span class="form-icon">✅</span>
+            <input class="form-input" type="password" placeholder="再次输入密码" id="confirmPw">
+          </div>
+
+          <!-- Remember + Forget (login only) -->
+          <div class="login-meta login-only">
+            <label class="remember-label">
+              <input type="checkbox" checked> 7 天内免登录
+            </label>
+            <span class="forget-link" onclick="showToast('请联系客服找回密码')">忘记密码？</span>
+          </div>
+
+          <!-- Submit -->
+          <button class="login-submit" onclick="submit()" id="submitBtn">
+            🔓 登录
+          </button>
+
+          <!-- OR -->
+          <div class="or-divider">其他登录方式</div>
+
+          <!-- Social -->
+          <div class="social-btns">
+            <button class="social-btn" onclick="socialLogin('微信')">💚 微信登录</button>
+            <button class="social-btn" onclick="socialLogin('支付宝')">💙 支付宝登录</button>
+          </div>
+
+          <!-- Switch -->
+          <div class="login-switch" id="switchHint">
+            没有账号？<a onclick="switchMode('register')">立即免费注册</a>
+          </div>
+
+          <!-- Agreement -->
+          <div class="login-agree">
+            登录即代表您同意
+            <a href="#">《用户服务协议》</a>与
+            <a href="#">《隐私政策》</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+let mode = 'login';
+
+function switchMode(m) {
+  mode = m;
+  const card = document.getElementById('loginCard');
+  const tabLogin = document.getElementById('tabLogin');
+  const tabReg = document.getElementById('tabReg');
+  const btn = document.getElementById('submitBtn');
+  const switchHint = document.getElementById('switchHint');
+
+  if (m === 'register') {
+    card.classList.add('reg-mode');
+    tabLogin.classList.remove('active');
+    tabReg.classList.add('active');
+    btn.innerHTML = '🎉 立即注册';
+    switchHint.innerHTML = '已有账号？<a onclick="switchMode(\'login\')">立即登录</a>';
+  } else {
+    card.classList.remove('reg-mode');
+    tabLogin.classList.add('active');
+    tabReg.classList.remove('active');
+    btn.innerHTML = '🔓 登录';
+    switchHint.innerHTML = '没有账号？<a onclick="switchMode(\'register\')">立即免费注册</a>';
+  }
+}
+
+function togglePw(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁️'; }
+}
+
+let codeCountdown = 0;
+let codeTimer;
+function sendCode(btn) {
+  const phone = document.getElementById('phone').value.trim();
+  if (!/^1[3-9]\d{9}$/.test(phone)) { showToast('请输入正确的手机号'); return; }
+  btn.disabled = true;
+  codeCountdown = 60;
+  btn.textContent = `${codeCountdown}s 后重发`;
+  codeTimer = setInterval(() => {
+    codeCountdown--;
+    btn.textContent = codeCountdown > 0 ? `${codeCountdown}s 后重发` : '重新获取';
+    if (codeCountdown <= 0) { clearInterval(codeTimer); btn.disabled = false; }
+  }, 1000);
+  showToast('✅ 验证码已发送至 ' + phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'));
+}
+
+function checkRegPw() {
+  const pw = document.getElementById('regPw').value;
+  const bars = [document.getElementById('pb1'), document.getElementById('pb2'), document.getElementById('pb3')];
+  const hint = document.getElementById('pwHint');
+  bars.forEach(b => { b.className = 'pw-bar'; });
+
+  if (!pw) { hint.textContent = '密码强度：未输入'; return; }
+  let strength = 0;
+  if (pw.length >= 8) strength++;
+  if (/[a-zA-Z]/.test(pw) && /[0-9]/.test(pw)) strength++;
+  if (/[!@#$%^&*]/.test(pw)) strength++;
+
+  if (strength === 1) {
+    bars[0].classList.add('weak');
+    hint.textContent = '密码强度：弱（建议加入字母和数字）';
+  } else if (strength === 2) {
+    bars[0].classList.add('medium'); bars[1].classList.add('medium');
+    hint.textContent = '密码强度：中等';
+  } else if (strength >= 3) {
+    bars.forEach(b => b.classList.add('strong'));
+    hint.textContent = '密码强度：强 ✓';
+  }
+}
+
+function submit() {
+  const phone = document.getElementById('phone').value.trim();
+  if (!/^1[3-9]\d{9}$/.test(phone)) { showToast('请输入正确的手机号'); return; }
+
+  if (mode === 'login') {
+    const pw = document.getElementById('password').value;
+    if (!pw) { showToast('请输入密码'); return; }
+    showToast('登录中...');
+    setTimeout(() => {
+      showToast('✅ 登录成功！欢迎回来');
+      setTimeout(() => location.href = 'index.html', 1200);
+    }, 900);
+  } else {
+    const code = document.getElementById('smsCode').value;
+    const pw = document.getElementById('regPw').value;
+    const cpw = document.getElementById('confirmPw').value;
+    if (!code) { showToast('请输入验证码'); return; }
+    if (pw.length < 8) { showToast('密码至少 8 位'); return; }
+    if (pw !== cpw) { showToast('两次密码不一致'); return; }
+    showToast('注册中...');
+    setTimeout(() => {
+      showToast('🎉 注册成功！欢迎加入珑饰');
+      setTimeout(() => location.href = 'face.html', 1200);
+    }, 900);
+  }
+}
+
+function socialLogin(name) {
+  showToast(`正在跳转 ${name} 授权...`);
+  setTimeout(() => {
+    showToast('✅ 登录成功！欢迎回来');
+    setTimeout(() => location.href = 'index.html', 1200);
+  }, 1500);
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+</script>
+</body>
+</html>

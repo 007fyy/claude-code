@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 智能导购 · 珑饰</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+body { background: var(--bg); }
+
+.guide-wrap {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 40px 32px 64px;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* ── Sidebar ── */
+.guide-sidebar {
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
+}
+.guide-sidebar-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 6px;
+}
+.guide-sidebar-sub {
+  font-size: 13px;
+  color: var(--t2);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.step-list { display: flex; flex-direction: column; gap: 4px; }
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: var(--r);
+  transition: all .2s;
+}
+.step-item.done  { background: var(--green-lt); }
+.step-item.active{ background: var(--gold-lt); }
+.step-num {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--bd-2);
+  color: var(--t3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800;
+  flex-shrink: 0;
+  transition: all .2s;
+}
+.step-item.done  .step-num { background: var(--green); color: white; font-size: 16px; }
+.step-item.active .step-num { background: var(--gold); color: white; }
+.step-info { flex: 1; }
+.step-name { font-size: 14px; font-weight: 700; color: var(--dark); }
+.step-val  { font-size: 12px; color: var(--t2); margin-top: 2px; }
+.step-item.done  .step-val { color: var(--green); }
+.step-item.active .step-val { color: var(--gold-dk); }
+
+.sidebar-face-card {
+  margin-top: 28px;
+  background: linear-gradient(135deg, #1A1714, #4A3020);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  color: white;
+  cursor: pointer;
+  transition: transform .2s;
+  text-decoration: none;
+  display: block;
+}
+.sidebar-face-card:hover { transform: translateY(-2px); }
+.sfc-icon { font-size: 32px; margin-bottom: 10px; }
+.sfc-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.sfc-sub   { font-size: 12px; color: rgba(255,255,255,.65); line-height: 1.5; }
+.sfc-btn   {
+  margin-top: 14px;
+  background: var(--gold);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 8px;
+  display: inline-block;
+  transition: background .15s;
+}
+.sidebar-face-card:hover .sfc-btn { background: var(--gold-dk); }
+
+/* ── Main Content ── */
+.guide-main { min-height: 500px; }
+.guide-step { display: none; }
+.guide-step.active { display: block; }
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.step-ai-av {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), #9E7050);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(196,144,106,.4);
+}
+.step-question { font-size: 22px; font-weight: 800; color: var(--dark); line-height: 1.3; }
+.step-question-sub { font-size: 14px; color: var(--t2); margin-top: 4px; }
+
+.prev-answers {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.prev-tag {
+  background: var(--dark);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.option-card {
+  background: var(--card);
+  border: 2px solid var(--bd);
+  border-radius: var(--r-lg);
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all .22s var(--ease);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.option-card:hover {
+  border-color: var(--gold);
+  background: var(--gold-lt);
+  transform: translateY(-2px);
+  box-shadow: var(--sh-md);
+}
+.option-card.selected {
+  border-color: var(--gold);
+  background: var(--gold-lt);
+  box-shadow: 0 0 0 3px rgba(196,144,106,.2);
+}
+.option-icon {
+  font-size: 36px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.option-info { }
+.option-title { font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.option-desc  { font-size: 13px; color: var(--t2); line-height: 1.5; }
+
+.step-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--bd);
+}
+.skip-link {
+  font-size: 13px;
+  color: var(--t2);
+  cursor: pointer;
+  transition: color .15s;
+  text-decoration: none;
+}
+.skip-link:hover { color: var(--gold); }
+
+/* ── Loading ── */
+.guide-loading {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  text-align: center;
+}
+.loading-spinner {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), #9E7050);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 28px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(196,144,106,.4); }
+  50%       { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(196,144,106,0); }
+}
+.loading-title { font-size: 20px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+.loading-sub   { font-size: 14px; color: var(--t2); margin-bottom: 32px; line-height: 1.7; }
+.loading-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  text-align: left;
+}
+.ls-item {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 14px; color: var(--t2);
+}
+.ls-dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+/* ── Results ── */
+.guide-result { display: none; }
+.result-summary {
+  background: linear-gradient(120deg, #1A1714, #4A3020);
+  border-radius: var(--r-lg);
+  padding: 28px 32px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+}
+.rs-title { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+.rs-title span { color: var(--gold); }
+.rs-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.rs-tag {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.85);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">💎 珑饰</a>
+    <ul class="nav-links">
+      <li><a href="index.html">首页</a></li>
+      <li><a href="products.html">耳饰</a></li>
+      <li><a href="products.html">项链</a></li>
+      <li><a href="products.html">手链</a></li>
+      <li><a href="products.html">戒指</a></li>
+      <li><a href="products.html">套装</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-search">
+        <span class="ic">🔍</span>
+        <input type="text" placeholder="搜索耳饰、项链、手链...">
+      </div>
+      <a href="guide.html" class="nav-ai-btn">✨ AI 选款</a>
+      <a href="ar.html" class="nav-icon-btn">📷</a>
+      <a href="cart.html" class="nav-icon-btn">🛍️<span class="badge">2</span></a>
+      <a href="login.html" class="nav-user-btn">👤 登录 / 注册</a>
+    </div>
+  </div>
+</nav>
+
+<main class="page-main">
+  <!-- Progress bar -->
+  <div style="height:3px;background:var(--bd);position:sticky;top:var(--nav-h);z-index:100;">
+    <div id="top-prog" style="height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-dk));width:25%;transition:width .4s ease;"></div>
+  </div>
+
+  <div class="guide-wrap">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="guide-sidebar">
+      <div class="guide-sidebar-title">✨ AI 选款顾问</div>
+      <div class="guide-sidebar-sub">回答 4 个问题，AI 为你生成<br>专属饰品推荐清单</div>
+
+      <div class="step-list">
+        <div class="step-item active" id="sl-0">
+          <div class="step-num">1</div>
+          <div class="step-info">
+            <div class="step-name">佩戴场合</div>
+            <div class="step-val" id="sv-0">请选择...</div>
+          </div>
+        </div>
+        <div class="step-item" id="sl-1">
+          <div class="step-num">2</div>
+          <div class="step-info">
+            <div class="step-name">整体风格</div>
+            <div class="step-val" id="sv-1">待选择</div>
+          </div>
+        </div>
+        <div class="step-item" id="sl-2">
+          <div class="step-num">3</div>
+          <div class="step-info">
+            <div class="step-name">材质偏好</div>
+            <div class="step-val" id="sv-2">待选择</div>
+          </div>
+        </div>
+        <div class="step-item" id="sl-3">
+          <div class="step-num">4</div>
+          <div class="step-info">
+            <div class="step-name">预算范围</div>
+            <div class="step-val" id="sv-3">待选择</div>
+          </div>
+        </div>
+      </div>
+
+      <a href="face.html" class="sidebar-face-card">
+        <div class="sfc-icon">😊</div>
+        <div class="sfc-title">上传照片，精准 +40%</div>
+        <div class="sfc-sub">AI 分析脸型与肤色，过滤不适合的款式，推荐更精准</div>
+        <div class="sfc-btn">脸型检测 →</div>
+      </a>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <div class="guide-main">
+
+      <!-- Step 0: 场合 -->
+      <div class="guide-step active" id="gs-0">
+        <div class="step-header">
+          <div class="step-ai-av">✨</div>
+          <div>
+            <div class="step-question">你打算在什么<em style="font-style:normal;color:var(--gold);">场合</em>佩戴这件饰品呢？</div>
+            <div class="step-question-sub">根据场合，AI 会推荐最合适的款式与设计风格</div>
+          </div>
+        </div>
+        <div class="options-grid">
+          <div class="option-card" onclick="selectOption(0,'日常通勤','👗','职场日常')">
+            <div class="option-icon">👗</div>
+            <div class="option-info">
+              <div class="option-title">日常通勤</div>
+              <div class="option-desc">上班、购物、日常出行<br>需要简约不失品味的款式</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(0,'约会出行','💑','甜蜜约会')">
+            <div class="option-icon">💑</div>
+            <div class="option-info">
+              <div class="option-title">约会出行</div>
+              <div class="option-desc">甜蜜约会、闺蜜聚餐<br>精致优雅，让你更亮眼</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(0,'职场正式','💼','商务正式')">
+            <div class="option-icon">💼</div>
+            <div class="option-info">
+              <div class="option-title">职场正式</div>
+              <div class="option-desc">重要会议、商务场合<br>低调有质感，彰显专业</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(0,'派对聚会','🎉','节日派对')">
+            <div class="option-icon">🎉</div>
+            <div class="option-info">
+              <div class="option-title">派对聚会</div>
+              <div class="option-desc">晚宴、节日、生日派对<br>大胆闪耀，成为焦点</div>
+            </div>
+          </div>
+        </div>
+        <div class="step-footer">
+          <span class="skip-link" onclick="skipAll()">跳过所有步骤，直接看推荐 →</span>
+          <div style="font-size:13px;color:var(--t3);">步骤 1 / 4</div>
+        </div>
+      </div>
+
+      <!-- Step 1: 风格 -->
+      <div class="guide-step" id="gs-1">
+        <div id="prev-1"></div>
+        <div class="step-header">
+          <div class="step-ai-av">✨</div>
+          <div>
+            <div class="step-question">你喜欢什么样的整体<em style="font-style:normal;color:var(--gold);">风格</em>呢？</div>
+            <div class="step-question-sub">选择最符合你日常穿搭调性的风格</div>
+          </div>
+        </div>
+        <div class="options-grid">
+          <div class="option-card" onclick="selectOption(1,'简约精致','✦','低调高级')">
+            <div class="option-icon">✦</div>
+            <div class="option-info">
+              <div class="option-title">简约精致</div>
+              <div class="option-desc">极简、低调、高级感<br>适合偏好纯粹设计的你</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(1,'优雅复古','🌹','宫廷古典')">
+            <div class="option-icon">🌹</div>
+            <div class="option-info">
+              <div class="option-title">优雅复古</div>
+              <div class="option-desc">宫廷、古典、文艺气息<br>彰显独特的历史美学</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(1,'甜美少女','🌸','粉嫩可爱')">
+            <div class="option-icon">🌸</div>
+            <div class="option-info">
+              <div class="option-title">甜美少女</div>
+              <div class="option-desc">可爱、粉嫩、甜系风格<br>充满青春活力的美感</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(1,'个性潮酷','⚡','先锋炸裂')">
+            <div class="option-icon">⚡</div>
+            <div class="option-info">
+              <div class="option-title">个性潮酷</div>
+              <div class="option-desc">街头、先锋、打破规则<br>充满实验性的个性表达</div>
+            </div>
+          </div>
+        </div>
+        <div class="step-footer">
+          <span class="skip-link" onclick="skipAll()">跳过，直接看推荐 →</span>
+          <div style="font-size:13px;color:var(--t3);">步骤 2 / 4</div>
+        </div>
+      </div>
+
+      <!-- Step 2: 材质 -->
+      <div class="guide-step" id="gs-2">
+        <div id="prev-2"></div>
+        <div class="step-header">
+          <div class="step-ai-av">✨</div>
+          <div>
+            <div class="step-question">对饰品<em style="font-style:normal;color:var(--gold);">材质</em>有什么偏好吗？</div>
+            <div class="step-question-sub">不同材质有不同的质感与适配肤色，选一个最符合你的</div>
+          </div>
+        </div>
+        <div class="options-grid">
+          <div class="option-card" onclick="selectOption(2,'925纯银','🪙','不易过敏')">
+            <div class="option-icon">🪙</div>
+            <div class="option-info">
+              <div class="option-title">925 纯银</div>
+              <div class="option-desc">不易氧化过敏、经典百搭<br>适合日常佩戴，性价比高</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(2,'黄金/镀金','✨','贵气显白')">
+            <div class="option-icon">✨</div>
+            <div class="option-info">
+              <div class="option-title">黄金 / 镀金</div>
+              <div class="option-desc">提亮肤色、贵气感强<br>暖色肤色佩戴效果尤佳</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(2,'天然宝石','💎','独特稀有')">
+            <div class="option-icon">💎</div>
+            <div class="option-info">
+              <div class="option-title">天然宝石</div>
+              <div class="option-desc">独特纹理、自然美感<br>每一件都是独一无二的</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(2,'没有要求','🙆','好看就行')">
+            <div class="option-icon">🙆</div>
+            <div class="option-info">
+              <div class="option-title">没有特别要求</div>
+              <div class="option-desc">好看就行，不限材质<br>让 AI 从全库中为你推荐</div>
+            </div>
+          </div>
+        </div>
+        <div class="step-footer">
+          <span class="skip-link" onclick="skipAll()">跳过，直接看推荐 →</span>
+          <div style="font-size:13px;color:var(--t3);">步骤 3 / 4</div>
+        </div>
+      </div>
+
+      <!-- Step 3: 预算 -->
+      <div class="guide-step" id="gs-3">
+        <div id="prev-3"></div>
+        <div class="step-header">
+          <div class="step-ai-av">✨</div>
+          <div>
+            <div class="step-question">最后一步！你的<em style="font-style:normal;color:var(--gold);">预算</em>大概是多少？</div>
+            <div class="step-question-sub">AI 会在你的预算范围内找到最高价值的款式</div>
+          </div>
+        </div>
+        <div class="options-grid">
+          <div class="option-card" onclick="selectOption(3,'¥50 以内','💰','性价比')">
+            <div class="option-icon">💰</div>
+            <div class="option-info">
+              <div class="option-title">¥50 以内</div>
+              <div class="option-desc">超高性价比之选<br>精选日常入门款</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(3,'¥50 – 200','💳','主力区间')">
+            <div class="option-icon">💳</div>
+            <div class="option-info">
+              <div class="option-title">¥50 – 200</div>
+              <div class="option-desc">日常主力购买区间<br>品质与价格的完美平衡</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(3,'¥200 – 500','💵','品质之选')">
+            <div class="option-icon">💵</div>
+            <div class="option-info">
+              <div class="option-title">¥200 – 500</div>
+              <div class="option-desc">品质型款式首选<br>真银真金，值得拥有</div>
+            </div>
+          </div>
+          <div class="option-card" onclick="selectOption(3,'¥500+','💎','奢享无限')">
+            <div class="option-icon">💎</div>
+            <div class="option-info">
+              <div class="option-title">¥500+</div>
+              <div class="option-desc">奢享品质，无上限<br>天然宝石 · 高档工艺</div>
+            </div>
+          </div>
+        </div>
+        <div class="step-footer">
+          <span class="skip-link" onclick="skipAll()">跳过，直接看推荐 →</span>
+          <div style="font-size:13px;color:var(--t3);">步骤 4 / 4</div>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div class="guide-loading" id="guide-loading">
+        <div class="loading-spinner">✨</div>
+        <div class="loading-title">AI 正在为你匹配专属款式...</div>
+        <div class="loading-sub">综合你的<strong>场合偏好 · 风格调性 · 材质要求 · 脸型特征</strong><br>从 50,000+ 件商品中精准筛选</div>
+        <div class="loading-steps">
+          <div class="ls-item"><div class="ls-dot">✓</div> 分析场合与风格偏好</div>
+          <div class="ls-item"><div class="ls-dot">✓</div> 匹配脸型特征数据（椭圆脸 · 暖肤）</div>
+          <div class="ls-item"><div class="ls-dot" style="background:var(--gold);animation:pulse 1s infinite;">…</div> <span>检索最高匹配商品库</span></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="guide-result" id="guide-result">
+        <div class="result-summary">
+          <div>
+            <div class="rs-title">为你找到 <span>14 款</span> 高匹配饰品</div>
+            <div style="font-size:13px;color:rgba(255,255,255,.65);margin-bottom:14px;">综合 4 项偏好 · 脸型匹配 · 脸型：椭圆脸 暖色调</div>
+            <div class="rs-tags">
+              <span class="rs-tag">约会出行</span>
+              <span class="rs-tag">优雅复古</span>
+              <span class="rs-tag">925纯银</span>
+              <span class="rs-tag">¥50–200</span>
+              <span class="rs-tag">😊 椭圆脸</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;">
+            <button onclick="resetGuide()" class="btn btn-lg" style="background:rgba(255,255,255,.1);color:white;border:1.5px solid rgba(255,255,255,.2);">重新选择</button>
+            <a href="products.html" class="btn btn-gold btn-lg">查看全部推荐 →</a>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div class="section-title"><span>✦</span>你的专属推荐</div>
+          <div style="font-size:13px;color:var(--t2);">按匹配度排序</div>
+        </div>
+
+        <div class="result-grid">
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#F5EDE3,#EDE0CE);">🌙<div class="try-badge">📷 试戴</div></div>
+            <div class="product-card-body">
+              <div class="product-card-name">月牙弧形耳环 · 复古宫廷风</div>
+              <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">168</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9 · 2.1k售</span><span class="match-pill">匹配 98%</span></div>
+              <div class="product-card-actions">
+                <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+                <button class="btn btn-dark btn-sm" style="flex:1;">加购</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#EAF0F5,#D8E8F0);">📿<div class="try-badge">📷 试戴</div></div>
+            <div class="product-card-body">
+              <div class="product-card-name">天然珍珠项链 · 简约极简风</div>
+              <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">238</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8 · 876售</span><span class="match-pill">匹配 95%</span></div>
+              <div class="product-card-actions">
+                <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+                <button class="btn btn-dark btn-sm" style="flex:1;">加购</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#F0ECF5,#E4DCF0);">💫<div class="try-badge">📷 试戴</div></div>
+            <div class="product-card-body">
+              <div class="product-card-name">星月水晶耳坠 · 甜美少女风</div>
+              <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">89</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.9 · 3.4k售</span><span class="match-pill">匹配 92%</span></div>
+              <div class="product-card-actions">
+                <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+                <button class="btn btn-dark btn-sm" style="flex:1;">加购</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#F5F0E8,#EDE8DC);">🔮</div>
+            <div class="product-card-body">
+              <div class="product-card-name">复古宫廷耳钉 · 宫廷优雅风</div>
+              <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">158</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★☆</span><span>4.7 · 512售</span><span class="match-pill">匹配 91%</span></div>
+              <div class="product-card-actions">
+                <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+                <button class="btn btn-dark btn-sm" style="flex:1;">加购</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#EAF5EA,#D8F0D8);">🌸</div>
+            <div class="product-card-body">
+              <div class="product-card-name">樱花珍珠耳坠 · 浪漫春意</div>
+              <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">128</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★★</span><span>4.8 · 986售</span><span class="match-pill">匹配 90%</span></div>
+              <div class="product-card-actions">
+                <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+                <button class="btn btn-dark btn-sm" style="flex:1;">加购</button>
+              </div>
+            </div>
+          </div>
+          <div class="product-card" onclick="location.href='product.html'">
+            <div class="product-card-img" style="background:linear-gradient(135deg,#EAF0F5,#D8E4F5);">⭐</div>
+            <div class="product-card-body">
+              <div class="product-card-name">极简星形耳钉 · 冷淡风格</div>
+              <div class="product-card-price"><span class="price-unit">¥</span><span class="price-main">69</span></div>
+              <div class="product-card-meta"><span class="stars">★★★★☆</span><span>4.6 · 1.2k售</span><span class="match-pill">匹配 88%</span></div>
+              <div class="product-card-actions">
+                <a href="ar.html" class="btn btn-out btn-sm" onclick="event.stopPropagation()">📷 试戴</a>
+                <button class="btn btn-dark btn-sm" style="flex:1;">加购</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /guide-main -->
+  </div><!-- /guide-wrap -->
+</main>
+
+<footer class="footer">
+  <div class="footer-bottom" style="max-width:100%;border:none;padding:20px 32px;">
+    <a href="index.html" style="color:rgba(255,255,255,.4);text-decoration:none;">← 返回首页</a>
+    <span>© 2026 珑饰 LongShi</span>
+    <span></span>
+  </div>
+</footer>
+
+<script>
+let step = 0;
+const answers = [];
+
+const stepData = [
+  { name:'佩戴场合', id:'sl-0', val:'sv-0', prev: null },
+  { name:'整体风格', id:'sl-1', val:'sv-1', prev:'prev-1' },
+  { name:'材质偏好', id:'sl-2', val:'sv-2', prev:'prev-2' },
+  { name:'预算范围', id:'sl-3', val:'sv-3', prev:'prev-3' },
+];
+
+function selectOption(stepIdx, label, icon, sub) {
+  // Highlight selected
+  const stepEl = document.getElementById('gs-' + stepIdx);
+  stepEl.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+
+  answers[stepIdx] = { label, icon, sub };
+
+  // Update sidebar
+  const sl = document.getElementById('sl-' + stepIdx);
+  sl.className = 'step-item done';
+  sl.querySelector('.step-num').textContent = '✓';
+  document.getElementById('sv-' + stepIdx).textContent = label;
+
+  // Update progress
+  const prog = (stepIdx + 2) / 4 * 100;
+  document.getElementById('top-prog').style.width = Math.min(prog, 100) + '%';
+
+  setTimeout(() => {
+    // Hide current step
+    stepEl.classList.remove('active');
+
+    if (stepIdx >= 3) {
+      showLoading();
+    } else {
+      const next = stepIdx + 1;
+      // Activate next sidebar item
+      document.getElementById('sl-' + next).classList.add('active');
+      document.getElementById('sv-' + next).textContent = '请选择...';
+
+      // Show prev answers in next step
+      const prevEl = document.getElementById('prev-' + next);
+      if (prevEl) {
+        prevEl.innerHTML = '<div class="prev-answers">' +
+          answers.slice(0, next).map(a =>
+            `<span class="prev-tag">${a.icon} ${a.label}</span>`
+          ).join('') +
+        '</div>';
+      }
+
+      document.getElementById('gs-' + next).classList.add('active');
+      step = next;
+    }
+  }, 350);
+}
+
+function showLoading() {
+  document.getElementById('top-prog').style.width = '100%';
+  document.getElementById('guide-loading').style.display = 'flex';
+  setTimeout(() => {
+    document.getElementById('guide-loading').style.display = 'none';
+    document.getElementById('guide-result').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 2400);
+}
+
+function skipAll() {
+  document.querySelectorAll('.guide-step').forEach(s => s.classList.remove('active'));
+  showLoading();
+}
+
+function resetGuide() {
+  step = 0;
+  answers.length = 0;
+  // Reset sidebar
+  stepData.forEach((s, i) => {
+    const sl = document.getElementById('sl-' + i);
+    sl.className = 'step-item' + (i === 0 ? ' active' : '');
+    sl.querySelector('.step-num').textContent = i + 1;
+    document.getElementById('sv-' + i).textContent = i === 0 ? '请选择...' : '待选择';
+  });
+  // Show step 0
+  document.querySelectorAll('.guide-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('gs-0').classList.add('active');
+  document.getElementById('guide-loading').style.display = 'none';
+  document.getElementById('guide-result').style.display = 'none';
+  document.getElementById('top-prog').style.width = '25%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
