@@ -1,21 +1,49 @@
 import http from './http'
 
-export const sendCode = (phone) => http.post('/auth/send-code', { phone })
+export const sendCode = (email) => {
+  return http.post('/auth/send-code', { email })
+}
 
-export const login = (phone, code) => http.post('/auth/login', { phone, code })
+export const login = (data) => {
+  return http.post('/auth/login', data)
+}
 
-export const getMe = () => http.get('/user/me')
+export const verify = (data) => {
+  return http.post('/auth/verify', data)
+}
 
-export const updateMe = (data) => http.put('/user/me', data)
+export const getMe = () => {
+  return http.get('/user/me')
+}
 
-export const updatePrefs = (data) => http.patch('/user/prefs', data)
+export const updateMe = (data) => {
+  return http.put('/user/me', data)
+}
 
-export const listAddress = () => http.get('/user/address')
+export const updatePrefs = (data) => {
+  return http.patch('/user/prefs', data)
+}
 
-export const createAddress = (data) => http.post('/user/address', data)
+export const changePassword = (data) => {
+  return http.put('/user/password', data)
+}
 
-export const updateAddress = (id, data) => http.put(`/user/address/${id}`, data)
+export const listAddress = () => {
+  return http.get('/user/address')
+}
 
-export const deleteAddress = (id) => http.delete(`/user/address/${id}`)
+export const createAddress = (data) => {
+  return http.post('/user/address', data)
+}
 
-export const setDefaultAddress = (id) => http.patch(`/user/address/${id}/default`)
+export const updateAddress = (id, data) => {
+  return http.put(`/user/address/${id}`, data)
+}
+
+export const deleteAddress = (id) => {
+  return http.delete(`/user/address/${id}`)
+}
+
+export const setDefaultAddress = (id) => {
+  return http.patch(`/user/address/${id}/default`)
+}

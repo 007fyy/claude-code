@@ -1,0 +1,1 @@
+import{I as r}from"./index-BEkO42-P.js";const a=t=>r.post("/cart/add",t),o=()=>r.get("/cart/list"),c=t=>r.put("/cart/update",t),n=t=>r.delete(`/cart/remove/${t}`);export{a as addToCart,o as getCartList,n as removeCart,c as updateCart};

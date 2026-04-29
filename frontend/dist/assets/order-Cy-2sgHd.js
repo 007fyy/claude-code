@@ -1,0 +1,1 @@
+import{I as e}from"./index-BEkO42-P.js";const o=r=>e.post("/order/create",r),s=r=>e.post("/order/pay",r),a=r=>e.get("/order/list",{params:r}),p=r=>e.get(`/order/${r}`),n=r=>e.post("/order/refund/apply",r);export{p as a,n as b,o as c,a as g,s as p};

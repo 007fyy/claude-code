@@ -1,4 +1,9 @@
 import http from './http'
 
-export const getGoodsList = (params) => http.get('/goods/list', { params })
-export const getGoodsDetail = (spuId) => http.get(`/goods/${spuId}`)
+export const getGoodsList = (params) => {
+  return http.get('/goods/list', { params })
+}
+
+export const getGoodsDetail = (spuId) => {
+  return http.get(`/goods/${spuId}`)
+}

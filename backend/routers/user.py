@@ -6,7 +6,7 @@ from database import get_db
 from models.user import User
 from schemas.address import AddressCreate, AddressOut, AddressUpdate
 from schemas.common import ApiResponse
-from schemas.user import UpdatePrefsReq, UpdateUserReq, UserOut
+from schemas.user import ChangePasswordReq, UpdatePrefsReq, UpdateUserReq, UserOut
 from services.address_service import AddressService
 from services.user_service import UserService
 
@@ -39,6 +39,16 @@ def update_prefs(
 ):
     user = UserService(db).update_prefs(current_user, req)
     return ApiResponse(data=UserOut.model_validate(user))
+
+
+@router.put("/password", response_model=ApiResponse[None])
+def change_password(
+    req: ChangePasswordReq,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    UserService(db).change_password(current_user, req)
+    return ApiResponse(message="密码修改成功")
 
 
 # ── 收货地址 ────────────────────────────────────────────────────────────────

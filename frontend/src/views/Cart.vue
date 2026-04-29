@@ -1,8 +1,10 @@
 <template>
   <div class="cart-page">
-    <div class="topbar">
-      <el-page-header @back="$router.push('/goods')" title="返回商城" content="购物车" />
-    </div>
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title"><span>✦</span> 购物车</h1>
+        <el-button text @click="$router.push('/goods')">← 继续购物</el-button>
+      </div>
 
     <div v-loading="loading" class="cart-body">
       <el-empty v-if="!loading && items.length === 0" description="购物车空空如也">
@@ -93,9 +95,10 @@
         </div>
       </template>
     </div>
+    </div>
 
     <!-- 结算弹窗 -->
-    <el-dialog v-model="checkoutVisible" title="填写收货信息" width="440px">
+    <el-dialog v-model="checkoutVisible" title="填写收货信息" width="520px">
       <el-form :model="form" label-width="80px" :rules="rules" ref="formRef">
         <el-form-item label="收货人" prop="receiver_name">
           <el-input v-model="form.receiver_name" placeholder="请输入姓名" />
@@ -228,65 +231,26 @@ onMounted(loadCart)
 </script>
 
 <style scoped>
-.cart-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 16px 60px;
-}
+.cart-page { flex: 1; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 32px 60px; }
 
-.topbar {
-  padding: 16px 0;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 20px;
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 0 20px;
 }
+.page-title { font-size: 24px; font-weight: 800; color: #1A1714; }
+.page-title span { color: #C4906A; }
 
-.item-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.item-img {
-  width: 64px;
-  height: 64px;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-
-.item-spu {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.price {
-  color: #e6564e;
-  font-weight: 600;
-}
-
-.subtotal {
-  color: #e6564e;
-  font-weight: 700;
-}
+.item-info { display: flex; align-items: center; gap: 12px; }
+.item-img { width: 64px; height: 64px; border-radius: 8px; flex-shrink: 0; }
+.item-spu { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.price { color: #1A1714; font-weight: 700; }
+.subtotal { color: #1A1714; font-weight: 800; font-size: 16px; }
 
 .checkout-bar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 24px;
-  padding: 16px 0;
-  border-top: 1px solid #eee;
-  margin-top: 12px;
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 24px; padding: 20px 0; border-top: 1px solid #F0F0F0; margin-top: 12px;
 }
-
-.summary {
-  font-size: 14px;
-  color: #666;
-}
-
-.total-price {
-  font-size: 20px;
-  font-weight: 700;
-  color: #e6564e;
-}
+.summary { font-size: 14px; color: #6B6B6B; }
+.total-price { font-size: 22px; font-weight: 800; color: #1A1714; }
 </style>

@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "cart_item_id": "ci001",
+      "cover_url": "https://picsum.photos/seed/ear1/400/400",
+      "spu_name": "月光珍珠耳环 · 优雅弧线款",
+      "sku_name": "银色 · 8mm珍珠",
+      "price": 168.00,
+      "quantity": 1,
+      "sku_id": "sku001a",
+      "ar_asset_url": "/assets/ar/ear1.glb",
+      "mount_type": "ear"
+    },
+    {
+      "cart_item_id": "ci002",
+      "cover_url": "https://picsum.photos/seed/neck1/400/400",
+      "spu_name": "蝴蝶结珍珠项链 · 甜美锁骨链",
+      "sku_name": "40cm链长",
+      "price": 258.00,
+      "quantity": 1,
+      "sku_id": "sku004a",
+      "ar_asset_url": "",
+      "mount_type": "neck"
+    },
+    {
+      "cart_item_id": "ci003",
+      "cover_url": "https://picsum.photos/seed/ear2/400/400",
+      "spu_name": "星芒锆石耳钉 · 极简日常款",
+      "sku_name": "银色 · 小号",
+      "price": 98.00,
+      "quantity": 2,
+      "sku_id": "sku002a",
+      "ar_asset_url": "/assets/ar/ear2.glb",
+      "mount_type": "ear"
+    }
+  ]
+}

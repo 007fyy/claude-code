@@ -1,0 +1,1299 @@
+{
+  "1": {
+    "spu_id": 1,
+    "name": "月光珍珠耳环 · 优雅弧线款",
+    "category": "earring",
+    "description": "精选天然淡水珍珠，925银镀白金工艺，弧线造型修饰脸型，日常佩戴不易过敏。",
+    "style_tags": [
+      "优雅复古",
+      "轻奢高级"
+    ],
+    "occasion_tags": [
+      "约会出行",
+      "职场正式"
+    ],
+    "material": "925银 / 天然淡水珍珠",
+    "cover_url": "https://picsum.photos/seed/ear1/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ear1/400/400"
+    ],
+    "target_face_shapes": [
+      "鹅蛋脸",
+      "圆脸"
+    ],
+    "mount_type": "ear",
+    "skus": [
+      {
+        "sku_id": 101,
+        "sku_name": "银色 · 8mm珍珠",
+        "price": 168,
+        "stock": 56,
+        "ar_asset_url": "/assets/ar/ear1.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 102,
+        "sku_name": "金色 · 8mm珍珠",
+        "price": 188,
+        "stock": 32,
+        "ar_asset_url": "/assets/ar/ear1.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 103,
+        "sku_name": "银色 · 10mm珍珠",
+        "price": 198,
+        "stock": 0,
+        "ar_asset_url": "/assets/ar/ear1.glb",
+        "ar_available": true
+      }
+    ]
+  },
+  "2": {
+    "spu_id": 2,
+    "name": "星芒锆石耳钉 · 极简日常款",
+    "category": "earring",
+    "description": "六爪镶嵌AAA级锆石，火彩媲美钻石，小巧精致适合日常通勤。",
+    "style_tags": [
+      "简约极简",
+      "日常通勤"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "职场正式"
+    ],
+    "material": "925银 / AAA锆石",
+    "cover_url": "https://picsum.photos/seed/ear2/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ear2/400/400"
+    ],
+    "target_face_shapes": [
+      "鹅蛋脸",
+      "方脸",
+      "心形脸"
+    ],
+    "mount_type": "ear",
+    "skus": [
+      {
+        "sku_id": 201,
+        "sku_name": "银色 · 小号",
+        "price": 98,
+        "stock": 120,
+        "ar_asset_url": "/assets/ar/ear2.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 202,
+        "sku_name": "银色 · 大号",
+        "price": 118,
+        "stock": 88,
+        "ar_asset_url": "/assets/ar/ear2.glb",
+        "ar_available": true
+      }
+    ]
+  },
+  "3": {
+    "spu_id": 3,
+    "name": "流苏长耳环 · 派对闪耀款",
+    "category": "earring",
+    "description": "多层流苏设计搭配切面水晶，走动时灵动闪耀，派对聚会的焦点单品。",
+    "style_tags": [
+      "个性先锋",
+      "派对聚会"
+    ],
+    "occasion_tags": [
+      "派对聚会",
+      "约会出行"
+    ],
+    "material": "合金镀金 / 水晶",
+    "cover_url": "https://picsum.photos/seed/ear3/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ear3/400/400"
+    ],
+    "target_face_shapes": [
+      "方脸",
+      "长脸"
+    ],
+    "mount_type": "ear",
+    "skus": [
+      {
+        "sku_id": 301,
+        "sku_name": "金色 · 8cm",
+        "price": 128,
+        "stock": 45,
+        "ar_asset_url": "/assets/ar/ear3.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 302,
+        "sku_name": "银色 · 8cm",
+        "price": 128,
+        "stock": 38,
+        "ar_asset_url": "/assets/ar/ear3.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 303,
+        "sku_name": "金色 · 12cm",
+        "price": 148,
+        "stock": 22,
+        "ar_asset_url": "/assets/ar/ear3.glb",
+        "ar_available": true
+      }
+    ]
+  },
+  "4": {
+    "spu_id": 4,
+    "name": "复古巴洛克珍珠耳环",
+    "category": "earring",
+    "description": "每颗巴洛克珍珠形态独一无二，14K包金耳钩不易褪色，复古气质拉满。",
+    "style_tags": [
+      "优雅复古",
+      "轻奢高级"
+    ],
+    "occasion_tags": [
+      "约会出行",
+      "派对聚会"
+    ],
+    "material": "14K包金 / 巴洛克珍珠",
+    "cover_url": "https://picsum.photos/seed/ear4/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ear4/400/400"
+    ],
+    "target_face_shapes": [
+      "鹅蛋脸",
+      "心形脸"
+    ],
+    "mount_type": "ear",
+    "skus": [
+      {
+        "sku_id": 401,
+        "sku_name": "金色 · 单珠",
+        "price": 238,
+        "stock": 28,
+        "ar_asset_url": "/assets/ar/ear4.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 402,
+        "sku_name": "金色 · 双珠",
+        "price": 298,
+        "stock": 15,
+        "ar_asset_url": "/assets/ar/ear4.glb",
+        "ar_available": true
+      }
+    ]
+  },
+  "5": {
+    "spu_id": 5,
+    "name": "几何三角耳环 · 建筑灵感",
+    "category": "earring",
+    "description": "灵感源自现代建筑线条，钛钢材质防过敏，简约中带有设计感。",
+    "style_tags": [
+      "简约极简",
+      "个性先锋"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "职场正式"
+    ],
+    "material": "钛钢 / 18K镀金",
+    "cover_url": "https://picsum.photos/seed/ear5/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ear5/400/400"
+    ],
+    "target_face_shapes": [
+      "圆脸",
+      "鹅蛋脸"
+    ],
+    "mount_type": "ear",
+    "skus": [
+      {
+        "sku_id": 501,
+        "sku_name": "金色",
+        "price": 108,
+        "stock": 75,
+        "ar_asset_url": "/assets/ar/ear5.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 502,
+        "sku_name": "银色",
+        "price": 108,
+        "stock": 60,
+        "ar_asset_url": "/assets/ar/ear5.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 503,
+        "sku_name": "玫瑰金",
+        "price": 118,
+        "stock": 42,
+        "ar_asset_url": "/assets/ar/ear5.glb",
+        "ar_available": true
+      }
+    ]
+  },
+  "6": {
+    "spu_id": 6,
+    "name": "蝴蝶翅膀耳夹 · 无耳洞款",
+    "category": "earring",
+    "description": "精致珐琅蝴蝶造型，弹簧耳夹设计无需耳洞，佩戴舒适不夹耳。",
+    "style_tags": [
+      "甜美少女",
+      "个性先锋"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "约会出行"
+    ],
+    "material": "合金镀金 / 珐琅",
+    "cover_url": "https://picsum.photos/seed/ear6/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ear6/400/400"
+    ],
+    "target_face_shapes": [
+      "鹅蛋脸",
+      "心形脸",
+      "圆脸"
+    ],
+    "mount_type": "ear",
+    "skus": [
+      {
+        "sku_id": 601,
+        "sku_name": "蓝色蝴蝶",
+        "price": 78,
+        "stock": 90,
+        "ar_asset_url": "/assets/ar/ear6.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 602,
+        "sku_name": "粉色蝴蝶",
+        "price": 78,
+        "stock": 85,
+        "ar_asset_url": "/assets/ar/ear6.glb",
+        "ar_available": true
+      }
+    ]
+  },
+  "7": {
+    "spu_id": 7,
+    "name": "蝴蝶结珍珠项链 · 甜美锁骨链",
+    "category": "necklace",
+    "description": "蝴蝶结与珍珠的经典组合，锁骨链长度恰好修饰颈部线条。",
+    "style_tags": [
+      "甜美少女",
+      "约会出行"
+    ],
+    "occasion_tags": [
+      "约会出行",
+      "日常通勤"
+    ],
+    "material": "925银 / 天然淡水珍珠",
+    "cover_url": "https://picsum.photos/seed/neck1/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/neck1/400/400"
+    ],
+    "target_face_shapes": [
+      "鹅蛋脸",
+      "心形脸"
+    ],
+    "mount_type": "neck",
+    "skus": [
+      {
+        "sku_id": 701,
+        "sku_name": "40cm链长",
+        "price": 258,
+        "stock": 30,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 702,
+        "sku_name": "45cm链长",
+        "price": 268,
+        "stock": 25,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "8": {
+    "spu_id": 8,
+    "name": "极简几何项链 · 通勤百搭款",
+    "category": "necklace",
+    "description": "极简圆环吊坠搭配细链，百搭不挑衣服，职场通勤首选。",
+    "style_tags": [
+      "简约极简",
+      "职场正式"
+    ],
+    "occasion_tags": [
+      "职场正式",
+      "日常通勤"
+    ],
+    "material": "钛钢 / 18K镀金",
+    "cover_url": "https://picsum.photos/seed/neck2/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/neck2/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "neck",
+    "skus": [
+      {
+        "sku_id": 801,
+        "sku_name": "金色",
+        "price": 188,
+        "stock": 60,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 802,
+        "sku_name": "银色",
+        "price": 188,
+        "stock": 45,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "9": {
+    "spu_id": 9,
+    "name": "双层珍珠项链 · 复古宫廷风",
+    "category": "necklace",
+    "description": "双层珍珠叠戴设计，宫廷复古风格，搭配V领或方领上衣效果绝佳。",
+    "style_tags": [
+      "优雅复古",
+      "轻奢高级"
+    ],
+    "occasion_tags": [
+      "派对聚会",
+      "约会出行"
+    ],
+    "material": "合金镀金 / 仿珍珠",
+    "cover_url": "https://picsum.photos/seed/neck3/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/neck3/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "neck",
+    "skus": [
+      {
+        "sku_id": 901,
+        "sku_name": "金色 · 40cm",
+        "price": 148,
+        "stock": 40,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 902,
+        "sku_name": "金色 · 45cm",
+        "price": 158,
+        "stock": 35,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "10": {
+    "spu_id": 10,
+    "name": "星月吊坠项链 · 浪漫星空",
+    "category": "necklace",
+    "description": "星星与月亮的浪漫组合，微镶锆石闪耀如星空，送礼自戴皆宜。",
+    "style_tags": [
+      "甜美少女",
+      "轻奢高级"
+    ],
+    "occasion_tags": [
+      "约会出行",
+      "日常通勤"
+    ],
+    "material": "925银 / 锆石",
+    "cover_url": "https://picsum.photos/seed/neck4/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/neck4/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "neck",
+    "skus": [
+      {
+        "sku_id": 1001,
+        "sku_name": "银色 · 星月款",
+        "price": 218,
+        "stock": 38,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1002,
+        "sku_name": "金色 · 星月款",
+        "price": 238,
+        "stock": 25,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "11": {
+    "spu_id": 11,
+    "name": "锁骨链 · 小蛮腰吊坠",
+    "category": "necklace",
+    "description": "小蛮腰造型吊坠寓意好身材好运气，钛钢材质防水防汗不褪色。",
+    "style_tags": [
+      "简约极简",
+      "甜美少女"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "运动休闲"
+    ],
+    "material": "钛钢 / 18K镀金",
+    "cover_url": "https://picsum.photos/seed/neck5/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/neck5/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "neck",
+    "skus": [
+      {
+        "sku_id": 1101,
+        "sku_name": "金色",
+        "price": 128,
+        "stock": 70,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1102,
+        "sku_name": "玫瑰金",
+        "price": 128,
+        "stock": 55,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "12": {
+    "spu_id": 12,
+    "name": "十字架项链 · 暗黑哥特风",
+    "category": "necklace",
+    "description": "哥特风十字架吊坠镶嵌黑色锆石，暗黑酷飒风格，男女皆可佩戴。",
+    "style_tags": [
+      "个性先锋"
+    ],
+    "occasion_tags": [
+      "派对聚会",
+      "日常通勤"
+    ],
+    "material": "钛钢 / 黑锆石",
+    "cover_url": "https://picsum.photos/seed/neck6/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/neck6/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "neck",
+    "skus": [
+      {
+        "sku_id": 1201,
+        "sku_name": "黑银色 · 50cm",
+        "price": 168,
+        "stock": 40,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1202,
+        "sku_name": "黑银色 · 60cm",
+        "price": 178,
+        "stock": 30,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "13": {
+    "spu_id": 13,
+    "name": "编织手链 · 波西米亚风情",
+    "category": "bracelet",
+    "description": "天然石搭配925银珠编织，波西米亚风格，每条纹理独一无二。",
+    "style_tags": [
+      "个性先锋",
+      "运动休闲"
+    ],
+    "occasion_tags": [
+      "运动休闲",
+      "日常通勤"
+    ],
+    "material": "925银 / 天然石",
+    "cover_url": "https://picsum.photos/seed/brace1/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/brace1/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "wrist",
+    "skus": [
+      {
+        "sku_id": 1301,
+        "sku_name": "蓝色天然石",
+        "price": 138,
+        "stock": 50,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1302,
+        "sku_name": "绿色天然石",
+        "price": 138,
+        "stock": 42,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "14": {
+    "spu_id": 14,
+    "name": "细链手镯 · 极简金属感",
+    "category": "bracelet",
+    "description": "极细链条搭配小圆片吊坠，极简金属风格，叠戴效果更佳。",
+    "style_tags": [
+      "简约极简",
+      "日常通勤"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "职场正式"
+    ],
+    "material": "钛钢 / 18K镀金",
+    "cover_url": "https://picsum.photos/seed/brace2/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/brace2/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "wrist",
+    "skus": [
+      {
+        "sku_id": 1401,
+        "sku_name": "金色",
+        "price": 118,
+        "stock": 65,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1402,
+        "sku_name": "玫瑰金",
+        "price": 128,
+        "stock": 48,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "15": {
+    "spu_id": 15,
+    "name": "珍珠手链 · 法式优雅",
+    "category": "bracelet",
+    "description": "天然淡水珍珠搭配14K包金链条，法式优雅风格，适合正式场合。",
+    "style_tags": [
+      "优雅复古",
+      "轻奢高级"
+    ],
+    "occasion_tags": [
+      "职场正式",
+      "约会出行"
+    ],
+    "material": "14K包金 / 天然淡水珍珠",
+    "cover_url": "https://picsum.photos/seed/brace3/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/brace3/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "wrist",
+    "skus": [
+      {
+        "sku_id": 1501,
+        "sku_name": "金色 · 16cm",
+        "price": 198,
+        "stock": 35,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1502,
+        "sku_name": "金色 · 18cm",
+        "price": 208,
+        "stock": 28,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "16": {
+    "spu_id": 16,
+    "name": "多层手链套装 · 叠戴三件套",
+    "category": "bracelet",
+    "description": "三条不同粗细的手链组合，可单戴可叠戴，一套搞定多种风格。",
+    "style_tags": [
+      "个性先锋",
+      "甜美少女"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "派对聚会"
+    ],
+    "material": "合金镀金",
+    "cover_url": "https://picsum.photos/seed/brace4/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/brace4/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "wrist",
+    "skus": [
+      {
+        "sku_id": 1601,
+        "sku_name": "金色三件套",
+        "price": 88,
+        "stock": 100,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1602,
+        "sku_name": "银色三件套",
+        "price": 88,
+        "stock": 80,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "17": {
+    "spu_id": 17,
+    "name": "莫比乌斯戒指 · 情侣对戒",
+    "category": "ring",
+    "description": "莫比乌斯环寓意永恒，925银磨砂质感，内壁可免费刻字。",
+    "style_tags": [
+      "简约极简",
+      "约会出行"
+    ],
+    "occasion_tags": [
+      "约会出行",
+      "日常通勤"
+    ],
+    "material": "925银",
+    "cover_url": "https://picsum.photos/seed/ring1/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ring1/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "finger",
+    "skus": [
+      {
+        "sku_id": 1701,
+        "sku_name": "银色 · 6号",
+        "price": 198,
+        "stock": 30,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1702,
+        "sku_name": "银色 · 7号",
+        "price": 198,
+        "stock": 28,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1703,
+        "sku_name": "银色 · 8号",
+        "price": 198,
+        "stock": 25,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "18": {
+    "spu_id": 18,
+    "name": "复古花丝戒指 · 宫廷风",
+    "category": "ring",
+    "description": "精致花丝镂空工艺搭配锆石点缀，复古宫廷风格，显手白显气质。",
+    "style_tags": [
+      "优雅复古",
+      "甜美少女"
+    ],
+    "occasion_tags": [
+      "约会出行",
+      "派对聚会"
+    ],
+    "material": "合金镀金 / 锆石",
+    "cover_url": "https://picsum.photos/seed/ring2/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ring2/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "finger",
+    "skus": [
+      {
+        "sku_id": 1801,
+        "sku_name": "金色 · 6号",
+        "price": 88,
+        "stock": 55,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1802,
+        "sku_name": "金色 · 7号",
+        "price": 88,
+        "stock": 50,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "19": {
+    "spu_id": 19,
+    "name": "开口戒指 · 星星月亮不对称",
+    "category": "ring",
+    "description": "一端星星一端月亮的不对称设计，开口可调节大小，送闺蜜首选。",
+    "style_tags": [
+      "甜美少女",
+      "简约极简"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "约会出行"
+    ],
+    "material": "925银 / 锆石",
+    "cover_url": "https://picsum.photos/seed/ring3/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ring3/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "finger",
+    "skus": [
+      {
+        "sku_id": 1901,
+        "sku_name": "银色 · 均码",
+        "price": 128,
+        "stock": 60,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 1902,
+        "sku_name": "金色 · 均码",
+        "price": 138,
+        "stock": 45,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "20": {
+    "spu_id": 20,
+    "name": "宽面戒指 · 极简哑光",
+    "category": "ring",
+    "description": "5mm宽面哑光质感，中性风格男女通用，钛钢材质永不褪色。",
+    "style_tags": [
+      "简约极简",
+      "个性先锋"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "运动休闲"
+    ],
+    "material": "钛钢 / 18K镀金",
+    "cover_url": "https://picsum.photos/seed/ring4/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ring4/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "finger",
+    "skus": [
+      {
+        "sku_id": 2001,
+        "sku_name": "金色 · 7号",
+        "price": 68,
+        "stock": 80,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2002,
+        "sku_name": "金色 · 8号",
+        "price": 68,
+        "stock": 75,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2003,
+        "sku_name": "银色 · 7号",
+        "price": 68,
+        "stock": 65,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2004,
+        "sku_name": "银色 · 8号",
+        "price": 68,
+        "stock": 60,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "21": {
+    "spu_id": 21,
+    "name": "珍珠发夹套装 · 三件套",
+    "category": "hairpin",
+    "description": "大中小三颗珍珠发夹组合，可单独使用也可组合造型，百搭实用。",
+    "style_tags": [
+      "甜美少女",
+      "日常通勤"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "约会出行"
+    ],
+    "material": "合金 / 仿珍珠",
+    "cover_url": "https://picsum.photos/seed/hair1/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/hair1/400/400"
+    ],
+    "target_face_shapes": [
+      "圆脸",
+      "鹅蛋脸"
+    ],
+    "mount_type": "hair",
+    "skus": [
+      {
+        "sku_id": 2101,
+        "sku_name": "白珍珠三件套",
+        "price": 68,
+        "stock": 80,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2102,
+        "sku_name": "金珍珠三件套",
+        "price": 78,
+        "stock": 55,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "22": {
+    "spu_id": 22,
+    "name": "金属发箍 · 法式复古",
+    "category": "hairpin",
+    "description": "法式复古金属发箍，宽边设计修饰发际线，优雅又实用。",
+    "style_tags": [
+      "优雅复古",
+      "轻奢高级"
+    ],
+    "occasion_tags": [
+      "职场正式",
+      "约会出行"
+    ],
+    "material": "合金镀金",
+    "cover_url": "https://picsum.photos/seed/hair2/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/hair2/400/400"
+    ],
+    "target_face_shapes": [
+      "鹅蛋脸",
+      "长脸"
+    ],
+    "mount_type": "hair",
+    "skus": [
+      {
+        "sku_id": 2201,
+        "sku_name": "金色",
+        "price": 58,
+        "stock": 90,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2202,
+        "sku_name": "银色",
+        "price": 58,
+        "stock": 70,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "23": {
+    "spu_id": 23,
+    "name": "水钻发卡 · 星空闪耀",
+    "category": "hairpin",
+    "description": "满钻星星造型发卡，光线下闪耀如星空，派对造型必备。",
+    "style_tags": [
+      "个性先锋",
+      "派对聚会"
+    ],
+    "occasion_tags": [
+      "派对聚会"
+    ],
+    "material": "合金 / 水钻",
+    "cover_url": "https://picsum.photos/seed/hair3/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/hair3/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "hair",
+    "skus": [
+      {
+        "sku_id": 2301,
+        "sku_name": "银色星星",
+        "price": 48,
+        "stock": 100,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2302,
+        "sku_name": "金色星星",
+        "price": 48,
+        "stock": 85,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "24": {
+    "spu_id": 24,
+    "name": "蜜蜂胸针 · 复古昆虫系列",
+    "category": "brooch",
+    "description": "精致珐琅工艺还原蜜蜂细节，可别在西装领口或包包上，点睛之笔。",
+    "style_tags": [
+      "个性先锋",
+      "轻奢高级"
+    ],
+    "occasion_tags": [
+      "职场正式",
+      "派对聚会"
+    ],
+    "material": "合金镀金 / 珐琅",
+    "cover_url": "https://picsum.photos/seed/brooch1/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/brooch1/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "chest",
+    "skus": [
+      {
+        "sku_id": 2401,
+        "sku_name": "金色",
+        "price": 78,
+        "stock": 60,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2402,
+        "sku_name": "银色",
+        "price": 78,
+        "stock": 45,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "25": {
+    "spu_id": 25,
+    "name": "山茶花胸针 · 经典优雅",
+    "category": "brooch",
+    "description": "经典山茶花造型，珍珠花蕊点缀，搭配大衣或针织衫尽显优雅。",
+    "style_tags": [
+      "优雅复古",
+      "轻奢高级"
+    ],
+    "occasion_tags": [
+      "职场正式",
+      "约会出行"
+    ],
+    "material": "合金 / 珍珠 / 珐琅",
+    "cover_url": "https://picsum.photos/seed/brooch2/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/brooch2/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "chest",
+    "skus": [
+      {
+        "sku_id": 2501,
+        "sku_name": "白色",
+        "price": 98,
+        "stock": 50,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2502,
+        "sku_name": "黑色",
+        "price": 98,
+        "stock": 40,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "26": {
+    "spu_id": 26,
+    "name": "脚链 · 海洋贝壳款",
+    "category": "anklet",
+    "description": "天然贝壳搭配925银链条，夏日海边度假风，脚踝间的小心机。",
+    "style_tags": [
+      "甜美少女",
+      "运动休闲"
+    ],
+    "occasion_tags": [
+      "运动休闲",
+      "约会出行"
+    ],
+    "material": "925银 / 天然贝壳",
+    "cover_url": "https://picsum.photos/seed/anklet1/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/anklet1/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "ankle",
+    "skus": [
+      {
+        "sku_id": 2601,
+        "sku_name": "银色 · 22cm",
+        "price": 88,
+        "stock": 45,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2602,
+        "sku_name": "银色 · 25cm",
+        "price": 88,
+        "stock": 38,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "27": {
+    "spu_id": 27,
+    "name": "珍珠耳骨夹 · 无耳洞三件套",
+    "category": "earring",
+    "description": "三种不同大小的珍珠耳骨夹，无需耳洞即可佩戴，叠戴效果满分。",
+    "style_tags": [
+      "简约极简",
+      "甜美少女"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "约会出行"
+    ],
+    "material": "925银 / 仿珍珠",
+    "cover_url": "https://picsum.photos/seed/ear7/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ear7/400/400"
+    ],
+    "target_face_shapes": [
+      "鹅蛋脸",
+      "圆脸",
+      "心形脸"
+    ],
+    "mount_type": "ear",
+    "skus": [
+      {
+        "sku_id": 2701,
+        "sku_name": "银色三件套",
+        "price": 58,
+        "stock": 110,
+        "ar_asset_url": "/assets/ar/ear7.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 2702,
+        "sku_name": "金色三件套",
+        "price": 68,
+        "stock": 85,
+        "ar_asset_url": "/assets/ar/ear7.glb",
+        "ar_available": true
+      }
+    ]
+  },
+  "28": {
+    "spu_id": 28,
+    "name": "链条耳环 · 朋克机车风",
+    "category": "earring",
+    "description": "粗链条设计搭配十字架吊坠，朋克机车风格，酷飒个性。",
+    "style_tags": [
+      "个性先锋"
+    ],
+    "occasion_tags": [
+      "派对聚会",
+      "日常通勤"
+    ],
+    "material": "钛钢",
+    "cover_url": "https://picsum.photos/seed/ear8/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ear8/400/400"
+    ],
+    "target_face_shapes": [
+      "方脸",
+      "长脸"
+    ],
+    "mount_type": "ear",
+    "skus": [
+      {
+        "sku_id": 2801,
+        "sku_name": "银色 · 单只",
+        "price": 48,
+        "stock": 70,
+        "ar_asset_url": "/assets/ar/ear8.glb",
+        "ar_available": true
+      },
+      {
+        "sku_id": 2802,
+        "sku_name": "银色 · 一对",
+        "price": 88,
+        "stock": 55,
+        "ar_asset_url": "/assets/ar/ear8.glb",
+        "ar_available": true
+      }
+    ]
+  },
+  "29": {
+    "spu_id": 29,
+    "name": "满钻手镯 · 轻奢闪耀",
+    "category": "bracelet",
+    "description": "密镶AAA锆石手镯，开口设计可调节，晚宴派对的闪耀配饰。",
+    "style_tags": [
+      "轻奢高级",
+      "派对聚会"
+    ],
+    "occasion_tags": [
+      "派对聚会",
+      "约会出行"
+    ],
+    "material": "合金镀金 / AAA锆石",
+    "cover_url": "https://picsum.photos/seed/brace5/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/brace5/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "wrist",
+    "skus": [
+      {
+        "sku_id": 2901,
+        "sku_name": "金色 · 开口款",
+        "price": 268,
+        "stock": 20,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 2902,
+        "sku_name": "银色 · 开口款",
+        "price": 258,
+        "stock": 18,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "30": {
+    "spu_id": 30,
+    "name": "转运珠戒指 · 红绳编织",
+    "category": "ring",
+    "description": "足金转运珠搭配手工编织红绳，寓意好运连连，本命年必备。",
+    "style_tags": [
+      "甜美少女",
+      "简约极简"
+    ],
+    "occasion_tags": [
+      "日常通勤"
+    ],
+    "material": "足金 / 红绳",
+    "cover_url": "https://picsum.photos/seed/ring5/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/ring5/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "finger",
+    "skus": [
+      {
+        "sku_id": 3001,
+        "sku_name": "3mm金珠",
+        "price": 298,
+        "stock": 25,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 3002,
+        "sku_name": "5mm金珠",
+        "price": 458,
+        "stock": 15,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  },
+  "31": {
+    "spu_id": 31,
+    "name": "锁骨链 · 字母定制款",
+    "category": "necklace",
+    "description": "可定制A-Z任意字母吊坠，925银镀18K金，专属你的个性项链。",
+    "style_tags": [
+      "简约极简",
+      "个性先锋"
+    ],
+    "occasion_tags": [
+      "日常通勤",
+      "约会出行"
+    ],
+    "material": "925银 / 18K镀金",
+    "cover_url": "https://picsum.photos/seed/neck7/400/400",
+    "detail_images": [
+      "https://picsum.photos/seed/neck7/400/400"
+    ],
+    "target_face_shapes": [],
+    "mount_type": "neck",
+    "skus": [
+      {
+        "sku_id": 3101,
+        "sku_name": "金色 · 40cm",
+        "price": 158,
+        "stock": 50,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 3102,
+        "sku_name": "银色 · 40cm",
+        "price": 148,
+        "stock": 45,
+        "ar_asset_url": null,
+        "ar_available": false
+      },
+      {
+        "sku_id": 3103,
+        "sku_name": "玫瑰金 · 40cm",
+        "price": 158,
+        "stock": 35,
+        "ar_asset_url": null,
+        "ar_available": false
+      }
+    ]
+  }
+}

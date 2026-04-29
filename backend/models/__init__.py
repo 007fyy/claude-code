@@ -8,10 +8,13 @@ from models.order import Order, OrderItem, RefundOrder  # noqa: F401
 from models.user import User                          # noqa: F401
 from models.verify_code import VerifyCode             # noqa: F401
 from models.address import Address                    # noqa: F401
+from models.favorite import UserFavorite              # noqa: F401
+from models.tracking_event import TrackingEvent       # noqa: F401
 
 __all__ = [
     "GoodsSpu", "GoodsSku",
     "CartItem",
     "Order", "OrderItem", "RefundOrder",
     "User", "VerifyCode", "Address",
+    "UserFavorite", "TrackingEvent",
 ]

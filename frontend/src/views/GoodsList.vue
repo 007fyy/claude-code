@@ -1,95 +1,76 @@
 <template>
   <div class="goods-page">
-    <!-- 顶部导航 -->
-    <div class="topbar">
-      <h1 class="logo">✦ 饰品商城</h1>
-      <el-button type="primary" plain @click="$router.push('/cart')">
-        <el-icon><ShoppingCart /></el-icon>
-        购物车
-        <el-badge v-if="cartCount > 0" :value="cartCount" class="badge-dot" />
-      </el-button>
-    </div>
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title"><span>✦</span> 饰品商城</h1>
+        <router-link to="/cart" class="cart-link">
+          🛒 购物车
+          <el-badge v-if="cartCount > 0" :value="cartCount" />
+        </router-link>
+      </div>
 
-    <!-- 分类筛选 -->
-    <div class="filter-bar">
-      <el-radio-group v-model="category" @change="fetchGoods(1)">
-        <el-radio-button label="">全部</el-radio-button>
-        <el-radio-button label="earring">耳饰</el-radio-button>
-        <el-radio-button label="necklace">项链</el-radio-button>
-        <el-radio-button label="hairpin">发饰</el-radio-button>
-        <el-radio-button label="bracelet">手链</el-radio-button>
-        <el-radio-button label="brooch">胸针</el-radio-button>
-      </el-radio-group>
-    </div>
+      <!-- 分类筛选 -->
+      <div class="filter-bar">
+        <span
+          v-for="cat in cats"
+          :key="cat.value"
+          class="chip"
+          :class="{ active: category === cat.value }"
+          @click="category = cat.value; fetchGoods(1)"
+        >{{ cat.label }}</span>
+      </div>
 
-    <!-- 商品网格 -->
-    <div v-loading="loading" class="goods-grid">
-      <el-card
-        v-for="item in goods"
-        :key="item.spu_id"
-        class="goods-card"
-        shadow="hover"
-      >
-        <el-image
-          :src="item.cover_url"
-          fit="cover"
-          class="goods-img"
-          :preview-src-list="[item.cover_url]"
-          preview-teleported
+      <!-- 商品网格 -->
+      <div v-loading="loading" class="goods-grid">
+        <div
+          v-for="item in goods"
+          :key="item.spu_id"
+          class="product-card"
+          @click="$router.push(`/goods/${item.spu_id}`)"
+          shadow="hover"
         >
-          <template #error>
-            <div class="img-placeholder"><el-icon><Picture /></el-icon></div>
-          </template>
-        </el-image>
-
-        <div class="goods-body">
-          <div class="goods-name" :title="item.name">{{ item.name }}</div>
-          <div class="goods-meta">
-            <span class="material">{{ item.material }}</span>
+          <div class="product-card-img">
+            <el-image :src="item.cover_url" fit="cover" class="card-img">
+              <template #error>
+                <div class="img-err"><el-icon><Picture /></el-icon></div>
+              </template>
+            </el-image>
+            <span class="fav-btn" :class="{ active: isFav(item.spu_id) }" @click.stop="toggleFav(item)">{{ isFav(item.spu_id) ? '❤️' : '🤍' }}</span>
+            <span class="try-badge" v-if="item.ar_available" @click.stop="tryOn(item)">📷 AR 试戴</span>
           </div>
-          <div class="tags">
-            <el-tag
-              v-for="tag in (item.style_tags || []).slice(0, 3)"
-              :key="tag"
-              size="small"
-              type="info"
-              effect="plain"
-            >{{ tag }}</el-tag>
-          </div>
-          <div class="price">¥ {{ item.price_range }}</div>
-          <div class="actions">
-            <el-button size="small" @click="addCart(item)">
-              <el-icon><ShoppingCartFull /></el-icon>
-              加购
-            </el-button>
-            <el-button
-              size="small"
-              type="primary"
-              @click="tryOn(item)"
-              :disabled="!item.ar_available"
-            >
-              <el-icon><Camera /></el-icon>
-              AR 试戴
-            </el-button>
+          <div class="product-card-body">
+            <div class="product-card-name" :title="item.name">{{ item.name }}</div>
+            <div class="product-card-meta">
+              <span class="material">{{ item.material }}</span>
+            </div>
+            <div class="tags">
+              <span v-for="tag in (item.style_tags || []).slice(0, 3)" :key="tag" class="tag tag-gold">{{ tag }}</span>
+            </div>
+            <div class="product-card-price">
+              <span class="price-main">¥{{ item.price_range }}</span>
+            </div>
+            <div class="product-card-actions">
+              <button class="btn btn-sm btn-lt" @click.stop="addCart(item)">🛒 加购</button>
+              <button class="btn btn-sm btn-dark" @click.stop="tryOn(item)" :disabled="!item.ar_available">📷 试戴</button>
+            </div>
           </div>
         </div>
-      </el-card>
 
-      <!-- 无数据 -->
-      <el-empty v-if="!loading && goods.length === 0" description="暂无商品" />
-    </div>
+        <el-empty v-if="!loading && goods.length === 0" description="暂无商品" />
+      </div>
 
-    <!-- 分页 -->
-    <div class="pagination">
-      <el-pagination
-        v-model:current-page="page"
-        :page-size="pageSize"
-        :total="total"
-        :pager-count="5"
-        layout="prev, pager, next, total"
-        @current-change="fetchGoods"
-        background
-      />
+      <!-- 分页 -->
+      <div class="pagination">
+        <el-pagination
+          v-model:current-page="page"
+          :page-size="pageSize"
+          :total="total"
+          :pager-count="7"
+          layout="prev, pager, next, total"
+          @current-change="fetchGoods"
+          background
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -98,10 +79,14 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Picture } from '@element-plus/icons-vue'
 import { getGoodsList } from '../api/goods'
 import { addToCart, getCartList } from '../api/cart'
+import { useFavorites } from '../composables/useFavorites'
+import { trackClick } from '../api/tracking'
 
 const router = useRouter()
+const { isFav, toggle, ensureLoaded } = useFavorites()
 
 const goods = ref([])
 const total = ref(0)
@@ -110,6 +95,15 @@ const pageSize = ref(12)
 const category = ref('')
 const loading = ref(false)
 const cartCount = ref(0)
+
+const cats = [
+  { label: '全部', value: '' },
+  { label: '耳饰', value: 'earring' },
+  { label: '项链', value: 'necklace' },
+  { label: '发饰', value: 'hairpin' },
+  { label: '手链', value: 'bracelet' },
+  { label: '胸针', value: 'brooch' },
+]
 
 async function fetchGoods(p = 1) {
   page.value = p
@@ -147,6 +141,7 @@ async function addCart(item) {
 }
 
 function tryOn(item) {
+  trackClick('ar_try', item.spu_id, '/goods')
   router.push({
     name: 'FaceARView',
     query: {
@@ -159,120 +154,137 @@ function tryOn(item) {
   })
 }
 
+async function toggleFav(item) {
+  trackClick('favorite', item.spu_id, '/goods')
+  try {
+    const faved = await toggle(item.spu_id)
+    ElMessage.success(faved ? '已收藏' : '已取消收藏')
+  } catch {}
+}
+
 onMounted(() => {
   fetchGoods()
   refreshCartCount()
+  if (localStorage.getItem('token')) ensureLoaded()
 })
 </script>
 
 <style scoped>
-.goods-page {
-  max-width: 1200px;
+.goods-page { flex: 1; }
+
+.container {
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 0 16px 40px;
+  padding: 0 32px 60px;
 }
 
-.topbar {
+.page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
-  border-bottom: 1px solid #eee;
-  margin-bottom: 16px;
-  position: relative;
+  padding: 24px 0 20px;
 }
-
-.logo {
-  font-size: 22px;
-  font-weight: 700;
-  color: #333;
-  letter-spacing: 2px;
+.page-title {
+  font-size: 24px; font-weight: 800; color: #1A1714;
 }
-
-.badge-dot {
-  margin-left: 4px;
+.page-title span { color: #C4906A; }
+.cart-link {
+  font-size: 14px; font-weight: 600; color: #6B6B6B;
+  text-decoration: none; transition: color .15s;
 }
+.cart-link:hover { color: #1A1714; }
 
 .filter-bar {
-  margin-bottom: 20px;
+  display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
 }
+.chip {
+  display: inline-flex; align-items: center;
+  padding: 8px 20px; border-radius: 20px;
+  font-size: 13px; font-weight: 500;
+  border: 1.5px solid #EBEBEB; background: #fff; color: #6B6B6B;
+  cursor: pointer; transition: all .15s;
+}
+.chip:hover { border-color: #C4906A; color: #9E7050; }
+.chip.active { background: #1A1714; color: white; border-color: #1A1714; }
 
 .goods-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
   min-height: 200px;
 }
 
-.goods-card {
-  cursor: default;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: transform 0.2s;
+.product-card {
+  background: #fff; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
+  transition: all .28s; cursor: pointer;
+  display: flex; flex-direction: column;
 }
+.product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 48px rgba(0,0,0,.14); }
 
-.goods-card:hover {
-  transform: translateY(-2px);
+.product-card-img {
+  width: 100%; aspect-ratio: 1; position: relative; overflow: hidden;
 }
+.card-img { width: 100%; height: 100%; }
+.img-err {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: #f0f0f0; color: #bbb; font-size: 48px;
+}
+.try-badge {
+  position: absolute; bottom: 10px; right: 10px;
+  background: rgba(0,0,0,.6); color: white;
+  font-size: 11px; font-weight: 600;
+  padding: 4px 10px; border-radius: 20px;
+  backdrop-filter: blur(6px);
+  opacity: 0; transform: translateY(4px); transition: all .2s;
+}
+.product-card:hover .try-badge { opacity: 1; transform: translateY(0); }
 
-.goods-img {
-  width: 100%;
-  height: 200px;
-  display: block;
+.fav-btn {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 20px; cursor: pointer;
+  opacity: 0; transition: all .2s;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
 }
+.product-card:hover .fav-btn { opacity: 1; }
+.fav-btn.active { opacity: 1; }
 
-.img-placeholder {
-  width: 100%;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f0f0f0;
-  font-size: 40px;
-  color: #bbb;
+.product-card-body { padding: 14px 14px 16px; flex: 1; display: flex; flex-direction: column; }
+.product-card-name {
+  font-size: 14px; font-weight: 600; color: #1A1714;
+  line-height: 1.4; margin-bottom: 4px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
+.product-card-meta { font-size: 12px; color: #6B6B6B; margin-bottom: 6px; }
+.tags { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; }
+.tag {
+  display: inline-block; padding: 3px 9px; border-radius: 5px;
+  font-size: 12px; font-weight: 600;
+}
+.tag-gold { background: #F5EDE3; color: #9E7050; }
 
-.goods-body {
-  padding: 12px;
-}
+.product-card-price { margin-bottom: 10px; }
+.price-main { font-size: 20px; font-weight: 800; color: #1A1714; }
 
-.goods-name {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.product-card-actions {
+  display: flex; gap: 8px; margin-top: auto;
+  opacity: 0; transform: translateY(4px); transition: all .22s;
 }
+.product-card:hover .product-card-actions { opacity: 1; transform: translateY(0); }
 
-.goods-meta {
-  font-size: 12px;
-  color: #999;
-  margin-bottom: 6px;
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  font-size: 13px; font-weight: 700; border-radius: 8px;
+  padding: 8px 18px; transition: all .2s; cursor: pointer; border: none;
 }
+.btn:hover { transform: translateY(-1px); }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-dark { background: #1A1714; color: white; }
+.btn-dark:hover { background: #2D231A; }
+.btn-dark:disabled { background: #B0B0B0; cursor: not-allowed; transform: none; }
+.btn-lt { background: #F5EDE3; color: #9E7050; }
+.btn-lt:hover { background: #EEE0CE; }
 
-.tags {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-
-.price {
-  font-size: 16px;
-  font-weight: 700;
-  color: #e6564e;
-  margin-bottom: 10px;
-}
-
-.actions {
-  display: flex;
-  gap: 8px;
-}
-
-.pagination {
-  margin-top: 24px;
-  display: flex;
-  justify-content: center;
-}
+.pagination { margin-top: 32px; display: flex; justify-content: center; }
 </style>

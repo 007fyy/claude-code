@@ -1,79 +1,77 @@
 <template>
   <div class="order-detail-page">
-    <div class="topbar">
-      <el-button :icon="ArrowLeft" circle @click="$router.back()" />
-      <span class="title">订单详情</span>
-    </div>
-
-    <div v-loading="loading">
-      <div v-if="order">
-        <!-- 物流进度 -->
-        <div class="logistics-steps">
-          <el-steps :active="activeStep" align-center>
-            <el-step title="已付款" />
-            <el-step title="已发货" />
-            <el-step title="运输中" />
-            <el-step title="已签收" />
-          </el-steps>
-        </div>
-
-        <!-- 物流信息 -->
-        <div class="section" v-if="order.tracking_no">
-          <div class="section-title">📦 物流信息</div>
-          <div class="logistics-card">
-            <div class="logistics-no">顺丰快递 {{ order.tracking_no }}</div>
-            <div class="logistics-latest">最新：商品已由商家发出，等待快递揽收</div>
-          </div>
-        </div>
-
-        <!-- 收货地址 -->
-        <div class="section">
-          <div class="section-title">📍 收货信息</div>
-          <div class="address-info">
-            <div class="addr-name">{{ order.receiver_name }} {{ order.receiver_phone }}</div>
-            <div class="addr-text">{{ order.receiver_address }}</div>
-          </div>
-        </div>
-
-        <!-- 商品 -->
-        <div class="section">
-          <div class="section-title">商品信息</div>
-          <div v-for="item in (order.items || [])" :key="item.sku_id" class="order-item">
-            <el-image :src="item.cover_url" fit="cover" class="item-img">
-              <template #error><div class="img-err"><el-icon><Picture /></el-icon></div></template>
-            </el-image>
-            <div class="item-meta">
-              <div class="item-name">{{ item.spu_name }}</div>
-              <div class="item-sku">{{ item.sku_name }} x{{ item.quantity }}</div>
-              <div class="item-price">¥{{ item.price }}</div>
-            </div>
-            <el-button
-              v-if="item.ar_asset_url"
-              size="small"
-              link
-              @click="tryOn(item)"
-            >试戴</el-button>
-          </div>
-        </div>
-
-        <!-- 订单信息 -->
-        <div class="section order-meta">
-          <div class="meta-row"><span>订单号</span><span>{{ order.order_no }}</span></div>
-          <div class="meta-row"><span>创建时间</span><span>{{ formatDate(order.created_at) }}</span></div>
-          <div class="meta-row"><span>支付方式</span><span>微信支付</span></div>
-          <div class="meta-row total-row"><span>实付金额</span><span class="price">¥{{ order.total_amount }}</span></div>
-        </div>
+    <div class="container">
+      <div class="page-header">
+        <el-button text @click="$router.back()">← 返回</el-button>
+        <h1 class="page-title">订单详情</h1>
       </div>
 
-      <el-empty v-else-if="!loading" description="订单不存在" />
-    </div>
+      <div v-loading="loading">
+        <div v-if="order">
+          <div class="logistics-steps">
+            <el-steps :active="activeStep" align-center>
+              <el-step title="已付款" />
+              <el-step title="已发货" />
+              <el-step title="运输中" />
+              <el-step title="已签收" />
+            </el-steps>
+          </div>
 
-    <!-- 底部操作 -->
-    <div class="bottom-bar" v-if="order">
-      <el-button size="large" class="action-btn" @click="$router.push(`/aftersale/apply?order_id=${order.order_id}`)">
-        申请售后
-      </el-button>
-      <el-button size="large" class="action-btn">联系客服</el-button>
+          <div class="detail-grid">
+            <div class="detail-left">
+              <div class="section" v-if="order.tracking_no">
+                <div class="section-title">📦 物流信息</div>
+                <div class="logistics-card">
+                  <div class="logistics-no">顺丰快递 {{ order.tracking_no }}</div>
+                  <div class="logistics-latest">最新：商品已由商家发出，等待快递揽收</div>
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="section-title">📍 收货信息</div>
+                <div class="address-info">
+                  <div class="addr-name">{{ order.receiver_name }} {{ order.receiver_phone }}</div>
+                  <div class="addr-text">{{ order.receiver_address }}</div>
+                </div>
+              </div>
+
+              <div class="section">
+                <div class="section-title">商品信息</div>
+                <div v-for="item in (order.items || [])" :key="item.sku_id" class="order-item">
+                  <el-image :src="item.cover_url" fit="cover" class="item-img">
+                    <template #error><div class="img-err"><el-icon><Picture /></el-icon></div></template>
+                  </el-image>
+                  <div class="item-meta">
+                    <div class="item-name">{{ item.spu_name }}</div>
+                    <div class="item-sku">{{ item.sku_name }} x{{ item.quantity }}</div>
+                    <div class="item-price">¥{{ item.price }}</div>
+                  </div>
+                  <el-button v-if="item.ar_asset_url" size="small" link @click="tryOn(item)">试戴</el-button>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-right">
+              <div class="section order-meta">
+                <div class="section-title">订单信息</div>
+                <div class="meta-row"><span>订单号</span><span>{{ order.order_no }}</span></div>
+                <div class="meta-row"><span>创建时间</span><span>{{ formatDate(order.created_at) }}</span></div>
+                <div class="meta-row"><span>支付方式</span><span>微信支付</span></div>
+                <div class="meta-row total-row"><span>实付金额</span><span class="price">¥{{ order.total_amount }}</span></div>
+              </div>
+
+              <div class="action-btns">
+                <el-button size="large" class="action-btn" @click="$router.push(`/aftersale/apply?order_id=${order.order_id}`)">
+                  申请售后
+                </el-button>
+                <el-button size="large" class="action-btn">联系客服</el-button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <el-empty v-else-if="!loading" description="订单不存在" />
+      </div>
     </div>
   </div>
 </template>
@@ -81,7 +79,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Picture } from '@element-plus/icons-vue'
+import { Picture } from '@element-plus/icons-vue'
 import { getOrderDetail } from '../api/order'
 
 const route  = useRoute()
@@ -117,94 +115,59 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.order-detail-page {
-  max-width: 480px;
-  margin: 0 auto;
-  min-height: 100dvh;
-  background: #f7f5f3;
-  padding-bottom: 80px;
-}
+.order-detail-page { flex: 1; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 32px 60px; }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #fff;
-  margin-bottom: 12px;
+.page-header {
+  display: flex; align-items: center; gap: 12px; padding: 24px 0 20px;
 }
-.title { font-size: 16px; font-weight: 700; }
+.page-title { font-size: 22px; font-weight: 800; color: #1A1714; }
 
 .logistics-steps {
-  background: #fff;
-  padding: 20px 16px;
-  margin-bottom: 12px;
+  background: #fff; padding: 24px; border-radius: 16px;
+  margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,.07);
+}
+
+.detail-grid {
+  display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start;
 }
 
 .section {
-  background: #fff;
-  margin-bottom: 12px;
-  padding: 16px;
+  background: #fff; border-radius: 16px; padding: 20px 24px;
+  margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07);
 }
-
-.section-title { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 12px; }
+.section-title { font-size: 15px; font-weight: 700; color: #1A1714; margin-bottom: 14px; }
 
 .logistics-card {
-  background: #f9f9f9;
-  border-radius: 10px;
-  padding: 12px 14px;
+  background: #FAF9F7; border-radius: 12px; padding: 14px 16px;
 }
+.logistics-no { font-size: 13px; color: #6B6B6B; margin-bottom: 6px; }
+.logistics-latest { font-size: 13px; color: #B0B0B0; }
 
-.logistics-no { font-size: 13px; color: #666; margin-bottom: 6px; }
-.logistics-latest { font-size: 13px; color: #999; }
-
-.address-info {}
-.addr-name { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 6px; }
-.addr-text { font-size: 13px; color: #777; line-height: 1.6; }
+.addr-name { font-size: 15px; font-weight: 600; color: #1A1714; margin-bottom: 6px; }
+.addr-text { font-size: 13px; color: #6B6B6B; line-height: 1.6; }
 
 .order-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f5f5f5;
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 0; border-bottom: 1px solid #F0F0F0;
 }
 .order-item:last-child { border-bottom: none; }
-
-.item-img { width: 60px; height: 60px; border-radius: 8px; flex-shrink: 0; }
-.img-err { width: 60px; height: 60px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #bbb; }
+.item-img { width: 64px; height: 64px; border-radius: 10px; flex-shrink: 0; }
+.img-err { width: 64px; height: 64px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #bbb; }
 .item-meta { flex: 1; min-width: 0; }
-.item-name  { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-.item-sku   { font-size: 12px; color: #999; margin-bottom: 4px; }
-.item-price { font-size: 14px; color: #e6564e; font-weight: 600; }
+.item-name { font-size: 14px; font-weight: 600; color: #1A1714; margin-bottom: 4px; }
+.item-sku { font-size: 12px; color: #B0B0B0; margin-bottom: 4px; }
+.item-price { font-size: 14px; color: #1A1714; font-weight: 700; }
 
-.order-meta {}
 .meta-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  color: #666;
-  padding: 6px 0;
-  border-bottom: 1px solid #f5f5f5;
+  display: flex; justify-content: space-between;
+  font-size: 14px; color: #6B6B6B; padding: 8px 0;
+  border-bottom: 1px solid #F0F0F0;
 }
 .meta-row:last-child { border-bottom: none; }
-.total-row { font-weight: 600; }
-.price { color: #e6564e; }
+.total-row { font-weight: 700; }
+.price { color: #1A1714; font-weight: 800; }
 
-.bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
-  display: flex;
-  gap: 10px;
-  padding: 12px 16px;
-  background: #fff;
-  border-top: 1px solid #f0f0f0;
-  z-index: 100;
-}
-
-.action-btn { flex: 1; border-radius: 24px; }
+.action-btns { display: flex; flex-direction: column; gap: 10px; }
+.action-btn { width: 100%; border-radius: 12px; }
 </style>

@@ -1,64 +1,67 @@
 <template>
   <div class="progress-page">
-    <div class="topbar">
-      <el-button :icon="ArrowLeft" circle @click="$router.back()" />
-      <span class="title">售后进度</span>
-    </div>
-
-    <div class="status-header">
-      <div class="status-label">退货退款 · {{ currentStatusText }}</div>
-    </div>
-
-    <!-- 进度条 -->
-    <div class="steps-section">
-      <el-steps :active="activeStep" align-center>
-        <el-step title="已申请" :description="applyDate" />
-        <el-step title="审核通过" />
-        <el-step title="已寄回" />
-        <el-step title="退款到账" :description="activeStep < 3 ? '预计5-7天' : ''" />
-      </el-steps>
-    </div>
-
-    <!-- 当前状态说明 -->
-    <div class="section">
-      <div class="section-title">当前状态说明</div>
-      <div class="status-card">
-        <div class="status-icon">{{ statusIcon }}</div>
-        <div class="status-desc">{{ statusDesc }}</div>
-        <div class="status-sub">{{ statusSub }}</div>
+    <div class="container">
+      <div class="page-header">
+        <el-button text @click="$router.back()">← 返回</el-button>
+        <h1 class="page-title">售后进度</h1>
       </div>
 
-      <!-- 审核通过后显示退货地址 -->
-      <div v-if="activeStep >= 1" class="return-address">
-        <div class="addr-title">退货地址</div>
-        <div class="addr-text">浙江省杭州市余杭区某某路100号 珑饰仓库（收）</div>
-        <div class="addr-phone">0571-88888888</div>
-        <el-input
-          v-if="activeStep === 1"
-          v-model="trackingNo"
-          placeholder="填写快递单号（寄出后填写）"
-          class="tracking-input"
-        >
-          <template #append>
-            <el-button @click="submitTracking" :loading="submittingTracking">确认</el-button>
-          </template>
-        </el-input>
+      <div class="status-banner">
+        <div class="status-label">退货退款 · {{ currentStatusText }}</div>
       </div>
-    </div>
 
-    <!-- 处理记录 -->
-    <div class="section">
-      <div class="section-title">处理记录</div>
-      <div v-for="log in logs" :key="log.time" class="log-item">
-        <span class="log-time">{{ log.time }}</span>
-        <span class="log-text">{{ log.text }}</span>
+      <div class="steps-card">
+        <el-steps :active="activeStep" align-center>
+          <el-step title="已申请" :description="applyDate" />
+          <el-step title="审核通过" />
+          <el-step title="已寄回" />
+          <el-step title="退款到账" :description="activeStep < 3 ? '预计5-7天' : ''" />
+        </el-steps>
       </div>
-    </div>
 
-    <!-- 底部操作 -->
-    <div class="bottom-bar">
-      <el-button size="large" class="action-btn">联系客服</el-button>
-      <el-button size="large" class="action-btn" type="danger" plain v-if="activeStep === 0" @click="cancelApply">撤销申请</el-button>
+      <div class="content-grid">
+        <div class="content-left">
+          <div class="section">
+            <div class="section-title">当前状态说明</div>
+            <div class="status-card">
+              <div class="status-icon">{{ statusIcon }}</div>
+              <div class="status-desc">{{ statusDesc }}</div>
+              <div class="status-sub">{{ statusSub }}</div>
+            </div>
+
+            <div v-if="activeStep >= 1" class="return-address">
+              <div class="addr-title">退货地址</div>
+              <div class="addr-text">浙江省杭州市余杭区某某路100号 珑饰仓库（收）</div>
+              <div class="addr-phone">0571-88888888</div>
+              <el-input
+                v-if="activeStep === 1"
+                v-model="trackingNo"
+                placeholder="填写快递单号（寄出后填写）"
+                class="tracking-input"
+              >
+                <template #append>
+                  <el-button @click="submitTracking" :loading="submittingTracking">确认</el-button>
+                </template>
+              </el-input>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-right">
+          <div class="section">
+            <div class="section-title">处理记录</div>
+            <div v-for="log in logs" :key="log.time" class="log-item">
+              <span class="log-time">{{ log.time }}</span>
+              <span class="log-text">{{ log.text }}</span>
+            </div>
+          </div>
+
+          <div class="action-btns">
+            <el-button size="large" class="action-btn">联系客服</el-button>
+            <el-button size="large" class="action-btn" type="danger" plain v-if="activeStep === 0" @click="cancelApply">撤销申请</el-button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -66,7 +69,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const router = useRouter()
@@ -116,93 +118,60 @@ async function cancelApply() {
 </script>
 
 <style scoped>
-.progress-page {
-  max-width: 480px;
-  margin: 0 auto;
-  min-height: 100dvh;
-  background: #f7f5f3;
-  padding-bottom: 80px;
+.progress-page { flex: 1; }
+.container { max-width: 900px; margin: 0 auto; padding: 0 32px 60px; }
+
+.page-header {
+  display: flex; align-items: center; gap: 12px; padding: 24px 0 20px;
+}
+.page-title { font-size: 22px; font-weight: 800; color: #1A1714; }
+
+.status-banner {
+  background: linear-gradient(135deg, #C4906A, #e8b49a);
+  padding: 20px 24px; border-radius: 16px; color: #fff; margin-bottom: 20px;
+}
+.status-label { font-size: 18px; font-weight: 700; }
+
+.steps-card {
+  background: #fff; padding: 24px; border-radius: 16px;
+  margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,.07);
 }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #fff;
-}
-.title { font-size: 16px; font-weight: 700; }
-
-.status-header {
-  background: linear-gradient(135deg, #c0876a, #e8b49a);
-  padding: 16px 20px;
-  color: #fff;
-}
-.status-label { font-size: 16px; font-weight: 700; }
-
-.steps-section {
-  background: #fff;
-  padding: 24px 8px;
-  margin-bottom: 12px;
+.content-grid {
+  display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start;
 }
 
 .section {
-  background: #fff;
-  padding: 16px;
-  margin-bottom: 12px;
+  background: #fff; border-radius: 16px; padding: 20px 24px;
+  margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.07);
 }
-.section-title { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 14px; }
+.section-title { font-size: 15px; font-weight: 700; color: #1A1714; margin-bottom: 14px; }
 
 .status-card {
-  background: #f9f9f9;
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  background: #FAF9F7; border-radius: 12px; padding: 18px;
+  display: flex; flex-direction: column; gap: 6px;
 }
-
 .status-icon { font-size: 28px; }
-.status-desc { font-size: 15px; font-weight: 600; color: #333; }
-.status-sub  { font-size: 13px; color: #888; }
+.status-desc { font-size: 15px; font-weight: 600; color: #1A1714; }
+.status-sub { font-size: 13px; color: #6B6B6B; }
 
 .return-address {
-  margin-top: 16px;
-  background: #f0f7ff;
-  border-radius: 10px;
-  padding: 14px;
+  margin-top: 16px; background: #f0f7ff;
+  border-radius: 12px; padding: 16px;
 }
-
 .addr-title { font-size: 13px; font-weight: 600; color: #5b9bd5; margin-bottom: 6px; }
-.addr-text  { font-size: 14px; color: #333; margin-bottom: 4px; line-height: 1.6; }
-.addr-phone { font-size: 13px; color: #888; margin-bottom: 12px; }
+.addr-text { font-size: 14px; color: #1A1714; margin-bottom: 4px; line-height: 1.6; }
+.addr-phone { font-size: 13px; color: #6B6B6B; margin-bottom: 12px; }
 .tracking-input { margin-top: 8px; }
 
 .log-item {
-  display: flex;
-  gap: 12px;
-  font-size: 13px;
-  padding: 6px 0;
-  border-bottom: 1px solid #f5f5f5;
+  display: flex; gap: 14px; font-size: 13px;
+  padding: 8px 0; border-bottom: 1px solid #F0F0F0;
 }
 .log-item:last-child { border-bottom: none; }
-.log-time { color: #bbb; flex-shrink: 0; }
-.log-text { color: #555; }
+.log-time { color: #B0B0B0; flex-shrink: 0; }
+.log-text { color: #6B6B6B; }
 
-.bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
-  display: flex;
-  gap: 10px;
-  padding: 12px 16px;
-  background: #fff;
-  border-top: 1px solid #f0f0f0;
-  z-index: 100;
-}
-
-.action-btn { flex: 1; border-radius: 24px; }
+.action-btns { display: flex; flex-direction: column; gap: 10px; }
+.action-btn { width: 100%; border-radius: 12px; }
 </style>

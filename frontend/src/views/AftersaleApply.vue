@@ -1,70 +1,70 @@
 <template>
   <div class="aftersale-apply-page">
-    <div class="topbar">
-      <el-button :icon="ArrowLeft" circle @click="$router.back()" />
-      <span class="title">申请售后</span>
+    <div class="container">
+      <div class="page-header">
+        <el-button text @click="$router.back()">← 返回</el-button>
+        <h1 class="page-title">申请售后</h1>
+      </div>
+
+      <div class="apply-card">
+        <el-form :model="form" ref="formRef" class="apply-form">
+          <div class="form-section">
+            <div class="form-section-title">选择售后方式</div>
+            <el-radio-group v-model="form.type" class="type-group">
+              <el-radio label="refund">退货退款</el-radio>
+              <el-radio label="exchange">换货</el-radio>
+            </el-radio-group>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">退货原因（必选）</div>
+            <el-radio-group v-model="form.reason" class="reason-group" @change="onReasonChange">
+              <el-radio v-for="r in reasons" :key="r.value" :label="r.value" class="reason-radio">
+                {{ r.label }}
+              </el-radio>
+            </el-radio-group>
+
+            <transition name="fade">
+              <div v-if="form.reason" class="remark-area">
+                <div class="remark-label">补充说明（选填）</div>
+                <el-input
+                  v-model="form.remark"
+                  type="textarea"
+                  :rows="3"
+                  :placeholder="remarkPlaceholder"
+                />
+              </div>
+            </transition>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">上传图片（选填，最多3张）</div>
+            <div class="upload-area">
+              <div
+                v-for="i in 3"
+                :key="i"
+                class="upload-slot"
+                @click="triggerUpload(i)"
+              >
+                <img v-if="photos[i - 1]" :src="photos[i - 1]" class="uploaded-img" />
+                <div v-else class="upload-placeholder">＋</div>
+              </div>
+              <input ref="photoInput" type="file" accept="image/*" multiple style="display:none" @change="onPhotoSelect" />
+            </div>
+          </div>
+
+          <el-button type="primary" size="large" class="submit-btn" :loading="submitting" @click="submit">
+            提交申请
+          </el-button>
+        </el-form>
+      </div>
     </div>
-
-    <el-form :model="form" ref="formRef" class="apply-form">
-      <!-- 售后方式 -->
-      <div class="section">
-        <div class="section-title">选择售后方式</div>
-        <el-radio-group v-model="form.type" class="type-group">
-          <el-radio label="refund">退货退款</el-radio>
-          <el-radio label="exchange">换货</el-radio>
-        </el-radio-group>
-      </div>
-
-      <!-- 退货原因 -->
-      <div class="section">
-        <div class="section-title">退货原因（必选）</div>
-        <el-radio-group v-model="form.reason" class="reason-group" @change="onReasonChange">
-          <el-radio v-for="r in reasons" :key="r.value" :label="r.value" class="reason-radio">
-            {{ r.label }}
-          </el-radio>
-        </el-radio-group>
-
-        <transition name="fade">
-          <div v-if="form.reason" class="remark-area">
-            <div class="remark-label">补充说明（选填）</div>
-            <el-input
-              v-model="form.remark"
-              type="textarea"
-              :rows="3"
-              :placeholder="remarkPlaceholder"
-            />
-          </div>
-        </transition>
-      </div>
-
-      <!-- 上传图片 -->
-      <div class="section">
-        <div class="section-title">上传图片（选填，最多3张）</div>
-        <div class="upload-area">
-          <div
-            v-for="i in 3"
-            :key="i"
-            class="upload-slot"
-            @click="triggerUpload(i)"
-          >
-            <img v-if="photos[i - 1]" :src="photos[i - 1]" class="uploaded-img" />
-            <div v-else class="upload-placeholder">＋</div>
-          </div>
-          <input ref="photoInput" type="file" accept="image/*" multiple style="display:none" @change="onPhotoSelect" />
-        </div>
-      </div>
-
-      <el-button type="primary" size="large" class="submit-btn" :loading="submitting" @click="submit">
-        提交申请
-      </el-button>
-    </el-form>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { applyRefund } from '../api/order'
 
@@ -132,78 +132,49 @@ async function submit() {
 </script>
 
 <style scoped>
-.aftersale-apply-page {
-  max-width: 480px;
-  margin: 0 auto;
-  min-height: 100dvh;
-  background: #f7f5f3;
-  padding-bottom: 40px;
+.aftersale-apply-page { flex: 1; }
+.container { max-width: 720px; margin: 0 auto; padding: 0 32px 60px; }
+
+.page-header {
+  display: flex; align-items: center; gap: 12px; padding: 24px 0 20px;
+}
+.page-title { font-size: 22px; font-weight: 800; color: #1A1714; }
+
+.apply-card {
+  background: #fff; border-radius: 16px; padding: 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.07);
 }
 
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #fff;
-  margin-bottom: 12px;
-}
-.title { font-size: 16px; font-weight: 700; }
-
-.apply-form { padding: 0 0 24px; }
-
-.section {
-  background: #fff;
-  padding: 16px;
-  margin-bottom: 12px;
-}
-
-.section-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 14px;
+.form-section { margin-bottom: 28px; }
+.form-section-title {
+  font-size: 16px; font-weight: 700; color: #1A1714;
+  margin-bottom: 16px; padding-bottom: 10px;
+  border-bottom: 1px solid #F0F0F0;
 }
 
 .type-group { display: flex; gap: 32px; }
-
-.reason-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
+.reason-group { display: flex; flex-direction: column; gap: 12px; }
 .reason-radio { margin-right: 0; }
 
 .remark-area { margin-top: 16px; }
-.remark-label { font-size: 14px; color: #666; margin-bottom: 8px; }
+.remark-label { font-size: 14px; color: #6B6B6B; margin-bottom: 8px; }
 
-.upload-area { display: flex; gap: 12px; }
-
+.upload-area { display: flex; gap: 16px; }
 .upload-slot {
-  width: 90px;
-  height: 90px;
-  border: 2px dashed #ddd;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  overflow: hidden;
+  width: 100px; height: 100px; border: 2px dashed #EBEBEB;
+  border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; cursor: pointer; overflow: hidden;
+  transition: border-color .15s;
 }
-
-.upload-slot:hover { border-color: #c0876a; }
-
-.upload-placeholder { font-size: 28px; color: #ccc; }
+.upload-slot:hover { border-color: #C4906A; }
+.upload-placeholder { font-size: 28px; color: #B0B0B0; }
 .uploaded-img { width: 100%; height: 100%; object-fit: cover; }
 
 .submit-btn {
-  display: block;
-  width: calc(100% - 32px);
-  margin: 0 16px;
-  border-radius: 24px;
-  font-size: 16px;
+  width: 100%; border-radius: 12px; font-size: 16px; font-weight: 700;
+  background: linear-gradient(135deg, #1A1714, #4A3020); border-color: transparent;
 }
+.submit-btn:hover { background: linear-gradient(135deg, #2D231A, #6B4226); }
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }

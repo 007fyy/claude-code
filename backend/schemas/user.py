@@ -3,24 +3,49 @@ from pydantic import BaseModel, ConfigDict, field_validator
 
 
 class SendCodeReq(BaseModel):
-    phone: str
+    email: str
 
-    @field_validator("phone")
+    @field_validator("email")
     @classmethod
-    def phone_must_be_valid(cls, v: str) -> str:
-        if not re.match(r"^1[3-9]\d{9}$", v):
-            raise ValueError("手机号格式不正确")
-        return v
+    def email_must_be_valid(cls, v: str) -> str:
+        if not re.match(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$", v):
+            raise ValueError("邮箱格式不正确")
+        return v.lower()
+
+
+class SendCodeOut(BaseModel):
+    is_registered: bool
 
 
 class LoginReq(BaseModel):
-    phone: str
+    email: str
+    password: str
+
+    @field_validator("email")
+    @classmethod
+    def email_must_be_valid(cls, v: str) -> str:
+        if not re.match(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$", v):
+            raise ValueError("邮箱格式不正确")
+        return v.lower()
+
+
+class VerifyReq(BaseModel):
+    email: str
     code: str
+    password: str | None = None
+    nickname: str | None = None
+
+    @field_validator("password")
+    @classmethod
+    def password_strength(cls, v: str | None) -> str | None:
+        if v is not None and len(v) < 8:
+            raise ValueError("密码至少8位，需包含字母和数字")
+        return v
 
 
 class UserOut(BaseModel):
     id: int
-    phone: str
+    email: str
     nickname: str | None
     avatar_url: str | None
     role: str
@@ -29,6 +54,12 @@ class UserOut(BaseModel):
     budget_pref: str | None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class LoginOut(BaseModel):
+    token: str
+    user: UserOut
+    is_new_user: bool = False
 
 
 class UpdateUserReq(BaseModel):
@@ -42,6 +73,13 @@ class UpdatePrefsReq(BaseModel):
     budget_pref: str | None = None
 
 
-class LoginOut(BaseModel):
-    token: str
-    user: UserOut
+class ChangePasswordReq(BaseModel):
+    old_password: str
+    new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def password_strength(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("密码至少8位")
+        return v

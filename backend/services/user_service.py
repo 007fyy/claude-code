@@ -1,7 +1,11 @@
+from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
+from config import BizError
 from models.user import User
-from schemas.user import UpdatePrefsReq, UpdateUserReq
+from schemas.user import ChangePasswordReq, UpdatePrefsReq, UpdateUserReq
+
+pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserService:
@@ -23,3 +27,9 @@ class UserService:
         self.db.commit()
         self.db.refresh(user)
         return user
+
+    def change_password(self, user: User, req: ChangePasswordReq) -> None:
+        if not pwd_ctx.verify(req.old_password, user.password_hash):
+            raise BizError(2009, "原密码错误")
+        user.password_hash = pwd_ctx.hash(req.new_password)
+        self.db.commit()
