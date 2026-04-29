@@ -119,6 +119,7 @@ import { getGoodsDetail, getGoodsList } from '../api/goods'
 import { addToCart } from '../api/cart'
 import { useFavorites } from '../composables/useFavorites'
 import { trackClick } from '../api/tracking'
+import { recordView } from '../api/history'
 
 const route  = useRoute()
 const router = useRouter()
@@ -168,6 +169,7 @@ async function addCart() {
   if (!selectedSku.value) { ElMessage.warning('请选择规格'); return }
   trackClick('add_cart', selectedSku.value.sku_id, `/goods/${route.params.id}`)
   await addToCart({ sku_id: selectedSku.value.sku_id, quantity: 1 })
+  window.dispatchEvent(new Event('cart-updated'))
   ElMessage.success('已加入购物车')
 }
 
@@ -175,6 +177,7 @@ function buyNow() {
   if (!selectedSku.value) { ElMessage.warning('请选择规格'); return }
   trackClick('buy_now', selectedSku.value.sku_id, `/goods/${route.params.id}`)
   addToCart({ sku_id: selectedSku.value.sku_id, quantity: 1 }).then(() => {
+    window.dispatchEvent(new Event('cart-updated'))
     router.push('/cart')
   })
 }
@@ -210,7 +213,10 @@ async function loadFavState() {
 onMounted(() => {
   loadDetail()
   loadSimilar()
-  if (localStorage.getItem('token')) loadFavState()
+  if (localStorage.getItem('token')) {
+    loadFavState()
+    recordView(route.params.id).catch(() => {})
+  }
 })
 </script>
 

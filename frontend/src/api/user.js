@@ -47,3 +47,11 @@ export const deleteAddress = (id) => {
 export const setDefaultAddress = (id) => {
   return http.patch(`/user/address/${id}/default`)
 }
+
+export const uploadAvatar = (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return http.post('/user/avatar', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+}

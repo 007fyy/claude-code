@@ -103,10 +103,22 @@ const routes = [
     meta: { title: '我的收藏', requireAuth: true },
   },
   {
+    path: '/profile/history',
+    name: 'BrowseHistory',
+    component: () => import('../views/BrowseHistory.vue'),
+    meta: { title: '浏览历史', requireAuth: true },
+  },
+  {
     path: '/profile/address',
     name: 'AddressManage',
     component: () => import('../views/AddressManage.vue'),
     meta: { title: '收货地址管理', requireAuth: true },
+  },
+  {
+    path: '/admin/orders',
+    name: 'AdminOrders',
+    component: () => import('../views/AdminOrders.vue'),
+    meta: { title: '订单管理', requireAuth: true },
   },
 ]
 

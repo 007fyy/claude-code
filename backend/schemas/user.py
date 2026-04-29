@@ -48,6 +48,11 @@ class UserOut(BaseModel):
     email: str
     nickname: str | None
     avatar_url: str | None
+    phone: str | None
+    gender: str | None
+    birthday: str | None
+    signature: str | None
+    bio: str | None
     role: str
     style_prefs: list | None
     occasion_prefs: list | None
@@ -65,6 +70,11 @@ class LoginOut(BaseModel):
 class UpdateUserReq(BaseModel):
     nickname: str | None = None
     avatar_url: str | None = None
+    phone: str | None = None
+    gender: str | None = None
+    birthday: str | None = None
+    signature: str | None = None
+    bio: str | None = None
 
 
 class UpdatePrefsReq(BaseModel):

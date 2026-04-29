@@ -20,7 +20,7 @@
           <div class="detail-grid">
             <div class="detail-left">
               <div class="section" v-if="order.tracking_no">
-                <div class="section-title">📦 物流信息</div>
+                <div class="section-title">物流信息</div>
                 <div class="logistics-card">
                   <div class="logistics-no">顺丰快递 {{ order.tracking_no }}</div>
                   <div class="logistics-latest">最新：商品已由商家发出，等待快递揽收</div>
@@ -28,7 +28,7 @@
               </div>
 
               <div class="section">
-                <div class="section-title">📍 收货信息</div>
+                <div class="section-title">收货信息</div>
                 <div class="address-info">
                   <div class="addr-name">{{ order.receiver_name }} {{ order.receiver_phone }}</div>
                   <div class="addr-text">{{ order.receiver_address }}</div>
@@ -56,14 +56,16 @@
                 <div class="section-title">订单信息</div>
                 <div class="meta-row"><span>订单号</span><span>{{ order.order_no }}</span></div>
                 <div class="meta-row"><span>创建时间</span><span>{{ formatDate(order.created_at) }}</span></div>
+                <div class="meta-row"><span>状态</span><span class="status-text">{{ statusText(order.status) }}</span></div>
                 <div class="meta-row"><span>支付方式</span><span>微信支付</span></div>
                 <div class="meta-row total-row"><span>实付金额</span><span class="price">¥{{ order.total_amount }}</span></div>
               </div>
 
               <div class="action-btns">
-                <el-button size="large" class="action-btn" @click="$router.push(`/aftersale/apply?order_id=${order.order_id}`)">
-                  申请售后
-                </el-button>
+                <el-button v-if="order.status === 'pending_pay'" size="large" type="primary" class="action-btn" @click="handlePay">去付款</el-button>
+                <el-button v-if="order.status === 'pending_pay'" size="large" class="action-btn" @click="handleCancel">取消订单</el-button>
+                <el-button v-if="order.status === 'shipped'" size="large" type="primary" class="action-btn" @click="handleConfirm">确认收货</el-button>
+                <el-button v-if="order.status === 'completed'" size="large" class="action-btn" @click="$router.push(`/aftersale/apply?order_id=${order.order_id}`)">申请售后</el-button>
                 <el-button size="large" class="action-btn">联系客服</el-button>
               </div>
             </div>
@@ -80,15 +82,27 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Picture } from '@element-plus/icons-vue'
-import { getOrderDetail } from '../api/order'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { getOrderDetail, payOrder, cancelOrder, confirmReceive } from '../api/order'
 
 const route  = useRoute()
 const router = useRouter()
 const order   = ref(null)
 const loading = ref(false)
 
-const STEP_MAP = { pending: 0, paid: 1, shipped: 2, completed: 3 }
+const STEP_MAP = { pending_pay: 0, paid: 1, shipped: 2, completed: 3 }
 const activeStep = computed(() => STEP_MAP[order.value?.status] ?? 0)
+
+const STATUS_MAP = {
+  pending_pay: '待付款',
+  paid: '待发货',
+  shipped: '待收货',
+  completed: '已完成',
+  cancelled: '已取消',
+  refunding: '售后中',
+  refunded: '已退款',
+}
+function statusText(s) { return STATUS_MAP[s] || s }
 
 function formatDate(str) {
   if (!str) return ''
@@ -102,16 +116,46 @@ function tryOn(item) {
   })
 }
 
-onMounted(async () => {
+async function loadOrder() {
   loading.value = true
   try {
-    order.value = await getOrderDetail(route.params.id)
+    const res = await getOrderDetail(route.params.id)
+    order.value = res.data
   } catch {
     order.value = null
   } finally {
     loading.value = false
   }
-})
+}
+
+async function handlePay() {
+  try {
+    await ElMessageBox.confirm(`确认支付 ¥${order.value.total_amount}？`, '模拟支付', { type: 'info' })
+    await payOrder({ order_id: order.value.order_id })
+    ElMessage.success('支付成功')
+    await loadOrder()
+  } catch {}
+}
+
+async function handleCancel() {
+  try {
+    await ElMessageBox.confirm('确认取消该订单？', '提示', { type: 'warning' })
+    await cancelOrder(order.value.order_id)
+    ElMessage.success('订单已取消')
+    await loadOrder()
+  } catch {}
+}
+
+async function handleConfirm() {
+  try {
+    await ElMessageBox.confirm('确认已收到商品？', '确认收货', { type: 'info' })
+    await confirmReceive(order.value.order_id)
+    ElMessage.success('已确认收货')
+    await loadOrder()
+  } catch {}
+}
+
+onMounted(loadOrder)
 </script>
 
 <style scoped>

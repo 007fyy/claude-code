@@ -35,8 +35,9 @@
           <div class="card-footer">
             <span class="total">共{{ order.item_count || 1 }}件 实付：<b class="price">¥{{ order.total_amount }}</b></span>
             <div class="footer-btns" @click.stop>
-              <el-button v-if="order.status === 'shipped'" size="small" @click="reorder(order)">再次购买</el-button>
-              <el-button v-if="order.status === 'shipped'" size="small" @click="urge(order)">催单</el-button>
+              <el-button v-if="order.status === 'pending_pay'" size="small" @click="handleCancel(order)">取消订单</el-button>
+              <el-button v-if="order.status === 'pending_pay'" size="small" type="primary" @click="handlePay(order)">去付款</el-button>
+              <el-button v-if="order.status === 'shipped'" size="small" type="primary" @click="handleConfirm(order)">确认收货</el-button>
               <el-button v-if="order.status === 'completed'" size="small" @click="$router.push(`/aftersale/apply?order_id=${order.order_id}`)">申请售后</el-button>
               <el-button v-if="order.status === 'completed'" size="small" type="primary">评价</el-button>
             </div>
@@ -55,17 +56,18 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Picture } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
-import { getOrderList } from '../api/order'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { getOrderList, payOrder, cancelOrder, confirmReceive } from '../api/order'
 
 const route  = useRoute()
 const router = useRouter()
 
 const tabs = [
   { label: '全部',   value: '' },
-  { label: '待付款', value: 'pending' },
+  { label: '待付款', value: 'pending_pay' },
   { label: '待发货', value: 'paid' },
   { label: '待收货', value: 'shipped' },
+  { label: '已完成', value: 'completed' },
   { label: '售后',   value: 'refunding' },
 ]
 
@@ -74,13 +76,13 @@ const orders    = ref([])
 const loading   = ref(false)
 
 const STATUS_MAP = {
-  pending:    { text: '待付款',  cls: 'yellow' },
-  paid:       { text: '待发货',  cls: 'blue' },
-  shipped:    { text: '运输中',  cls: 'blue' },
-  completed:  { text: '已完成',  cls: 'green' },
-  cancelled:  { text: '已取消',  cls: 'gray' },
-  refunding:  { text: '售后中',  cls: 'red' },
-  refunded:   { text: '已退款',  cls: 'gray' },
+  pending_pay: { text: '待付款',  cls: 'yellow' },
+  paid:        { text: '待发货',  cls: 'blue' },
+  shipped:     { text: '待收货',  cls: 'blue' },
+  completed:   { text: '已完成',  cls: 'green' },
+  cancelled:   { text: '已取消',  cls: 'gray' },
+  refunding:   { text: '售后中',  cls: 'red' },
+  refunded:    { text: '已退款',  cls: 'gray' },
 }
 
 function statusText(s) { return STATUS_MAP[s]?.text || s }
@@ -103,12 +105,31 @@ async function loadOrders() {
   }
 }
 
-function reorder(order) {
-  ElMessage.success('已加入购物车')
+async function handlePay(order) {
+  try {
+    await ElMessageBox.confirm(`确认支付 ¥${order.total_amount}？`, '模拟支付', { type: 'info' })
+    await payOrder({ order_id: order.order_id })
+    ElMessage.success('支付成功')
+    await loadOrders()
+  } catch {}
 }
 
-function urge(order) {
-  ElMessage.success('催单成功，商家将尽快处理')
+async function handleCancel(order) {
+  try {
+    await ElMessageBox.confirm('确认取消该订单？', '提示', { type: 'warning' })
+    await cancelOrder(order.order_id)
+    ElMessage.success('订单已取消')
+    await loadOrders()
+  } catch {}
+}
+
+async function handleConfirm(order) {
+  try {
+    await ElMessageBox.confirm('确认已收到商品？', '确认收货', { type: 'info' })
+    await confirmReceive(order.order_id)
+    ElMessage.success('已确认收货')
+    await loadOrders()
+  } catch {}
 }
 
 onMounted(loadOrders)

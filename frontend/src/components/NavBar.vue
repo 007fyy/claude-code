@@ -30,37 +30,65 @@
           🛒
           <span v-if="cartCount > 0" class="badge">{{ cartCount }}</span>
         </router-link>
-        <router-link v-if="!isLoggedIn" to="/login" class="nav-user-btn">👤 登录 / 注册</router-link>
-        <router-link v-else to="/profile" class="nav-user-btn">👤 {{ nickname }}</router-link>
+        <router-link v-if="!isLoggedIn" to="/login" class="nav-user-btn">
+          <span class="nav-avatar-placeholder">👤</span> 登录 / 注册
+        </router-link>
+        <router-link v-else to="/profile" class="nav-user-btn">
+          <img v-if="avatarUrl" :src="avatarUrl" class="nav-avatar" />
+          <span v-else class="nav-avatar-placeholder">{{ nickname.charAt(0) || '👤' }}</span>
+          {{ nickname }}
+        </router-link>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { getCartList } from '../api/cart'
 
 const route = useRoute()
 
 const isLoggedIn = computed(() => !!localStorage.getItem('token'))
-const nickname = computed(() => {
-  try {
-    const u = JSON.parse(localStorage.getItem('user') || '{}')
-    return u.nickname || '我的'
-  } catch { return '我的' }
-})
+const userStore = ref(JSON.parse(localStorage.getItem('user') || '{}'))
+const nickname = computed(() => userStore.value.nickname || '我的')
+const avatarUrl = computed(() => userStore.value.avatar_url || '')
 const cartCount = ref(0)
 
-onMounted(() => {
+function refreshUser() {
+  try {
+    userStore.value = JSON.parse(localStorage.getItem('user') || '{}')
+  } catch {
+    userStore.value = {}
+  }
+}
+
+async function refreshCart() {
   try {
     const token = localStorage.getItem('token')
-    if (token) {
-      import('../api/cart').then(({ getCartList }) => {
-        getCartList().then(res => { cartCount.value = res.items?.length || 0 }).catch(() => {})
-      })
-    }
-  } catch {}
+    if (!token) { cartCount.value = 0; return }
+    const res = await getCartList()
+    cartCount.value = res.items?.length || 0
+  } catch {
+    cartCount.value = 0
+  }
+}
+
+watch(() => route.path, () => {
+  refreshUser()
+  refreshCart()
+})
+
+onMounted(() => {
+  window.addEventListener('storage', refreshUser)
+  window.addEventListener('cart-updated', refreshCart)
+  refreshCart()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('storage', refreshUser)
+  window.removeEventListener('cart-updated', refreshCart)
 })
 </script>
 
@@ -232,4 +260,14 @@ onMounted(() => {
   white-space: nowrap;
 }
 .nav-user-btn:hover { border-color: #1A1714; color: #1A1714; }
+
+.nav-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  object-fit: cover; flex-shrink: 0;
+}
+.nav-avatar-placeholder {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; background: #F0F0F0; flex-shrink: 0;
+}
 </style>

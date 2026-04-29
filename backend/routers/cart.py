@@ -1,17 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from core.deps import get_current_user
 from database import get_db
+from models.user import User
 import models
 import schemas
 
 router = APIRouter()
 
-DEMO_USER = 1
-
 
 @router.post("/add", response_model=schemas.Resp)
-def add_to_cart(body: schemas.AddCartReq, db: Session = Depends(get_db)):
+def add_to_cart(
+    body: schemas.AddCartReq,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     sku = db.query(models.GoodsSku).filter(
         models.GoodsSku.id == body.sku_id,
         models.GoodsSku.status == 1,
@@ -22,7 +26,7 @@ def add_to_cart(body: schemas.AddCartReq, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="库存不足")
 
     existing = db.query(models.CartItem).filter(
-        models.CartItem.user_id == DEMO_USER,
+        models.CartItem.user_id == current_user.id,
         models.CartItem.sku_id == body.sku_id,
     ).first()
 
@@ -30,7 +34,7 @@ def add_to_cart(body: schemas.AddCartReq, db: Session = Depends(get_db)):
         existing.quantity += body.quantity
     else:
         db.add(models.CartItem(
-            user_id=DEMO_USER,
+            user_id=current_user.id,
             sku_id=body.sku_id,
             quantity=body.quantity,
         ))
@@ -40,10 +44,13 @@ def add_to_cart(body: schemas.AddCartReq, db: Session = Depends(get_db)):
 
 
 @router.get("/list", response_model=schemas.CartListResp)
-def cart_list(db: Session = Depends(get_db)):
+def cart_list(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     items = (
         db.query(models.CartItem)
-        .filter(models.CartItem.user_id == DEMO_USER)
+        .filter(models.CartItem.user_id == current_user.id)
         .all()
     )
 
@@ -84,10 +91,14 @@ def cart_list(db: Session = Depends(get_db)):
 
 
 @router.put("/update", response_model=schemas.Resp)
-def update_cart(body: schemas.UpdateCartReq, db: Session = Depends(get_db)):
+def update_cart(
+    body: schemas.UpdateCartReq,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     item = db.query(models.CartItem).filter(
         models.CartItem.id == body.cart_item_id,
-        models.CartItem.user_id == DEMO_USER,
+        models.CartItem.user_id == current_user.id,
     ).first()
     if not item:
         raise HTTPException(status_code=404, detail="购物车项不存在")
@@ -105,10 +116,14 @@ def update_cart(body: schemas.UpdateCartReq, db: Session = Depends(get_db)):
 
 
 @router.delete("/remove/{cart_item_id}", response_model=schemas.Resp)
-def remove_cart(cart_item_id: int, db: Session = Depends(get_db)):
+def remove_cart(
+    cart_item_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     item = db.query(models.CartItem).filter(
         models.CartItem.id == cart_item_id,
-        models.CartItem.user_id == DEMO_USER,
+        models.CartItem.user_id == current_user.id,
     ).first()
     if not item:
         raise HTTPException(status_code=404, detail="购物车项不存在")

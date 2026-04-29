@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, JSON, String, func
+from sqlalchemy import DateTime, JSON, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -35,6 +35,11 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(128), nullable=False)
     nickname: Mapped[str | None] = mapped_column(String(50), default=None)
     avatar_url: Mapped[str | None] = mapped_column(String(255), default=None)
+    phone: Mapped[str | None] = mapped_column(String(20), default=None)
+    gender: Mapped[str | None] = mapped_column(String(10), default=None)
+    birthday: Mapped[str | None] = mapped_column(String(20), default=None)
+    signature: Mapped[str | None] = mapped_column(String(100), default=None)
+    bio: Mapped[str | None] = mapped_column(Text, default=None)
     # role: "user" 普通用户 | "admin" 管理员
     role: Mapped[str] = mapped_column(String(10), default="user", nullable=False)
     # 用户画像（冷启动问卷 + AI 导购采集）

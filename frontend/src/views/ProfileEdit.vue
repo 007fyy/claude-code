@@ -28,6 +28,10 @@
               <span class="sidebar-val">{{ form.email || '未绑定' }}</span>
             </div>
             <div class="sidebar-row">
+              <span class="sidebar-key">手机号</span>
+              <span class="sidebar-val">{{ form.phone || '未绑定' }}</span>
+            </div>
+            <div class="sidebar-row">
               <span class="sidebar-key">注册时间</span>
               <span class="sidebar-val">{{ joinDate }}</span>
             </div>
@@ -42,10 +46,11 @@
             <div class="form-card">
               <div class="card-title">基本信息</div>
               <div class="form-grid">
-                <el-form-item label="QQ邮箱" prop="email">
-                  <el-input v-model="form.email" placeholder="请输入QQ邮箱" size="large" disabled>
-                    <template #prefix><span class="input-icon">📧</span></template>
-                  </el-input>
+                <el-form-item label="QQ邮箱">
+                  <div class="email-display">
+                    <span class="input-icon">📧</span>
+                    <span>{{ form.email }}</span>
+                  </div>
                   <div class="field-hint">邮箱为账号唯一标识，不可修改</div>
                 </el-form-item>
                 <el-form-item label="昵称" prop="nickname">
@@ -56,6 +61,11 @@
               </div>
 
               <div class="form-grid">
+                <el-form-item label="手机号" prop="phone">
+                  <el-input v-model="form.phone" placeholder="请输入手机号" size="large" maxlength="11">
+                    <template #prefix><span class="input-icon">📱</span></template>
+                  </el-input>
+                </el-form-item>
                 <el-form-item label="性别">
                   <div class="gender-cards">
                     <div
@@ -173,18 +183,20 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { getMe, updatePrefs } from '@/api/user'
+import { getMe, updateMe, updatePrefs, uploadAvatar } from '@/api/user'
 
 const router = useRouter()
 const saving = ref(false)
 const faceType = ref('')
 const formRef = ref(null)
 const avatarInput = ref(null)
+const avatarFile = ref(null)
 const joinDate = ref('2026.04')
 
 const form = ref({
   email: '',
   nickname: '',
+  phone: '',
   gender: 'secret',
   birthday: '',
   signature: '',
@@ -194,11 +206,18 @@ const form = ref({
   occasion_prefs: [],
 })
 
+const phoneValidator = (_r, v, cb) => {
+  if (v && !/^1[3-9]\d{9}$/.test(v)) cb(new Error('请输入正确的11位手机号'))
+  else cb()
+}
+
 const rules = {
-  email: [{ required: true, message: '请输入QQ邮箱', trigger: 'blur' }],
   nickname: [
     { required: true, message: '请输入昵称', trigger: 'blur' },
     { min: 2, max: 20, message: '昵称长度 2-20 个字符', trigger: 'blur' },
+  ],
+  phone: [
+    { validator: phoneValidator, trigger: 'blur' },
   ],
 }
 
@@ -229,6 +248,7 @@ function triggerAvatarUpload() {
 function onAvatarSelect(e) {
   const file = e.target.files?.[0]
   if (!file) return
+  avatarFile.value = file
   const reader = new FileReader()
   reader.onload = (ev) => {
     form.value.avatar_url = ev.target.result
@@ -242,6 +262,7 @@ onMounted(async () => {
     const u = res.data
     form.value.email = u.email || ''
     form.value.nickname = u.nickname || ''
+    form.value.phone = u.phone || ''
     form.value.gender = u.gender || 'secret'
     form.value.birthday = u.birthday || ''
     form.value.signature = u.signature || ''
@@ -262,7 +283,32 @@ async function save() {
   }
   saving.value = true
   try {
-    await updatePrefs(form.value)
+    if (avatarFile.value) {
+      const avatarRes = await uploadAvatar(avatarFile.value)
+      form.value.avatar_url = avatarRes.data.avatar_url
+      avatarFile.value = null
+    }
+
+    await updateMe({
+      nickname: form.value.nickname,
+      avatar_url: form.value.avatar_url,
+      phone: form.value.phone,
+      gender: form.value.gender,
+      birthday: form.value.birthday,
+      signature: form.value.signature,
+      bio: form.value.bio,
+    })
+
+    await updatePrefs({
+      style_prefs: form.value.style_prefs,
+      occasion_prefs: form.value.occasion_prefs,
+    })
+
+    const stored = JSON.parse(localStorage.getItem('user') || '{}')
+    stored.nickname = form.value.nickname
+    stored.avatar_url = form.value.avatar_url
+    localStorage.setItem('user', JSON.stringify(stored))
+
     ElMessage.success('保存成功')
     router.back()
   } catch {
@@ -347,6 +393,13 @@ async function save() {
 
 .input-icon { font-size: 16px; }
 .field-hint { font-size: 12px; color: #B0B0B0; margin-top: 4px; }
+
+.email-display {
+  display: flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 12px;
+  background: #FAF9F7; border-radius: 8px;
+  font-size: 14px; color: #1A1714; width: 100%;
+}
 
 .gender-cards { display: flex; gap: 12px; }
 .gender-card {

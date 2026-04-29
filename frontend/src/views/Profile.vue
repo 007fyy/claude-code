@@ -5,11 +5,15 @@
         <!-- 左侧 -->
         <div class="profile-sidebar">
           <div class="user-card">
-            <div class="avatar">{{ user.avatar_url ? '' : '👤' }}</div>
+            <div class="avatar">
+              <img v-if="user.avatar_url" :src="user.avatar_url" class="avatar-img" />
+              <span v-else class="avatar-fallback">{{ user.nickname?.charAt(0) || '👤' }}</span>
+            </div>
             <div class="user-info">
               <div class="user-name">{{ user.nickname || '未设置昵称' }}</div>
               <div class="user-sig" v-if="user.signature">{{ user.signature }}</div>
               <div class="user-email">{{ user.email || '未登录' }}</div>
+              <div class="user-phone" v-if="user.phone">{{ user.phone }}</div>
             </div>
             <el-button size="small" plain @click="$router.push('/profile/edit')">编辑资料</el-button>
           </div>
@@ -31,7 +35,7 @@
               <span class="menu-label">收货地址管理</span>
               <span class="menu-arrow">›</span>
             </div>
-            <div class="menu-item">
+            <div class="menu-item" @click="$router.push('/profile/history')">
               <span class="menu-icon">👁️</span>
               <span class="menu-label">浏览历史</span>
               <span class="menu-arrow">›</span>
@@ -49,6 +53,11 @@
             <div class="menu-item">
               <span class="menu-icon">⚖️</span>
               <span class="menu-label">用户协议 / 隐私政策</span>
+              <span class="menu-arrow">›</span>
+            </div>
+            <div v-if="isAdmin" class="menu-item" @click="$router.push('/admin/orders')">
+              <span class="menu-icon">🛠️</span>
+              <span class="menu-label">订单管理（管理员）</span>
               <span class="menu-arrow">›</span>
             </div>
             <div class="menu-item logout" @click="logout">
@@ -87,10 +96,19 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
 import { getMe } from '@/api/user'
+import { getOrderStatusCounts } from '@/api/order'
 
 const router = useRouter()
 const user = ref({ nickname: '', email: '' })
 const faceType = ref('')
+const isAdmin = ref(false)
+
+const orderTabs = ref([
+  { icon: '⏰', label: '待付款', path: '/orders?status=pending_pay', count: 0 },
+  { icon: '📦', label: '待发货', path: '/orders?status=paid',    count: 0 },
+  { icon: '🚚', label: '待收货', path: '/orders?status=shipped', count: 0 },
+  { icon: '🔄', label: '售后',   path: '/orders?status=refunding', count: 0 },
+])
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
@@ -99,15 +117,18 @@ onMounted(async () => {
     const res = await getMe()
     user.value = res.data
     if (res.data.face_shape) faceType.value = res.data.face_shape
+    if (res.data.role === 'admin') isAdmin.value = true
+  } catch {}
+
+  try {
+    const res = await getOrderStatusCounts()
+    const c = res.data
+    orderTabs.value[0].count = c.pending_pay || 0
+    orderTabs.value[1].count = c.paid || 0
+    orderTabs.value[2].count = c.shipped || 0
+    orderTabs.value[3].count = c.refunding || 0
   } catch {}
 })
-
-const orderTabs = [
-  { icon: '⏰', label: '待付款', path: '/orders?status=pending', count: 0 },
-  { icon: '📦', label: '待发货', path: '/orders?status=paid',    count: 0 },
-  { icon: '🚚', label: '待收货', path: '/orders?status=shipped', count: 0 },
-  { icon: '🔄', label: '售后',   path: '/orders?status=refunding', count: 0 },
-]
 
 async function logout() {
   await ElMessageBox.confirm('确认退出登录？', '提示', { type: 'warning' })
@@ -143,10 +164,18 @@ async function logout() {
   font-size: 52px; width: 72px; height: 72px;
   display: flex; align-items: center; justify-content: center;
   background: rgba(255,255,255,.2); border-radius: 50%;
+  overflow: hidden;
+}
+.avatar-img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.avatar-fallback {
+  font-size: 32px; color: #fff;
 }
 .user-name { font-size: 18px; font-weight: 700; }
 .user-sig { font-size: 13px; opacity: .85; font-style: italic; }
 .user-email { font-size: 14px; opacity: .85; }
+.user-phone { font-size: 13px; opacity: .75; }
 
 .menu-list {
   background: #fff; border-radius: 16px;
