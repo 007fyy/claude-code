@@ -29,11 +29,16 @@ def startup():
     Base.metadata.create_all(bind=engine)
     from sqlalchemy import text
     with engine.connect() as conn:
-        try:
-            conn.execute(text("ALTER TABLE users ADD COLUMN phone VARCHAR(20) DEFAULT NULL"))
-            conn.commit()
-        except Exception:
-            pass
+        for ddl in [
+            "ALTER TABLE users ADD COLUMN phone VARCHAR(20) DEFAULT NULL",
+            "ALTER TABLE users ADD COLUMN face_type VARCHAR(20) DEFAULT NULL",
+            "ALTER TABLE users ADD COLUMN skin_tone VARCHAR(20) DEFAULT NULL",
+        ]:
+            try:
+                conn.execute(text(ddl))
+                conn.commit()
+            except Exception:
+                pass
 
 
 app.include_router(auth_router.router, prefix="/api/v1")

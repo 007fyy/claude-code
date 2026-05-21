@@ -116,6 +116,8 @@ class PayOrderReq(BaseModel):
 
 
 class OrderItemOut(BaseModel):
+    order_item_id: Optional[int] = None
+    spu_name: Optional[str] = None
     sku_name: Optional[str]
     cover_url: Optional[str]
     price: float
@@ -130,7 +132,9 @@ class OrderOut(BaseModel):
     pay_amount: Optional[float]
     status: str
     receiver_name: Optional[str]
+    receiver_phone: Optional[str] = None
     receiver_address: Optional[str]
+    item_count: Optional[int] = None
     items: List[OrderItemOut] = []
     created_at: Optional[str]
 

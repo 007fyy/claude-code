@@ -28,6 +28,18 @@ export const applyRefund = (data) => {
   return http.post('/order/refund/apply', data)
 }
 
+export const getRefundDetail = (refundId) => {
+  return http.get(`/order/refund/${refundId}`)
+}
+
+export const submitReturnTracking = (refundId, trackingNo) => {
+  return http.post('/order/refund/return_tracking', null, { params: { refund_id: refundId, tracking_no: trackingNo } })
+}
+
+export const cancelRefund = (refundId) => {
+  return http.post('/order/refund/cancel', null, { params: { refund_id: refundId } })
+}
+
 export const confirmReceive = (orderId) => {
   return http.post('/order/confirm_receive', null, { params: { order_id: orderId } })
 }

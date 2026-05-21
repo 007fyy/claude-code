@@ -19,12 +19,31 @@
           </div>
 
           <div class="menu-list">
-            <div class="menu-item" @click="$router.push('/face-detect')">
-              <span class="menu-icon">💄</span>
-              <span class="menu-label">我的脸型档案</span>
-              <span class="menu-value">{{ faceType || '未检测' }}</span>
-              <span class="menu-arrow">›</span>
+            <!-- 脸型档案卡片 -->
+            <div class="face-profile-card">
+              <div class="face-profile-header">
+                <span class="menu-icon">💄</span>
+                <span class="menu-label">我的脸型档案</span>
+              </div>
+              <template v-if="user.face_type">
+                <div class="face-profile-data">
+                  <div class="face-data-item">
+                    <span class="face-data-label">脸型</span>
+                    <span class="face-data-value">{{ user.face_type }}</span>
+                  </div>
+                  <div class="face-data-item" v-if="user.skin_tone">
+                    <span class="face-data-label">肤色</span>
+                    <span class="face-data-value">{{ user.skin_tone }}</span>
+                  </div>
+                </div>
+                <el-button size="small" plain class="face-retest-btn" @click="$router.push('/face-detect')">重新检测</el-button>
+              </template>
+              <template v-else>
+                <div class="face-no-data">还没有脸型记录，测一测让推荐更精准</div>
+                <el-button type="primary" size="small" class="face-start-btn" @click="$router.push('/face-detect')">立即检测 →</el-button>
+              </template>
             </div>
+
             <div class="menu-item" @click="$router.push('/profile/favorites')">
               <span class="menu-icon">🛍️</span>
               <span class="menu-label">我的收藏</span>
@@ -53,11 +72,6 @@
             <div class="menu-item">
               <span class="menu-icon">⚖️</span>
               <span class="menu-label">用户协议 / 隐私政策</span>
-              <span class="menu-arrow">›</span>
-            </div>
-            <div v-if="isAdmin" class="menu-item" @click="$router.push('/admin/orders')">
-              <span class="menu-icon">🛠️</span>
-              <span class="menu-label">订单管理（管理员）</span>
               <span class="menu-arrow">›</span>
             </div>
             <div class="menu-item logout" @click="logout">
@@ -99,8 +113,7 @@ import { getMe } from '@/api/user'
 import { getOrderStatusCounts } from '@/api/order'
 
 const router = useRouter()
-const user = ref({ nickname: '', email: '' })
-const faceType = ref('')
+const user = ref({ nickname: '', email: '', face_type: null, skin_tone: null })
 const isAdmin = ref(false)
 
 const orderTabs = ref([
@@ -116,7 +129,6 @@ onMounted(async () => {
   try {
     const res = await getMe()
     user.value = res.data
-    if (res.data.face_shape) faceType.value = res.data.face_shape
     if (res.data.role === 'admin') isAdmin.value = true
   } catch {}
 
@@ -195,6 +207,24 @@ async function logout() {
 .menu-value { font-size: 13px; color: #B0B0B0; }
 .menu-arrow { font-size: 16px; color: #EBEBEB; }
 .logout .menu-label { color: #E74C3C; }
+
+.face-profile-card {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid #F0F0F0;
+}
+.face-profile-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.face-profile-header .menu-label { font-weight: 600; }
+.face-profile-data {
+  display: flex; gap: 24px; margin-bottom: 12px;
+}
+.face-data-item { display: flex; flex-direction: column; gap: 2px; }
+.face-data-label { font-size: 11px; color: #B0B0B0; }
+.face-data-value { font-size: 15px; font-weight: 700; color: #C4906A; }
+.face-no-data { font-size: 13px; color: #B0B0B0; margin-bottom: 12px; }
+.face-retest-btn { font-size: 12px; }
+.face-start-btn { border-radius: 8px; font-size: 13px; font-weight: 600; }
 
 .profile-main { display: flex; flex-direction: column; gap: 16px; }
 

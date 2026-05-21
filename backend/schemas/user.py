@@ -57,6 +57,8 @@ class UserOut(BaseModel):
     style_prefs: list | None
     occasion_prefs: list | None
     budget_pref: str | None
+    face_type: str | None
+    skin_tone: str | None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -81,11 +83,33 @@ class UpdatePrefsReq(BaseModel):
     style_prefs: list[str] | None = None
     occasion_prefs: list[str] | None = None
     budget_pref: str | None = None
+    face_type: str | None = None
+    skin_tone: str | None = None
 
 
 class ChangePasswordReq(BaseModel):
     old_password: str
     new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def password_strength(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("密码至少8位")
+        return v
+
+
+class ResetPasswordReq(BaseModel):
+    email: str
+    code: str
+    new_password: str
+
+    @field_validator("email")
+    @classmethod
+    def email_must_be_valid(cls, v: str) -> str:
+        if not re.match(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$", v):
+            raise ValueError("邮箱格式不正确")
+        return v.lower()
 
     @field_validator("new_password")
     @classmethod

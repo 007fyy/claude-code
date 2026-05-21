@@ -45,6 +45,11 @@
                     <div class="item-name">{{ item.spu_name }}</div>
                     <div class="item-sku">{{ item.sku_name }} x{{ item.quantity }}</div>
                     <div class="item-price">¥{{ item.price }}</div>
+                    <el-button
+                      v-if="order.status === 'completed' && item.order_item_id"
+                      size="small" link type="warning"
+                      @click="$router.push(`/aftersale/apply?order_id=${order.order_id}&order_item_id=${item.order_item_id}`)"
+                    >申请售后</el-button>
                   </div>
                   <el-button v-if="item.ar_asset_url" size="small" link @click="tryOn(item)">试戴</el-button>
                 </div>
@@ -65,7 +70,6 @@
                 <el-button v-if="order.status === 'pending_pay'" size="large" type="primary" class="action-btn" @click="handlePay">去付款</el-button>
                 <el-button v-if="order.status === 'pending_pay'" size="large" class="action-btn" @click="handleCancel">取消订单</el-button>
                 <el-button v-if="order.status === 'shipped'" size="large" type="primary" class="action-btn" @click="handleConfirm">确认收货</el-button>
-                <el-button v-if="order.status === 'completed'" size="large" class="action-btn" @click="$router.push(`/aftersale/apply?order_id=${order.order_id}`)">申请售后</el-button>
                 <el-button size="large" class="action-btn">联系客服</el-button>
               </div>
             </div>

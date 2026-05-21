@@ -46,6 +46,8 @@ class User(Base):
     style_prefs: Mapped[list | None] = mapped_column(JSON, default=None)
     occasion_prefs: Mapped[list | None] = mapped_column(JSON, default=None)
     budget_pref: Mapped[str | None] = mapped_column(String(20), default=None)
+    face_type: Mapped[str | None] = mapped_column(String(20), default=None)
+    skin_tone: Mapped[str | None] = mapped_column(String(20), default=None)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )

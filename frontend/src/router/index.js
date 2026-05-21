@@ -115,10 +115,15 @@ const routes = [
     meta: { title: '收货地址管理', requireAuth: true },
   },
   {
-    path: '/admin/orders',
-    name: 'AdminOrders',
-    component: () => import('../views/AdminOrders.vue'),
-    meta: { title: '订单管理', requireAuth: true },
+    path: '/admin',
+    component: () => import('../views/AdminLayout.vue'),
+    meta: { requireAuth: true, requireAdmin: true, hideChrome: true },
+    redirect: '/admin/dashboard',
+    children: [
+      { path: 'dashboard', name: 'AdminDashboard', component: () => import('../views/AdminDashboard.vue'), meta: { title: '数据概览' } },
+      { path: 'orders',    name: 'AdminOrders',    component: () => import('../views/AdminOrders.vue'),    meta: { title: '订单管理' } },
+      { path: 'goods',     name: 'AdminGoods',     component: () => import('../views/AdminGoods.vue'),     meta: { title: '商品管理' } },
+    ],
   },
 ]
 
@@ -138,12 +143,31 @@ router.beforeEach((to, from) => {
   }
 
   const token = localStorage.getItem('token')
+  const user  = (() => { try { return JSON.parse(localStorage.getItem('user') || 'null') } catch { return null } })()
+  const isAdmin = user?.role === 'admin'
+
+  // 未登录 → 跳登录页
   const needAuth = to.matched.some((r) => r.meta.requireAuth)
   if (needAuth && !token) {
     return { path: '/login', query: { redirect: to.fullPath } }
   }
-  if (to.path === '/login' && token) {
+
+  // 非管理员访问 /admin/* → 跳首页
+  const needAdmin = to.matched.some((r) => r.meta.requireAdmin)
+  if (needAdmin && !isAdmin) {
     return '/home'
+  }
+
+  // 已登录访问 /login → 按角色跳转
+  if (to.path === '/login' && token) {
+    return isAdmin ? '/admin/dashboard' : '/home'
+  }
+
+  // 管理员访问需要用户身份的页面（个人中心、订单等）→ 跳后台
+  const isAdminRoute = to.matched.some((r) => r.meta.requireAdmin)
+  const isUserOnlyRoute = to.matched.some((r) => r.meta.requireAuth) && !isAdminRoute
+  if (isAdmin && token && isUserOnlyRoute) {
+    return '/admin/dashboard'
   }
 })
 

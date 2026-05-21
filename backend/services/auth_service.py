@@ -89,6 +89,38 @@ class AuthService:
         token = create_access_token(user.id)
         return token, user
 
+    def send_reset_code(self, email: str) -> None:
+        """Send password-reset code. Raises BizError if email not registered."""
+        user = self.db.query(User).filter(User.email == email).first()
+        if not user:
+            raise BizError(2011, "该邮箱尚未注册")
+
+        now = datetime.utcnow()
+        code = str(random.randint(100000, 999999))
+        self.db.add(VerifyCode(
+            email=email,
+            code=code,
+            expired_at=now + timedelta(minutes=5),
+            used=False,
+        ))
+        self.db.commit()
+
+        if self._use_real_email():
+            _send_email(email, code)
+        else:
+            raise BizError(2006, "邮件服务未配置，无法发送验证码")
+
+        print(f"[RESET CODE] {email} -> {code}（5分钟有效）")
+
+    def reset_password(self, email: str, code: str, new_password: str) -> None:
+        """Verify code and update user password."""
+        self._consume_code(email, code)
+        user = self.db.query(User).filter(User.email == email).first()
+        if not user:
+            raise BizError(2011, "该邮箱尚未注册")
+        user.password_hash = pwd_ctx.hash(new_password)
+        self.db.commit()
+
     def verify(self, email: str, code: str, password: str | None = None, nickname: str | None = None):
         """Register new user with verification code. Existing users must use /auth/login."""
         from core.security import create_access_token

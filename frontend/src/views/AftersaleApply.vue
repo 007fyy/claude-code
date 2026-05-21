@@ -63,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { applyRefund } from '../api/order'
@@ -74,6 +74,9 @@ const formRef   = ref(null)
 const photoInput = ref(null)
 const submitting = ref(false)
 const photos = ref([null, null, null])
+
+// order_item_id comes from route query (set by OrderDetail.vue when clicking 申请售后)
+const orderItemId = computed(() => Number(route.query.order_item_id))
 
 const form = ref({
   type:   'refund',
@@ -112,17 +115,17 @@ function onPhotoSelect(e) {
 
 async function submit() {
   if (!form.value.reason) { ElMessage.warning('请选择退货原因'); return }
+  if (!orderItemId.value) { ElMessage.error('缺少订单商品信息，请从订单详情页进入'); return }
   submitting.value = true
   try {
     const res = await applyRefund({
-      order_id: route.query.order_id,
-      type:     form.value.type,
-      reason:   form.value.reason,
-      remark:   form.value.remark,
+      order_item_id: orderItemId.value,
+      reason_type:   form.value.reason,
+      reason_detail: form.value.remark,
     })
     ElMessage.success('申请已提交，商家将在24小时内处理')
-    const aftersaleId = res?.data?.aftersale_id || route.query.order_id
-    router.replace(`/aftersale/${aftersaleId}`)
+    const refundId = res?.data?.refund_id
+    router.replace(`/aftersale/${refundId}`)
   } catch {
     ElMessage.error('提交失败，请稍后重试')
   } finally {

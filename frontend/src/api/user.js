@@ -4,6 +4,14 @@ export const sendCode = (email) => {
   return http.post('/auth/send-code', { email })
 }
 
+export const sendResetCode = (email) => {
+  return http.post('/auth/send-reset-code', { email })
+}
+
+export const resetPassword = (data) => {
+  return http.post('/auth/reset-password', data)
+}
+
 export const login = (data) => {
   return http.post('/auth/login', data)
 }

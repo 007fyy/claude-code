@@ -52,9 +52,13 @@
     <div class="login-form-wrap">
       <div v-if="!showOnboarding" class="login-card">
         <!-- Tabs -->
-        <div class="login-tabs">
+        <div v-if="mode !== 'reset'" class="login-tabs">
           <div class="login-tab" :class="{ active: mode === 'login' }" @click="mode = 'login'">登录账号</div>
           <div class="login-tab" :class="{ active: mode === 'register' }" @click="mode = 'register'">新用户注册</div>
+        </div>
+        <div v-else class="reset-header">
+          <el-button link class="back-btn" style="margin-bottom:16px" @click="mode = 'login'">&#8592; 返回登录</el-button>
+          <div class="reset-title">重置密码</div>
         </div>
 
         <!-- Login: email + password -->
@@ -68,6 +72,7 @@
             <el-form-item prop="password">
               <el-input ref="loginPwInput" v-model="form.password" placeholder="请输入密码" size="large" type="password" show-password @keyup.enter="handleLogin" />
             </el-form-item>
+            <el-button link class="forgot-btn" @click="enterReset">忘记密码？</el-button>
             <el-button type="primary" size="large" class="submit-btn" :loading="loading" @click="handleLogin">
               登录
             </el-button>
@@ -122,6 +127,54 @@
           </div>
         </div>
 
+        <!-- Reset password -->
+        <div v-if="mode === 'reset'" class="step-wrap">
+          <div v-if="resetStep === 1">
+            <el-form :model="form" ref="resetEmailRef" :rules="emailRules" class="auth-form">
+              <el-form-item prop="email">
+                <el-input v-model="form.email" placeholder="请输入注册时的 QQ 邮箱" size="large" @keyup.enter="handleSendResetCode">
+                  <template #suffix>@qq.com</template>
+                </el-input>
+              </el-form-item>
+              <el-button type="primary" size="large" class="submit-btn" :loading="sending" @click="handleSendResetCode">
+                获取验证码
+              </el-button>
+            </el-form>
+          </div>
+
+          <div v-if="resetStep === 2">
+            <div class="step-hint hint-reset">请输入验证码并设置新密码</div>
+            <div class="step-email">{{ fullEmail }}</div>
+
+            <el-form :model="form" ref="resetVerifyRef" :rules="resetRules" class="auth-form">
+              <el-form-item prop="code">
+                <el-input v-model="form.code" placeholder="请输入 6 位验证码" maxlength="6" size="large">
+                  <template #append>
+                    <el-button :disabled="countdown > 0" @click="resendResetCode" link>
+                      {{ countdown > 0 ? `${countdown}s` : '重新发送' }}
+                    </el-button>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item prop="password">
+                <el-input v-model="form.password" placeholder="设置新密码（8位以上含字母+数字）" size="large" type="password" show-password />
+              </el-form-item>
+              <div class="pw-strength">
+                <div class="pw-bar" :class="pwLevel >= 1 ? pwClass : ''" />
+                <div class="pw-bar" :class="pwLevel >= 2 ? pwClass : ''" />
+                <div class="pw-bar" :class="pwLevel >= 3 ? pwClass : ''" />
+              </div>
+              <el-form-item prop="confirmPwd">
+                <el-input v-model="form.confirmPwd" placeholder="确认新密码" size="large" type="password" show-password />
+              </el-form-item>
+              <el-button type="primary" size="large" class="submit-btn" :loading="loading" @click="handleResetPassword">
+                重置密码
+              </el-button>
+            </el-form>
+            <el-button link class="back-btn" @click="resetStep = 1">&#8592; 换一个邮箱</el-button>
+          </div>
+        </div>
+
         <div class="agreement">
           继续即同意
           <el-link type="primary" :underline="false">《用户协议》</el-link>
@@ -157,13 +210,14 @@
 import { ref, reactive, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { sendCode as apiSendCode, login as apiLogin, verify as apiVerify, updatePrefs } from '@/api/user'
+import { sendCode as apiSendCode, sendResetCode as apiSendResetCode, resetPassword as apiResetPassword, login as apiLogin, verify as apiVerify, updatePrefs } from '@/api/user'
 
 const router = useRouter()
 const route = useRoute()
 
 const mode = ref('login')
 const regStep = ref(1)
+const resetStep = ref(1)
 const sending = ref(false)
 const loading = ref(false)
 const countdown = ref(0)
@@ -174,6 +228,8 @@ const obAnswers = reactive(['', '', ''])
 const loginRef = ref(null)
 const emailRef = ref(null)
 const verifyRef = ref(null)
+const resetEmailRef = ref(null)
+const resetVerifyRef = ref(null)
 
 const form = reactive({
   email: '',
@@ -218,6 +274,12 @@ const verifyRules = {
   confirmPwd: [{ required: true, validator: confirmPwdValidator, trigger: 'blur' }],
 }
 
+const resetRules = {
+  code: [{ required: true, len: 6, message: '请输入6位验证码', trigger: 'blur' }],
+  password: [{ required: true, min: 8, message: '密码至少8位', trigger: 'blur' }],
+  confirmPwd: [{ required: true, validator: confirmPwdValidator, trigger: 'blur' }],
+}
+
 const obQuestions = [
   { q: '你的常见饰品佩戴场合？', options: ['日常通勤', '约会出行', '职场正式', '派对聚会'] },
   { q: '你偏好的饰品风格？', options: ['简约极简', '优雅复古', '甜美少女', '个性先锋'] },
@@ -231,6 +293,51 @@ function startCountdown() {
   }, 1000)
 }
 
+function enterReset() {
+  form.email = ''
+  form.code = ''
+  form.password = ''
+  form.confirmPwd = ''
+  resetStep.value = 1
+  mode.value = 'reset'
+}
+
+async function handleSendResetCode() {
+  await resetEmailRef.value.validate()
+  sending.value = true
+  try {
+    await apiSendResetCode(fullEmail.value)
+    ElMessage.success('验证码已发送到您的邮箱，请查收')
+    startCountdown()
+    resetStep.value = 2
+  } catch { /* interceptor */ }
+  finally { sending.value = false }
+}
+
+async function resendResetCode() {
+  try {
+    await apiSendResetCode(fullEmail.value)
+    ElMessage.success('验证码已重新发送')
+    startCountdown()
+  } catch { /* interceptor */ }
+}
+
+async function handleResetPassword() {
+  await resetVerifyRef.value.validate()
+  loading.value = true
+  try {
+    await apiResetPassword({ email: fullEmail.value, code: form.code, new_password: form.password })
+    ElMessage.success('密码重置成功，请使用新密码登录')
+    form.code = ''
+    form.password = ''
+    form.confirmPwd = ''
+    resetStep.value = 1
+    mode.value = 'login'
+  } catch (e) {
+    console.error('[重置密码失败]', e?.message || e)
+  } finally { loading.value = false }
+}
+
 async function handleLogin() {
   await loginRef.value.validate()
   loading.value = true
@@ -241,7 +348,11 @@ async function handleLogin() {
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(user))
       ElMessage.success('登录成功，欢迎回来')
-      router.push(route.query.redirect || '/home')
+      if (user.role === 'admin') {
+        router.push('/admin/dashboard')
+      } else {
+        router.push(route.query.redirect || '/home')
+      }
     }
   } catch (e) {
     console.error('[登录失败]', e?.message || e)
@@ -513,6 +624,23 @@ async function finishOnboarding() {
 }
 .ob-opt:hover { border-color: #C4906A; color: #C4906A; }
 .ob-opt.selected { border-color: #C4906A; background: #fdf6f0; color: #C4906A; font-weight: 600; }
+
+.forgot-btn {
+  display: block;
+  margin: -4px 0 8px auto;
+  color: #C4906A;
+  font-size: 12px;
+  padding: 0;
+  height: auto;
+}
+.forgot-btn:hover { color: #a87456; }
+
+.reset-header { margin-bottom: 8px; }
+.reset-title {
+  font-size: 20px; font-weight: 800; color: #1A1714;
+  text-align: center; margin-bottom: 24px;
+}
+.hint-reset { background: #e8f4fd; color: #0277bd; }
 
 /* ── Transitions ── */
 .slide-left-enter-active, .slide-left-leave-active { transition: all .3s ease; }

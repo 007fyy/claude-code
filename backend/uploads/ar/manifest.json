@@ -1,0 +1,114 @@
+[
+  {
+    "filename": "ear_pearl_drop.png",
+    "ar_asset_url": "/uploads/ar/ear_pearl_drop.png",
+    "name": "珍珠垂坠耳环",
+    "mount_type": "ear_lobe",
+    "ar_offset_x": 0,
+    "ar_offset_y": 0,
+    "ar_scale_base": 1.0,
+    "ar_rotation_offset": 0,
+    "image_size": [
+      160,
+      320
+    ]
+  },
+  {
+    "filename": "ear_gold_hoop.png",
+    "ar_asset_url": "/uploads/ar/ear_gold_hoop.png",
+    "name": "金色圆圈耳环",
+    "mount_type": "ear_lobe",
+    "ar_offset_x": -8,
+    "ar_offset_y": -8,
+    "ar_scale_base": 1.3,
+    "ar_rotation_offset": 0,
+    "image_size": [
+      200,
+      215
+    ]
+  },
+  {
+    "filename": "ear_crystal_drop.png",
+    "ar_asset_url": "/uploads/ar/ear_crystal_drop.png",
+    "name": "水晶泪滴耳环",
+    "mount_type": "ear_lobe",
+    "ar_offset_x": 0,
+    "ar_offset_y": 0,
+    "ar_scale_base": 1.0,
+    "ar_rotation_offset": 0,
+    "image_size": [
+      140,
+      300
+    ]
+  },
+  {
+    "filename": "ear_rose_stud.png",
+    "ar_asset_url": "/uploads/ar/ear_rose_stud.png",
+    "name": "玫瑰金耳钉",
+    "mount_type": "ear_lobe",
+    "ar_offset_x": 0,
+    "ar_offset_y": -5,
+    "ar_scale_base": 0.75,
+    "ar_rotation_offset": 0,
+    "image_size": [
+      120,
+      120
+    ]
+  },
+  {
+    "filename": "ear_emerald_drop.png",
+    "ar_asset_url": "/uploads/ar/ear_emerald_drop.png",
+    "name": "祖母绿垂坠耳环",
+    "mount_type": "ear_lobe",
+    "ar_offset_x": 0,
+    "ar_offset_y": 0,
+    "ar_scale_base": 1.0,
+    "ar_rotation_offset": 0,
+    "image_size": [
+      140,
+      280
+    ]
+  },
+  {
+    "filename": "ear_ruby_drop.png",
+    "ar_asset_url": "/uploads/ar/ear_ruby_drop.png",
+    "name": "红宝石垂坠耳环",
+    "mount_type": "ear_lobe",
+    "ar_offset_x": 0,
+    "ar_offset_y": 0,
+    "ar_scale_base": 1.0,
+    "ar_rotation_offset": 0,
+    "image_size": [
+      130,
+      290
+    ]
+  },
+  {
+    "filename": "neck_gold_star.png",
+    "ar_asset_url": "/uploads/ar/neck_gold_star.png",
+    "name": "金色星形项链",
+    "mount_type": "neck",
+    "ar_offset_x": 0,
+    "ar_offset_y": 0,
+    "ar_scale_base": 1.0,
+    "ar_rotation_offset": 0,
+    "image_size": [
+      320,
+      180
+    ]
+  },
+  {
+    "filename": "hair_gold_pin.png",
+    "ar_asset_url": "/uploads/ar/hair_gold_pin.png",
+    "name": "金色花朵发簪",
+    "mount_type": "hair",
+    "ar_offset_x": 0,
+    "ar_offset_y": 0,
+    "ar_scale_base": 1.0,
+    "ar_rotation_offset": 0,
+    "image_size": [
+      320,
+      90
+    ]
+  }
+]

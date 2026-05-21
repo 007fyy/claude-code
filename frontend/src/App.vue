@@ -13,7 +13,7 @@ import NavBar from './components/NavBar.vue'
 import FooterBar from './components/FooterBar.vue'
 
 const route = useRoute()
-const showChrome = computed(() => route.meta?.hideChrome !== true)
+const showChrome = computed(() => !route.matched.some(r => r.meta?.hideChrome))
 </script>
 
 <style>

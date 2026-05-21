@@ -235,6 +235,79 @@ def order_detail(
 
 # ── Refund ────────────────────────────────────────────────────────────────────
 
+@router.get("/refund/{refund_id}", response_model=schemas.Resp)
+def get_refund(
+    refund_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    refund = db.query(models.RefundOrder).filter(
+        models.RefundOrder.id == refund_id,
+        models.RefundOrder.user_id == current_user.id,
+    ).first()
+    if not refund:
+        raise HTTPException(status_code=404, detail="售后单不存在")
+
+    return schemas.Resp(data={
+        "refund_id": refund.id,
+        "refund_no": refund.refund_no,
+        "order_id": refund.order_id,
+        "order_item_id": refund.order_item_id,
+        "status": refund.status,
+        "reason_type": refund.reason_type,
+        "reason_detail": refund.reason_detail,
+        "refund_amount": float(refund.refund_amount),
+        "return_tracking_no": refund.return_tracking_no,
+        "reviewed_at": refund.reviewed_at.isoformat() if refund.reviewed_at else None,
+        "refunded_at": refund.refunded_at.isoformat() if refund.refunded_at else None,
+        "created_at": refund.created_at.isoformat() if refund.created_at else None,
+    })
+
+
+@router.post("/refund/return_tracking", response_model=schemas.Resp)
+def submit_return_tracking(
+    refund_id: int = Query(...),
+    tracking_no: str = Query(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    refund = db.query(models.RefundOrder).filter(
+        models.RefundOrder.id == refund_id,
+        models.RefundOrder.user_id == current_user.id,
+    ).first()
+    if not refund:
+        raise HTTPException(status_code=404, detail="售后单不存在")
+    if refund.status != "approved":
+        raise HTTPException(status_code=400, detail="售后单尚未审核通过")
+    refund.return_tracking_no = tracking_no
+    db.commit()
+    return schemas.Resp(message="快递单号已提交")
+
+
+@router.post("/refund/cancel", response_model=schemas.Resp)
+def cancel_refund(
+    refund_id: int = Query(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    refund = db.query(models.RefundOrder).filter(
+        models.RefundOrder.id == refund_id,
+        models.RefundOrder.user_id == current_user.id,
+    ).first()
+    if not refund:
+        raise HTTPException(status_code=404, detail="售后单不存在")
+    if refund.status != "pending_review":
+        raise HTTPException(status_code=400, detail="只有待审核的售后单可以撤销")
+
+    order = db.query(models.Order).filter(models.Order.id == refund.order_id).first()
+    if order and order.status == "refunding":
+        order.status = "paid"
+
+    db.delete(refund)
+    db.commit()
+    return schemas.Resp(message="售后申请已撤销")
+
+
 @router.post("/refund/apply", response_model=schemas.Resp)
 def apply_refund(
     body: schemas.ApplyRefundReq,
@@ -391,6 +464,7 @@ def _order_to_out(o: models.Order, db: Session = None) -> schemas.OrderOut:
             if spu:
                 spu_name = spu.name
         items.append(schemas.OrderItemOut(
+            order_item_id=i.id,
             spu_name=spu_name,
             sku_name=i.sku_name,
             cover_url=i.cover_url,
